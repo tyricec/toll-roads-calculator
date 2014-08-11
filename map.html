@@ -1,0 +1,72 @@
+<script src="bower_components/jquery/dist/jquery.js"></script>
+<script src="//maps.googleapis.com/maps/api/js?sensor=false"></script>
+<script src="bower_components/angular/angular.js"></script>
+<script src="bower_components/lodash/dist/lodash.underscore.js"></script>
+<script src="bower_components/angular-google-maps/dist/angular-google-maps.js"></script>
+<script src="map.js"></script>
+<script src="services.js"></script>
+<script>
+    $(function () {
+        $('#panoButton').click(function () {
+            console.log("works");
+            $('#pano').animate({'height': 0}, 500).animate({'z-index': -1}, 1)
+              .animate({'height': '500'}, 50);                
+        });
+    });
+</script>
+
+<style>
+   html, body {
+        padding:  0;
+        margin:  0;
+    }
+  .angular-google-map-container {
+    position: absolute;
+    top:  0px;
+    height: 100%;
+    width: 100%;
+    z-index: 0
+    }
+    #controls {
+        position: absolute;
+        z-index: 1;
+        background-color: rgba(0,0,0, 0.3);
+        color: white;
+    }
+  #pano {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    bottom: 0;
+    z-index: -1;
+    height: 500px;
+   }
+</style>
+<html ng-app="mapApp">
+<body ng-controller="mapController">
+<div id="controls">
+Starts: <select ng-model="map.local.route.start" 
+          ng-options="marker.id as marker.id for marker in map.local.markers"></select><br />
+Ends: <select ng-model="map.local.route.end" 
+        ng-options="marker.id as marker.id for marker in map.local.markers"> </select> 
+<button ng-click="map.toggleTrafficLayer()">Traffic</button>
+<button id="panoButton">Close Street View</button>
+</div>
+<google-map control="map.streetView" center="map.center" zoom="map.zoom" 
+    options="map.mapOptions" draggable="true">
+  <layer type="TrafficLayer"  show="map.showTraffic"></layer>
+  <markers models="map.local.markers" coords="'latlng'" click="'onClick'" labelContent="'title'" icon="'icon'" >
+    <windows show="'showWindow'" closeClick="'close'" options="map.infoWindowOptions">
+      <div>
+          <div ng-controller="infoController">
+             <button ng-click="onStartClick()">Start Here</button>
+             <button ng-click="onEndClick()">End Here</button>
+             <button ng-click="onStreetViewClick()">Street View</button>
+          </div>
+        This is a window for id {{ id }}.
+      </div>
+    </windows>
+  </markers>
+</google-map>
+<div id="pano"></div>
+</html>
