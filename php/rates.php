@@ -1,23 +1,32 @@
 <?php
 
 /*
- *		Company			:			Civic Resource  Group (CRG)
- *		Project			:			BSMS (Bus System Management System)
- * 		Date 			:			03/24/2014
- * 		File	 		: 			CheckUserAvailability.php
- * 		Purpose			:			Checks the availability of the username
- * 		Input			:			userName
- * 		Output			:			True or False
+ *		Company			:			Civic Resource Group (CRG)
+ *		Project			:			Toll Roads (Toll Road Rate Calculator)
+ * 		Date 			:			08/11/2014
+ * 		File	 		: 			rates.php
+ * 		Purpose			:			controller that relates to rates model methods
+ * 		Input			:			NA
+ * 		Output			:			NA 
  */
 
-require_once './models/Routes.php';
+require_once './models/Rates.php';
 
-//$userName = $_REQUEST['userName'];
+$method = $_REQUEST['method'];
 
-$routes = new routes();
-//$route_array = $routes->getRoutes();
-//$route_id = $routes->getRouteById(3);
-$route_name = $routes->getRouteByName('JAMBOREE ROAD (Irvine)');
-print_r($route_name);
+$rates = new rates();
+
+switch($method) {
+	
+	case 'getRate':
+	$entry = intval($_REQUEST['entry']);
+	$exit = intval($_REQUEST['exit']);
+	$axles = intval($_REQUEST['axles']);
+	$type = $_REQUEST['type'];
+	$result = $rates->getRate($entry,$exit,$axles,$type);
+	break;
+}
+
+print_r($result);
 
 ?>
