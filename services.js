@@ -7,8 +7,8 @@ app.service('sharedProperties', function() {
   var props;
   props = {
     route: {
-      start: -1,
-      end: -1
+      start: 0,
+      end: 0
     },
     markers: [],
     panorama: {}
@@ -27,13 +27,10 @@ app.service('sharedProperties', function() {
       return props.markers = val;
     },
     setPanorama: function(val) {
-      var currentMarker, panoEl, panoramaOptions;
+      var currentMarker, panoEl;
       currentMarker = props.markers[0];
-      panoramaOptions = {
-        position: currentMarker.glatlng
-      };
       panoEl = document.getElementById('pano');
-      return props.panorama = new google.maps.StreetViewPanorama(panoEl, panoramaOptions);
+      return props.panorama = new google.maps.StreetViewPanorama(panoEl);
     }
   };
 });

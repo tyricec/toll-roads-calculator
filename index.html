@@ -49,12 +49,12 @@
   <div class="form-group">
     <label for="exampleInputEmail1" class="font16" required>Start:</label>
     <select class="form-control" ng-model="map.local.route.start" 
-          ng-options="marker.id as marker.label for marker in map.local.markers"></select>
+          ng-options="marker.id as marker.name for marker in map.local.markers"></select>
   </div>
   <div class="form-group">
     <label for="exampleInputPassword1" class="font16" required>End:</label>
     <select class="form-control" ng-model="map.local.route.end" 
-          ng-options="marker.id as marker.label for marker in map.local.markers"></select>
+          ng-options="marker.id as marker.name for marker in map.local.markers"></select>
   </div>
 
   <button type="submit" class="btn btn-default btn-custom btn-blue">Find Your Toll</button>
@@ -98,10 +98,10 @@
 </div>
 
 <google-map control="map.streetView" center="map.center" zoom="map.zoom" 
-    options="map.mapOptions" draggable="true">
+    options="map.mapOptions" draggable="true" events="map.events">
   <layer type="TrafficLayer"  show="map.showTraffic"></layer>
-  <markers models="map.local.markers" coords="'latlng'" click="'onClick'" labelContent="'title'" icon="'icon'" >
-    <windows show="'showWindow'" closeClick="'close'" options="map.infoWindowOptions">
+  <markers models="map.local.markers" coords="'latlng'" click="'onClick'" icon="'icon'" >
+    <windows show="'showWindow'" closeClick="'close'" options="map.infoWindowOptions" doRebuildAll="refresh">
       <div>
           <div ng-controller="infoController">
              <button ng-click="onStartClick()">Start Here</button>
