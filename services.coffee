@@ -3,7 +3,7 @@ app = angular.module 'services', []
 # Services used by controllers
 app.service 'sharedProperties', ->
   props = {
-    route: { start: -1, end: -1 },
+    route: { start: 0, end: 0 },
     markers: [],
     panorama: {}
   }
@@ -13,7 +13,10 @@ app.service 'sharedProperties', ->
     setStart: (val) -> return props.route.start = val,
     setEnd: (val) -> return props.route.end = val,
     setMarkers: (val) -> return props.markers = val,
-    setPanorama: (val) -> return props.panorama = val.getGMap().getStreetView()
+    setPanorama: (val) -> 
+      currentMarker = props.markers[0]
+      panoEl = document.getElementById('pano')
+      props.panorama = new google.maps.StreetViewPanorama(panoEl)
   }
 
 app.service 'markerService', ->

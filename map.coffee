@@ -6,32 +6,55 @@ app.controller 'infoController', ['$scope', 'sharedProperties', ($scope, sharedP
   $scope.onStartClick = () -> 
     props = sharedProperties.Properties()
     id = $scope.model.id
-    sharedProperties.setEnd -1 if props.route.end is id
+    sharedProperties.setEnd 0 if props.route.end is id
     sharedProperties.setStart($scope.model.id) 
   $scope.onEndClick = () -> 
     props = sharedProperties.Properties()
     id = $scope.model.id
-    sharedProperties.setStart -1 if props.route.start is id
+    sharedProperties.setStart 0 if props.route.start is id
     sharedProperties.setEnd($scope.model.id) 
 
   $scope.onStreetViewClick = ->
     properties = sharedProperties.Properties()
     currentMarker = properties.markers[$scope.model.id]
-    panoramaOptions = {
-        position : currentMarker.glatlng
-      }
-    panorama = new google.maps.StreetViewPanorama(document.getElementById('pano'),panoramaOptions)
-    panorama.setVisible(true)
-    $('#pano').animate({'height': 0}, 100).animate({'z-index': 1}, 1).animate({'height': 500}, 800)
-    return true
+    properties.panorama.setPosition currentMarker.glatlng
+    $scope.$emit('street-view-clicked')
 ]
 
 # Map Controller
 
-app.controller 'mapController', ['$scope', 'sharedProperties', 'markerService', 
- ($scope, sharedProperties, markerService) ->
-  
-  $scope.markers = []
+app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedProperties', 'markerService', 
+ ($scope, $http, $compile, sharedProperties, markerService) ->
+
+  initMarkers = -> 
+    $http.get('/php/routes.php?method=getRoutes').success( (points) -> 
+      # Creating the markers
+      markers = []
+      points.forEach (element) ->
+        do -> 
+          latlng = {'latitude': parseFloat(element.route_lat), 'longitude': parseFloat(element.route_long)}
+          marker = new Marker(parseInt(element.route_id), element.route_name, 
+            element.route_type, latlng, element.route_fwy
+          )
+          marker.close = ->
+            markerService.setMarkerDefault @model
+            $scope.$apply()
+	  
+          marker.onClick = ->
+            # Set all markers to their default just in case one that was focused wasn't closed
+            setMarkersDefault = (cb) -> 
+              $scope.map.local.markers.forEach((element) -> do -> markerService.setMarkerDefault element)
+              return cb()
+            setMarkersDefault => 
+              markerService.setMarkerStatus @model, "focused"
+              $scope.id = @model.id
+              $scope.$apply()
+
+          markers.push marker
+      return do -> $scope.map.local.markers = markers
+    )
+
+  initMarkers()
   
   $scope.map = {
     'center': {'latitude': 33.884388, 'longitude': -117.641235},
@@ -39,6 +62,7 @@ app.controller 'mapController', ['$scope', 'sharedProperties', 'markerService',
     'streetView': {},
     'local': sharedProperties.Properties(),
     'showTraffic': false,
+    'showStreetView': true,
     'toggleTrafficLayer': -> $scope.map.showTraffic = !$scope.map.showTraffic,
     'mapOptions': {
       'panControl': false,
@@ -50,41 +74,53 @@ app.controller 'mapController', ['$scope', 'sharedProperties', 'markerService',
     }
     'infoWindowOptions': {
       'pixelOffset': new google.maps.Size(0, -30)
+    },
+    'events': {
+      # Invoked when the map is loaded
+      'idle': (map) ->
+        # Add traffic layer btn to map
+        addTrafficBtn = () ->
+          element = document.createElement 'div'
+          el = angular.element element
+          el.append '<button ng-click="map.toggleTrafficLayer()">Traffic</button>'
+          
+          # Need to invoke compile for click event to be registered to button
+          $compile(el)($scope)
+          map.controls[google.maps.ControlPosition.TOP_RIGHT].push el[0]
+
+        addCloseStreetBtn = (callback) ->
+          element = document.createElement 'div'
+          el = angular.element element
+          el.append '<button id="closeStreetView" ng-click="map.handleStreetView()">Close</button>'
+          $compile(el)($scope)
+          panorama = sharedProperties.Properties().panorama
+          panorama.controls[google.maps.ControlPosition.TOP_RIGHT].push el[0]
+          return callback()
+
+        loadStreetView = (cb) ->
+          sharedProperties.setPanorama map
+          return cb()
+
+        loadStreetView -> addCloseStreetBtn -> angular.element("#pano").slideToggle(800)
+
+        addTrafficBtn()
     }
 
   }
-    
-  latlngs = []
+  
+  $scope.$on("street-view-clicked", ->
+    panoEl = angular.element("#pano")
+    if $scope.map.showStreetView is true
+      panoEl.css("height", 0) unless panoEl.css("z-index") is -1
+  )
 
-  latlngs.push {'latitude': 33.843801, 'longitude': -117.717234}
-  latlngs.push {'latitude': 33.826690, 'longitude': -117.716419}
-  latlngs.push {'latitude': 33.820415, 'longitude': -117.716977}
-  
-  # Creating the markers
-  latlngs.forEach (element, index) ->
-    marker = new Marker index, element
-    marker.close = ->
-      markerService.setMarkerDefault @model
-      $scope.$apply()
-	  
-    marker.onClick = ->
-      # Saving the streetview map
-      sharedProperties.setPanorama $scope.map.streetView
-      # Set all markers to their default just in case one that was focused wasn't closed
-      $scope.map.local.markers.forEach (element) -> markerService.setMarkerDefault element
-      markerService.setMarkerStatus @model, "focused"
-      $scope.id = @model.id
-      $scope.$apply()
-	  
-    $scope.map.local.markers.push marker
-  
   $scope.$watchCollection 'map.local.route', (newValues, oldValues, scope) ->
     startId = newValues.start
     endId = newValues.end
     # Check is needed just in case the current start is trying to be overwritten by end
-    if (startId is -1) and (endId is -1) or (startId is endId)
-      return sharedProperties.setStart -1 if oldValues.start is startId
-      return sharedProperties.setEnd -1 if oldValues.end is endId
+    if (startId is 0) and (endId is 0) or (startId is endId)
+      return sharedProperties.setStart 0 if oldValues.start is startId
+      return sharedProperties.setEnd 0 if oldValues.end is endId
     markers = sharedProperties.Properties().markers
     # Set other markers that were previously start or end to inactive
     markers.forEach (marker) ->
@@ -92,5 +128,5 @@ app.controller 'mapController', ['$scope', 'sharedProperties', 'markerService',
         markerService.setMarkerStatus marker, "inactive" 
     
     sharedProperties.setMarkers markers
-    markerService.setMarkerStatus markers[startId], 'start'; markerService.setMarkerStatus markers[endId], 'end'
+    markerService.setMarkerStatus markers[startId - 1], 'start'; markerService.setMarkerStatus markers[endId - 1], 'end'
 ]
