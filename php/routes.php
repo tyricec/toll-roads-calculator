@@ -1,34 +1,34 @@
 <?php
 
 /*
- *		Company			:			Civic Resource  Group (CRG)
- *		Project			:			BSMS (Bus System Management System)
- * 		Date 			:			03/24/2014
- * 		File	 		: 			CheckUserAvailability.php
- * 		Purpose			:			Checks the availability of the username
- * 		Input			:			userName
- * 		Output			:			True or False
+ *		Company			:			Civic Resource Group (CRG)
+ *		Project			:			Toll Roads (Toll Road Rate Calculator)
+ * 		Date 			:			08/11/2014
+ * 		File	 		: 			routes.php
+ * 		Purpose			:			controller that relates to routes model methods
+ * 		Input			:			NA
+ * 		Output			:			NA 
  */
 
-require_once './models/Routes.php';
+require_once './application.php';
 
-$method = $_REQUEST['method'];
+$params = $_REQUEST;
 
 $routes = new routes();
 
-switch($method) {
+switch($params['method']) {
 	
 	case 'getRoutes':
 		$result = $routes->getRoutes();
 	break;
 	
 	case 'getRouteById':
-		$id = intval($_REQUEST['route_id']);
+		$id = intval($params['route_id']);
 		$result = $routes->getRouteById($id);
 	break;
 	
 	case 'getRouteByName':
-		$name = $_REQUEST['route_name'];
+		$name = $params['route_name'];
 		$result = $routes->getRouteByName($name);
 	break;
 	

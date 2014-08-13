@@ -23,27 +23,33 @@
       <h3>Toll Calculator</h3>
       <hr>
       <p>Calculate your toll by selecting your options below:</p>
-      	<div style="display:block; height:762px; width:100%; border:1px solid #b6b6b6;" ng-controller="mapController">
+      	<div style="display:block; height:782px; width:100%; border:1px solid #b6b6b6;" ng-controller="mapController">
           <div id="calc-form-container" class="col-md-3">
-          
-          
-          
-          
-          
           <form id="calc-form" role="form" ng-submit="calc-form.$valid" novalidate>
           
       <label for="exampleInputEmail1" class="font16">Vehicle Axles:</label>      
-     <div id="choice-axle" class="btn-group">
-
-  <button type="button" class="btn btn-default btn-custom btn-silver font12">2 or less</button>
-  <button type="button" class="btn btn-default btn-custom btn-silver font12">3 or 4</button>
-  <button type="button" class="btn btn-default btn-custom btn-silver font12">5 or more</button>
-</div>
+        <div id="choice-axle" class="btn-group" data-toggle="buttons">
+            <label class="btn btn-default btn-custom btn-silver font12">
+            <input type="radio" name="axles" value="2" id="axle1">2 or less
+            </label>
+            <label class="btn btn-default btn-custom btn-silver font12" style="width:95px;">
+            <input type="radio" name="axles" value="3" id="axle2">3 or 4
+            </label>
+            <label class="btn btn-default btn-custom btn-silver font12">
+            <input type="radio" name="axles" value="5" id="axle2">5 or more
+            </label>
+        </div>
 <label for="exampleInputEmail1" class="font16">Pay by:</label>
-<div class="btn-group">
-  <button type="button" class="btn btn-default btn-custom btn-silver font12">FasTrak</button>
-  <button type="button" class="btn btn-default btn-custom btn-silver font12" style="width:125px;">ExpressAccount</button>
-  <button type="button" class="btn btn-default btn-custom btn-silver font12">Cash</button>
+<div class="btn-group" data-toggle="buttons">
+            <label class="btn btn-default btn-custom btn-silver font12">
+            <input type="radio" name="type" value="fasttrak" id="type1">FasTrak
+            </label>
+            <label class="btn btn-default btn-custom btn-silver font12" style="width:75px;">
+            <input type="radio" name="type" value="express" id="type2">Express
+            </label>
+            <label class="btn btn-default btn-custom btn-silver font12">
+            <input type="radio" name="type" value="onetime" id="type3">One-Time-Toll
+            </label>
 </div>     
           
   <div class="form-group">
@@ -108,9 +114,9 @@
     <windows show="'showWindow'" closeClick="'close'" options="map.infoWindowOptions" doRebuildAll="refresh">
       <div>
           {{ typeString }}
-          <div ng-controller="infoController" ng-show="showPointControls">
-             <button ng-click="onStartClick()">Start Here</button>
-             <button ng-click="onEndClick()">End Here</button>
+          <div ng-controller="infoController">
+             <button ng-click="onStartClick()" class="btn btn-success">Start Here</button>
+             <button ng-click="onEndClick()" class="btn btn-danger">End Here</button>
              <button ng-click="onStreetViewClick()">Street View</button>
           </div>
       </div>

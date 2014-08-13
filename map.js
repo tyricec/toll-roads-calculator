@@ -121,10 +121,10 @@ app.controller('mapController', [
     initMarkers();
     $scope.map = {
       'center': {
-        'latitude': 33.884388,
-        'longitude': -117.641235
+        'latitude': 33.714388,
+        'longitude': -117.741235
       },
-      'zoom': 12,
+      'zoom': 11,
       'streetView': {},
       'innerElementsLoaded': false,
       'local': sharedProperties.Properties(),
