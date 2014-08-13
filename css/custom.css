@@ -121,3 +121,7 @@ background-image: linear-gradient(#bf00f9, #710093);
 @media all and (max-width: 768px) {
 #calc-outer  { height: 650px }
 }
+#pano {
+    height: 500px;
+    width: 100%
+}

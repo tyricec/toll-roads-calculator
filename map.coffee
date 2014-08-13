@@ -60,9 +60,11 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
     'center': {'latitude': 33.884388, 'longitude': -117.641235},
     'zoom': 12,
     'streetView': {},
+    'innerElementsLoaded': false,
     'local': sharedProperties.Properties(),
     'showTraffic': false,
     'showStreetView': true,
+    'handleStreetView': (action) -> $scope.map.showStreetView = false if action is 'close',
     'toggleTrafficLayer': -> $scope.map.showTraffic = !$scope.map.showTraffic,
     'mapOptions': {
       'panControl': false,
@@ -78,40 +80,43 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
     'events': {
       # Invoked when the map is loaded
       'idle': (map) ->
-        # Add traffic layer btn to map
-        addTrafficBtn = () ->
-          element = document.createElement 'div'
-          el = angular.element element
-          el.append '<button ng-click="map.toggleTrafficLayer()">Traffic</button>'
+        unless $scope.map.innerElementsLoaded
+          # Add traffic layer btn to map
+          addTrafficBtn = () ->
+            element = document.createElement 'div'
+            el = angular.element element
+            el.append '<button ng-click="map.toggleTrafficLayer()">Traffic</button>'
           
-          # Need to invoke compile for click event to be registered to button
-          $compile(el)($scope)
-          map.controls[google.maps.ControlPosition.TOP_RIGHT].push el[0]
+            # Need to invoke compile for click event to be registered to button
+            $compile(el)($scope)
+            map.controls[google.maps.ControlPosition.TOP_RIGHT].push el[0]
 
-        addCloseStreetBtn = (callback) ->
-          element = document.createElement 'div'
-          el = angular.element element
-          el.append '<button id="closeStreetView" ng-click="map.handleStreetView()">Close</button>'
-          $compile(el)($scope)
-          panorama = sharedProperties.Properties().panorama
-          panorama.controls[google.maps.ControlPosition.TOP_RIGHT].push el[0]
-          return callback()
+          addCloseStreetBtn = (callback) ->
+            element = document.createElement 'div'
+            el = angular.element element
+            el.append '<button id="closeStreetView" ng-click="map.handleStreetView(\'close\')">Close</button>'
+            $compile(el)($scope)
+            panorama = sharedProperties.Properties().panorama
+            panorama.controls[google.maps.ControlPosition.TOP_RIGHT].push el[0]
+            return callback()
 
-        loadStreetView = (cb) ->
-          sharedProperties.setPanorama map
-          return cb()
+          loadStreetView = (cb) ->
+            sharedProperties.setPanorama map
+            return cb()
 
-        loadStreetView -> addCloseStreetBtn -> angular.element("#pano").slideToggle(800)
+          loadStreetView -> addCloseStreetBtn -> $scope.map.innerElementsLoaded = true
 
-        addTrafficBtn()
+          addTrafficBtn()
     }
 
   }
   
   $scope.$on("street-view-clicked", ->
     panoEl = angular.element("#pano")
+    console.log $scope.map.showStreetView
     if $scope.map.showStreetView is true
-      panoEl.css("height", 0) unless panoEl.css("z-index") is -1
+      panoEl.css("z-index", 1)
+      $scope.map.showStreetView = true
   )
 
   $scope.$watchCollection 'map.local.route', (newValues, oldValues, scope) ->

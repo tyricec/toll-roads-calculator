@@ -109,9 +109,15 @@ app.controller('mapController', [
       },
       'zoom': 12,
       'streetView': {},
+      'innerElementsLoaded': false,
       'local': sharedProperties.Properties(),
       'showTraffic': false,
       'showStreetView': true,
+      'handleStreetView': function(action) {
+        if (action === 'close') {
+          return $scope.map.showStreetView = false;
+        }
+      },
       'toggleTrafficLayer': function() {
         return $scope.map.showTraffic = !$scope.map.showTraffic;
       },
@@ -129,44 +135,46 @@ app.controller('mapController', [
       'events': {
         'idle': function(map) {
           var addCloseStreetBtn, addTrafficBtn, loadStreetView;
-          addTrafficBtn = function() {
-            var el, element;
-            element = document.createElement('div');
-            el = angular.element(element);
-            el.append('<button ng-click="map.toggleTrafficLayer()">Traffic</button>');
-            $compile(el)($scope);
-            return map.controls[google.maps.ControlPosition.TOP_RIGHT].push(el[0]);
-          };
-          addCloseStreetBtn = function(callback) {
-            var el, element, panorama;
-            element = document.createElement('div');
-            el = angular.element(element);
-            el.append('<button id="closeStreetView" ng-click="map.handleStreetView()">Close</button>');
-            $compile(el)($scope);
-            panorama = sharedProperties.Properties().panorama;
-            panorama.controls[google.maps.ControlPosition.TOP_RIGHT].push(el[0]);
-            return callback();
-          };
-          loadStreetView = function(cb) {
-            sharedProperties.setPanorama(map);
-            return cb();
-          };
-          loadStreetView(function() {
-            return addCloseStreetBtn(function() {
-              return angular.element("#pano").slideToggle(800);
+          if (!$scope.map.innerElementsLoaded) {
+            addTrafficBtn = function() {
+              var el, element;
+              element = document.createElement('div');
+              el = angular.element(element);
+              el.append('<button ng-click="map.toggleTrafficLayer()">Traffic</button>');
+              $compile(el)($scope);
+              return map.controls[google.maps.ControlPosition.TOP_RIGHT].push(el[0]);
+            };
+            addCloseStreetBtn = function(callback) {
+              var el, element, panorama;
+              element = document.createElement('div');
+              el = angular.element(element);
+              el.append('<button id="closeStreetView" ng-click="map.handleStreetView(\'close\')">Close</button>');
+              $compile(el)($scope);
+              panorama = sharedProperties.Properties().panorama;
+              panorama.controls[google.maps.ControlPosition.TOP_RIGHT].push(el[0]);
+              return callback();
+            };
+            loadStreetView = function(cb) {
+              sharedProperties.setPanorama(map);
+              return cb();
+            };
+            loadStreetView(function() {
+              return addCloseStreetBtn(function() {
+                return $scope.map.innerElementsLoaded = true;
+              });
             });
-          });
-          return addTrafficBtn();
+            return addTrafficBtn();
+          }
         }
       }
     };
     $scope.$on("street-view-clicked", function() {
       var panoEl;
       panoEl = angular.element("#pano");
+      console.log($scope.map.showStreetView);
       if ($scope.map.showStreetView === true) {
-        if (panoEl.css("z-index") !== -1) {
-          return panoEl.css("height", 0);
-        }
+        panoEl.css("z-index", 1);
+        return $scope.map.showStreetView = true;
       }
     });
     return $scope.$watchCollection('map.local.route', function(newValues, oldValues, scope) {
