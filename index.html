@@ -114,9 +114,11 @@
     <windows show="'showWindow'" closeClick="'close'" options="map.infoWindowOptions" doRebuildAll="refresh">
       <div>
           {{ typeString }}
+          <br>
+          {{ markerTitle }}
           <div ng-controller="infoController">
-             <button ng-click="onStartClick()" class="btn btn-success">Start Here</button>
-             <button ng-click="onEndClick()" class="btn btn-danger">End Here</button>
+             <button ng-click="onStartClick()" class="btn btn-success point-control">Start Here</button>
+             <button ng-click="onEndClick()" class="btn btn-danger point-control">End Here</button>
              <button ng-click="onStreetViewClick()">Street View</button>
           </div>
       </div>
@@ -124,7 +126,6 @@
   </markers>
 </google-map>
 <div id="pano" ng-show="map.showStreetView" class=""></div>
-      
 </div>
         </div>
         <div class="col-md-12 font12">
