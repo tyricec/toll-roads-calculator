@@ -70,6 +70,7 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
     'local': sharedProperties.Properties(),
     'showTraffic': false,
     'showStreetView': true,
+    'accessPoints': [],
     'closeStreetView': ( -> 
       panoEl = angular.element('#pano')
       panoEl.animate({"height": 0}, {"complete": -> $scope.map.showStreetView = false})

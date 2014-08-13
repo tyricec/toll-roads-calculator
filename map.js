@@ -125,6 +125,7 @@ app.controller('mapController', [
       'local': sharedProperties.Properties(),
       'showTraffic': false,
       'showStreetView': true,
+      'accessPoints': [],
       'closeStreetView': (function() {
         var panoEl;
         panoEl = angular.element('#pano');
