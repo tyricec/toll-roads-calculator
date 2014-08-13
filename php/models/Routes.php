@@ -22,7 +22,7 @@ class routes {
 		return json_encode($result);
 	}
 	
-	public function getRouteById($ID) {
+	public static function getRouteById($ID) {
 		$_db = Db::init();
 		$ID= intval($ID);
 		$data = array('ID' => $ID);

@@ -10,25 +10,25 @@
  * 		Output			:			NA 
  */
 
-require_once './models/Routes.php';
+require_once './application.php';
 
-$method = $_REQUEST['method'];
+$params = $_REQUEST;
 
 $routes = new routes();
 
-switch($method) {
+switch($params['method']) {
 	
 	case 'getRoutes':
 		$result = $routes->getRoutes();
 	break;
 	
 	case 'getRouteById':
-		$id = intval($_REQUEST['route_id']);
+		$id = intval($params['route_id']);
 		$result = $routes->getRouteById($id);
 	break;
 	
 	case 'getRouteByName':
-		$name = $_REQUEST['route_name'];
+		$name = $params['route_name'];
 		$result = $routes->getRouteByName($name);
 	break;
 	

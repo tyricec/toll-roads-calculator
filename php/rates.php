@@ -10,20 +10,58 @@
  * 		Output			:			NA 
  */
 
-require_once './models/Rates.php';
+require_once './application.php';
 
-$method = $_REQUEST['method'];
+$params = $_REQUEST;
 
 $rates = new rates();
 
-switch($method) {
+switch($params['method']) {
 	
 	case 'getRate':
-	$entry = intval($_REQUEST['entry']);
-	$exit = intval($_REQUEST['exit']);
-	$axles = intval($_REQUEST['axles']);
-	$type = $_REQUEST['type'];
-	$result = $rates->getRate($entry,$exit,$axles,$type);
+	
+		$entry_id = intval($params['entry']);
+		$exit_id = intval($params['exit']);
+		
+		$result['start'] = routes::getRouteById($entry_id);
+		$result['start'] = 'CA-'.$result['start']['route_fwy'].' - '.$result['start']['route_name'];
+		$result['end'] = routes::getRouteById($exit_id);
+		$result['end'] = 'CA-'.$result['end']['route_fwy'].' - '.$result['end']['route_name'];
+		
+		switch($params['type']) {
+			
+			case 'fasttrak':
+			$result['payment'] = 'FastTrak';
+			break;
+			
+			case 'express':
+			$result['payment'] = 'ExpressAccount';
+			break;
+			
+			case 'onetime':
+			$result['payment'] = 'One-Time-Toll';
+			break;
+			
+		}
+		
+		switch($params['axles']) {
+			
+			case '2':
+			$result['axles'] = '2 Axle Vehicles and Motorcycles';
+			break;
+			
+			case '3':
+			$result['axles'] = '3-4 Axle Vehicles';
+			break;
+			
+			case '5':
+			$result['axles'] = '5+ Axle Vehicles';
+			break;
+			
+		}
+	
+		$result['rates'] = $rates->getRate($entry_id,$exit_id,intval($params['axles']),$params['type']);
+
 	break;
 }
 
