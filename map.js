@@ -10,6 +10,11 @@ Marker = (function() {
     this.freeway = freeway;
     this.start = null;
     this.end = null;
+    if (this.type !== "plaza") {
+      this.typeString = "Access Point: CA " + this.freeway;
+    } else {
+      this.typeString = "Plaza: CA " + this.freeway;
+    }
     this.glatlng = {
       lat: this.latlng.latitude,
       lng: this.latlng.longitude
@@ -28,6 +33,11 @@ app = angular.module('mapApp', ['google-maps', 'services']);
 
 app.controller('infoController', [
   '$scope', 'sharedProperties', function($scope, sharedProperties) {
+    $scope.showPointControls = true;
+    $scope.$on("marker-clicked", function(evt, showPointControls) {
+      evt.currentScope.showPointControls = showPointControls;
+      return console.log(evt);
+    });
     $scope.onStartClick = function() {
       var id, props;
       props = sharedProperties.Properties();
@@ -89,6 +99,13 @@ app.controller('mapController', [
                 return function() {
                   markerService.setMarkerStatus(_this.model, "focused");
                   $scope.id = _this.model.id;
+                  $scope.typeString = _this.model.typeString;
+                  if (_this.model.type === "plaza" && $scope.map.showPointControls) {
+                    $scope.map.showPointControls = false;
+                  } else {
+                    $scope.showPointControls = true;
+                  }
+                  $scope.$broadcast('marker-clicked', $scope.map.showPointControls);
                   return $scope.$apply();
                 };
               })(this));
@@ -113,11 +130,18 @@ app.controller('mapController', [
       'local': sharedProperties.Properties(),
       'showTraffic': false,
       'showStreetView': true,
-      'handleStreetView': function(action) {
-        if (action === 'close') {
-          return $scope.map.showStreetView = false;
-        }
-      },
+      'showPointControls': true,
+      'closeStreetView': (function() {
+        var panoEl;
+        panoEl = angular.element('#pano');
+        return panoEl.animate({
+          "height": 0
+        }, {
+          "complete": function() {
+            return $scope.map.showStreetView = false;
+          }
+        });
+      }),
       'toggleTrafficLayer': function() {
         return $scope.map.showTraffic = !$scope.map.showTraffic;
       },
@@ -148,7 +172,7 @@ app.controller('mapController', [
               var el, element, panorama;
               element = document.createElement('div');
               el = angular.element(element);
-              el.append('<button id="closeStreetView" ng-click="map.handleStreetView(\'close\')">Close</button>');
+              el.append('<button id="closeStreetView" ng-click="map.closeStreetView(\'close\')">Close</button>');
               $compile(el)($scope);
               panorama = sharedProperties.Properties().panorama;
               panorama.controls[google.maps.ControlPosition.TOP_RIGHT].push(el[0]);
@@ -171,10 +195,20 @@ app.controller('mapController', [
     $scope.$on("street-view-clicked", function() {
       var panoEl;
       panoEl = angular.element("#pano");
-      console.log($scope.map.showStreetView);
-      if ($scope.map.showStreetView === true) {
-        panoEl.css("z-index", 1);
-        return $scope.map.showStreetView = true;
+      if ($scope.map.showStreetView === true && panoEl.css('z-index') === "-1") {
+        panoEl.css({
+          "z-index": 1,
+          "height": 0
+        });
+        panoEl.hide();
+        $scope.map.showStreetView = false;
+      }
+      if ($scope.map.showStreetView === false) {
+        $scope.map.showStreetView = true;
+        panoEl.show();
+        return panoEl.animate({
+          "height": "500px"
+        });
       }
     });
     return $scope.$watchCollection('map.local.route', function(newValues, oldValues, scope) {
