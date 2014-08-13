@@ -33,11 +33,6 @@ app = angular.module('mapApp', ['google-maps', 'services']);
 
 app.controller('infoController', [
   '$scope', 'sharedProperties', function($scope, sharedProperties) {
-    $scope.showPointControls = true;
-    $scope.$on("marker-clicked", function(evt, showPointControls) {
-      evt.currentScope.showPointControls = showPointControls;
-      return console.log(evt);
-    });
     $scope.onStartClick = function() {
       var id, props;
       props = sharedProperties.Properties();
@@ -100,12 +95,12 @@ app.controller('mapController', [
                   markerService.setMarkerStatus(_this.model, "focused");
                   $scope.id = _this.model.id;
                   $scope.typeString = _this.model.typeString;
-                  if (_this.model.type === "plaza" && $scope.map.showPointControls) {
-                    $scope.map.showPointControls = false;
+                  $scope.markerTitle = _this.model.name;
+                  if (_this.model.type === "plaza") {
+                    angular.element(".point-control").hide();
                   } else {
-                    $scope.showPointControls = true;
+                    angular.element(".point-control").show();
                   }
-                  $scope.$broadcast('marker-clicked', $scope.map.showPointControls);
                   return $scope.$apply();
                 };
               })(this));
@@ -121,16 +116,15 @@ app.controller('mapController', [
     initMarkers();
     $scope.map = {
       'center': {
-        'latitude': 33.714388,
-        'longitude': -117.741235
+        'latitude': 33.884388,
+        'longitude': -117.641235
       },
-      'zoom': 11,
+      'zoom': 12,
       'streetView': {},
       'innerElementsLoaded': false,
       'local': sharedProperties.Properties(),
       'showTraffic': false,
       'showStreetView': true,
-      'showPointControls': true,
       'closeStreetView': (function() {
         var panoEl;
         panoEl = angular.element('#pano');

@@ -2,15 +2,6 @@ app = angular.module 'mapApp', ['google-maps', 'services']
 
 # InfoWindow controller
 app.controller 'infoController', ['$scope', 'sharedProperties', ($scope, sharedProperties) ->
-
-  $scope.showPointControls = true
-
-  $scope.$on("marker-clicked", (evt, showPointControls) ->
-    evt.currentScope.showPointControls = showPointControls
-    
-    console.log(evt)
-  )
-
   $scope.onStartClick = () -> 
     props = sharedProperties.Properties()
     id = $scope.model.id
@@ -57,11 +48,12 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
               markerService.setMarkerStatus @model, "focused"
               $scope.id = @model.id
               $scope.typeString = @model.typeString
-              if @model.type is "plaza" and $scope.map.showPointControls
-                $scope.map.showPointControls = false
+              $scope.markerTitle = @model.name
+              # Hide controls if plaza.
+              if @model.type is "plaza"
+                angular.element(".point-control").hide()
               else
-                $scope.showPointControls = true
-              $scope.$broadcast('marker-clicked', $scope.map.showPointControls)
+                angular.element(".point-control").show()
               $scope.$apply()
 
           markers.push marker
@@ -78,7 +70,6 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
     'local': sharedProperties.Properties(),
     'showTraffic': false,
     'showStreetView': true,
-    'showPointControls': true,
     'closeStreetView': ( -> 
       panoEl = angular.element('#pano')
       panoEl.animate({"height": 0}, {"complete": -> $scope.map.showStreetView = false})
