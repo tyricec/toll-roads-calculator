@@ -55,14 +55,14 @@
   <div class="form-group">
     <label for="exampleInputEmail1" class="font16" required>Start:</label>
     <select class="form-control" ng-model="map.local.route.start" 
-          ng-options="marker.id as marker.name for marker in map.local.markers">
+          ng-options="marker as marker.name for marker in map.local.displayPoints">
       <option value="">--Select Start Point--</option>
     </select>
   </div>
   <div class="form-group">
     <label for="exampleInputPassword1" class="font16" required>End:</label>
     <select class="form-control" ng-model="map.local.route.end" 
-          ng-options="marker.id as marker.name for marker in map.local.markers">
+          ng-options="marker as marker.name for marker in map.local.displayPoints">
       <option value="">--Select End Point--</option>
     </select>
   </div>
@@ -110,7 +110,7 @@
 <google-map control="map.streetView" center="map.center" zoom="map.zoom" 
     options="map.mapOptions" draggable="true" events="map.events" ng-cloak>
   <layer type="TrafficLayer"  show="map.showTraffic"></layer>
-  <markers models="map.local.markers" coords="'latlng'" click="'onClick'" icon="'icon'">
+  <markers models="map.local.points" coords="'latlng'" click="'onClick'" icon="'icon'">
     <windows show="'showWindow'" closeClick="'close'" options="map.infoWindowOptions" ng-cloak>
       <div class="info-window">
           {{ typeString }}
