@@ -30,8 +30,9 @@ app.service 'markerService', ->
         console.log "Here"
         marker.status = status
         marker.showWindow = true if status is 'focused'
-        marker.prevIcon = "/states/#{status}.png" if status isnt 'focused'
-        marker.icon = "/states/#{status}.png"
+        unless marker.type is "plaza"
+          marker.prevIcon = "/states/#{status}.png" if status isnt 'focused'
+          marker.icon = "/states/#{status}.png"
     ,
     setMarkerDefault: (marker) ->
       marker.showWindow = false

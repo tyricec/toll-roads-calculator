@@ -19,8 +19,13 @@ Marker = (function() {
       lat: this.latlng.latitude,
       lng: this.latlng.longitude
     };
-    this.icon = "/states/inactive.png";
-    this.prevIcon = "/states/inactive.png";
+    if (this.type !== "plaza") {
+      this.icon = "/states/inactive.png";
+      this.prevIcon = "/states/inactive.png";
+    } else {
+      this.icon = "/states/plaza.png";
+      this.prevIcon = "/states/plaza.png";
+    }
     this.showWindow = false;
     this.refresh = true;
   }
@@ -231,8 +236,13 @@ app.controller('mapController', [
         }
       });
       sharedProperties.setMarkers(markers);
-      markerService.setMarkerStatus(markers[startId - 1], 'start');
-      return markerService.setMarkerStatus(markers[endId - 1], 'end');
+      return markers.forEach(function(marker) {
+        if (marker.id === startId) {
+          return markerService.setMarkerStatus(marker, 'start');
+        } else if (marker.id === endId) {
+          return markerService.setMarkerStatus(marker, 'end');
+        }
+      });
     });
   }
 ]);

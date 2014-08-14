@@ -50,10 +50,12 @@ app.service('markerService', function() {
         if (status === 'focused') {
           marker.showWindow = true;
         }
-        if (status !== 'focused') {
-          marker.prevIcon = "/states/" + status + ".png";
+        if (marker.type !== "plaza") {
+          if (status !== 'focused') {
+            marker.prevIcon = "/states/" + status + ".png";
+          }
+          return marker.icon = "/states/" + status + ".png";
         }
-        return marker.icon = "/states/" + status + ".png";
       }
     },
     setMarkerDefault: function(marker) {

@@ -151,5 +151,10 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
         markerService.setMarkerStatus marker, "inactive" 
     
     sharedProperties.setMarkers markers
-    markerService.setMarkerStatus markers[startId - 1], 'start'; markerService.setMarkerStatus markers[endId - 1], 'end'
+    markers.forEach( (marker) -> 
+      if marker.id is startId
+        markerService.setMarkerStatus marker, 'start'
+      else if marker.id is endId
+        markerService.setMarkerStatus marker, 'end' 
+    )
 ]
