@@ -4,19 +4,20 @@ app = angular.module 'services', []
 app.service 'sharedProperties', ->
   props = {
     route: { start: 0, end: 0 },
-    markers: [],
+    points: [],
     plazas: [],
-    panorama: {}
+    panorama: {},
+    displayPoints: []                # The points allowed for user to select.
   }
   
   return {
     Properties: -> return props,
     setStart: (val) -> return props.route.start = val,
     setEnd: (val) -> return props.route.end = val,
-    setMarkers: (val) -> return props.markers = val,
-    setPlazas: (val) -> return props.markers= val,
+    setPoints: (val) -> return props.points = val,
+    setPlazas: (val) -> return props.plazas= val,
     setPanorama: (val) -> 
-      currentMarker = props.markers[0]
+      currentMarker = props.points[0]
       panoEl = document.getElementById('pano')
       props.panorama = new google.maps.StreetViewPanorama(panoEl)
   }
@@ -27,7 +28,6 @@ app.service 'markerService', ->
       if not marker?
         return
       else
-        console.log "Here"
         marker.status = status
         marker.showWindow = true if status is 'focused'
         unless marker.type is "plaza"
@@ -37,4 +37,7 @@ app.service 'markerService', ->
     setMarkerDefault: (marker) ->
       marker.showWindow = false
       marker.icon = marker.prevIcon
+    ,
+    applyToMarkers: (serviceFunction, markers, fargs...) ->
+      markers.forEach( (marker) -> serviceFunction(marker, fargs) )
   }
