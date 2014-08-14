@@ -11,6 +11,7 @@ app.service('sharedProperties', function() {
       end: 0
     },
     markers: [],
+    plazas: [],
     panorama: {}
   };
   return {
@@ -24,6 +25,9 @@ app.service('sharedProperties', function() {
       return props.route.end = val;
     },
     setMarkers: function(val) {
+      return props.markers = val;
+    },
+    setPlazas: function(val) {
       return props.markers = val;
     },
     setPanorama: function(val) {
@@ -41,6 +45,7 @@ app.service('markerService', function() {
       if (marker == null) {
 
       } else {
+        console.log("Here");
         marker.status = status;
         if (status === 'focused') {
           marker.showWindow = true;

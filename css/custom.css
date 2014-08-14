@@ -11,7 +11,7 @@ html, body {
     position: absolute;
     top:  0px;
     height: 100%;
-    width: 98%;
+    width: 100%;
     }
     #controls {
         position: absolute;
@@ -116,7 +116,7 @@ background-image: linear-gradient(#bf00f9, #710093);
 	background-color:#0052a1;!important;
 }
 #calc-outer {height: 100%; padding: 20px; border: 2px solid #CCC; margin-bottom: 20px; background-color:#FFF }
-#map-container { height: 780px }
+#map-container { height: 760px }
 #calc-form label {margin-top:10px;}
 @media all and (max-width: 768px) {
 #calc-outer  { height: 650px }

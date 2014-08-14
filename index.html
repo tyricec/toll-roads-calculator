@@ -108,17 +108,29 @@
 </div>
 
 <google-map control="map.streetView" center="map.center" zoom="map.zoom" 
-    options="map.mapOptions" draggable="true" events="map.events">
+    options="map.mapOptions" draggable="true" events="map.events" ng-cloak>
   <layer type="TrafficLayer"  show="map.showTraffic"></layer>
-  <markers models="map.local.markers" coords="'latlng'" click="'onClick'" icon="'icon'" >
-    <windows show="'showWindow'" closeClick="'close'" options="map.infoWindowOptions" doRebuildAll="refresh">
-      <div>
+  <markers models="map.local.markers" coords="'latlng'" click="'onClick'" icon="'icon'">
+    <windows show="'showWindow'" closeClick="'close'" options="map.infoWindowOptions" ng-cloak>
+      <div class="info-window">
           {{ typeString }}
           <br>
           {{ markerTitle }}
           <div ng-controller="infoController">
              <button ng-click="onStartClick()" class="btn btn-success point-control">Start Here</button>
              <button ng-click="onEndClick()" class="btn btn-danger point-control">End Here</button>
+             <button ng-click="onStreetViewClick()">Street View</button>
+          </div>
+      </div>
+    </windows>
+  </markers>
+  <markers models="map.local.plazas" coords="'latlng'" click="'onClick'" icon="'icon'" >
+    <windows show="'showWindow'" closeClick="'close'" options="map.infoWindowOptions" ng-cloak>
+        <div>
+          {{ typeString }}
+          <br>
+          {{ markerTitle }}
+          <div ng-controller="infoController">
              <button ng-click="onStreetViewClick()">Street View</button>
           </div>
       </div>

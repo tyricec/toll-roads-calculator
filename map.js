@@ -66,8 +66,9 @@ app.controller('mapController', [
     var initMarkers;
     initMarkers = function() {
       return $http.get('/php/routes.php?method=getRoutes').success(function(points) {
-        var markers;
-        markers = [];
+        var markerPlazas, markerPoints;
+        markerPoints = [];
+        markerPlazas = [];
         points.forEach(function(element) {
           return (function() {
             var latlng, marker;
@@ -88,6 +89,11 @@ app.controller('mapController', [
                     return markerService.setMarkerDefault(element);
                   })();
                 });
+                $scope.map.local.plazas.forEach(function(element) {
+                  return (function() {
+                    return markerService.setMarkerDefault(element);
+                  })();
+                });
                 return cb();
               };
               return setMarkersDefault((function(_this) {
@@ -96,20 +102,20 @@ app.controller('mapController', [
                   $scope.id = _this.model.id;
                   $scope.typeString = _this.model.typeString;
                   $scope.markerTitle = _this.model.name;
-                  if (_this.model.type === "plaza") {
-                    angular.element(".point-control").hide();
-                  } else {
-                    angular.element(".point-control").show();
-                  }
                   return $scope.$apply();
                 };
               })(this));
             };
-            return markers.push(marker);
+            if (marker.type === "point") {
+              return markerPoints.push(marker);
+            } else {
+              return markerPlazas.push(marker);
+            }
           })();
         });
         return (function() {
-          return $scope.map.local.markers = markers;
+          $scope.map.local.markers = markerPoints;
+          return $scope.map.local.plazas = markerPlazas;
         })();
       });
     };
@@ -125,7 +131,6 @@ app.controller('mapController', [
       'local': sharedProperties.Properties(),
       'showTraffic': false,
       'showStreetView': true,
-      'accessPoints': [],
       'closeStreetView': (function() {
         var panoEl;
         panoEl = angular.element('#pano');
@@ -155,6 +160,7 @@ app.controller('mapController', [
         'idle': function(map) {
           var addCloseStreetBtn, addTrafficBtn, loadStreetView;
           if (!$scope.map.innerElementsLoaded) {
+            angular.element('.infoWindow').show();
             addTrafficBtn = function() {
               var el, element;
               element = document.createElement('div');

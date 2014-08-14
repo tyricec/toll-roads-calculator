@@ -5,6 +5,7 @@ app.service 'sharedProperties', ->
   props = {
     route: { start: 0, end: 0 },
     markers: [],
+    plazas: [],
     panorama: {}
   }
   
@@ -13,6 +14,7 @@ app.service 'sharedProperties', ->
     setStart: (val) -> return props.route.start = val,
     setEnd: (val) -> return props.route.end = val,
     setMarkers: (val) -> return props.markers = val,
+    setPlazas: (val) -> return props.markers= val,
     setPanorama: (val) -> 
       currentMarker = props.markers[0]
       panoEl = document.getElementById('pano')
@@ -25,6 +27,7 @@ app.service 'markerService', ->
       if not marker?
         return
       else
+        console.log "Here"
         marker.status = status
         marker.showWindow = true if status is 'focused'
         marker.prevIcon = "/states/#{status}.png" if status isnt 'focused'

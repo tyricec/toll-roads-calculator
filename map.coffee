@@ -28,7 +28,8 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
   initMarkers = -> 
     $http.get('/php/routes.php?method=getRoutes').success( (points) -> 
       # Creating the markers
-      markers = []
+      markerPoints =  []
+      markerPlazas = []
       points.forEach (element) ->
         do -> 
           latlng = {'latitude': parseFloat(element.route_lat), 'longitude': parseFloat(element.route_long)}
@@ -43,21 +44,22 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
             # Set all markers to their default just in case one that was focused wasn't closed
             setMarkersDefault = (cb) -> 
               $scope.map.local.markers.forEach((element) -> do -> markerService.setMarkerDefault element)
+              $scope.map.local.plazas.forEach((element) -> do -> markerService.setMarkerDefault element)
               return cb()
-            setMarkersDefault => 
+            setMarkersDefault =>
               markerService.setMarkerStatus @model, "focused"
               $scope.id = @model.id
               $scope.typeString = @model.typeString
               $scope.markerTitle = @model.name
-              # Hide controls if plaza.
-              if @model.type is "plaza"
-                angular.element(".point-control").hide()
-              else
-                angular.element(".point-control").show()
               $scope.$apply()
 
-          markers.push marker
-      return do -> $scope.map.local.markers = markers
+          if marker.type is "point"
+            markerPoints.push(marker) 
+          else
+            markerPlazas.push marker
+      return do -> 
+        $scope.map.local.markers = markerPoints
+        $scope.map.local.plazas = markerPlazas
     )
 
   initMarkers()
@@ -70,7 +72,6 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
     'local': sharedProperties.Properties(),
     'showTraffic': false,
     'showStreetView': true,
-    'accessPoints': [],
     'closeStreetView': ( -> 
       panoEl = angular.element('#pano')
       panoEl.animate({"height": 0}, {"complete": -> $scope.map.showStreetView = false})
@@ -91,6 +92,7 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
       # Invoked when the map is loaded
       'idle': (map) ->
         unless $scope.map.innerElementsLoaded
+          angular.element('.infoWindow').show()
           # Add traffic layer btn to map
           addTrafficBtn = () ->
             element = document.createElement 'div'
