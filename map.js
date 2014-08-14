@@ -20,11 +20,11 @@ Marker = (function() {
       lng: this.latlng.longitude
     };
     if (this.type !== "plaza") {
-      this.icon = "/states/inactive.png";
-      this.prevIcon = "/states/inactive.png";
+      this.icon = "states/inactive.png";
+      this.prevIcon = "states/inactive.png";
     } else {
-      this.icon = "/states/plaza.png";
-      this.prevIcon = "/states/plaza.png";
+      this.icon = "states/plaza.png";
+      this.prevIcon = "states/plaza.png";
     }
     this.showWindow = false;
     this.refresh = true;
@@ -70,7 +70,7 @@ app.controller('mapController', [
   '$scope', '$http', '$compile', 'sharedProperties', 'markerService', function($scope, $http, $compile, sharedProperties, markerService) {
     var initMarkers;
     initMarkers = function() {
-      return $http.get('/php/routes.php?method=getRoutes').success(function(points) {
+      return $http.get('php/routes.php?method=getRoutes').success(function(points) {
         var markerPlazas, markerPoints;
         markerPoints = [];
         markerPlazas = [];
