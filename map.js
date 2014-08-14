@@ -233,7 +233,7 @@ app.controller('mapController', [
     };
     return $scope.$watchCollection('map.local.route', function(newValues, oldValues, scope) {
       var displayPoints, endPoint, points, startPoint, startPointChanged;
-      startPointChanged = (oldValues.start.id === !newValues.start.id) || (oldValues.start.id != null);
+      startPointChanged = (oldValues.start.id === !newValues.start.id) || (oldValues.start.id == null) || (newValues.start.id == null);
       startPoint = newValues.start;
       endPoint = newValues.end;
       if ((startPoint === 0) && (endPoint === 0) || (startPoint.id === endPoint.id)) {
@@ -269,8 +269,22 @@ app.controller('mapController', [
         if (startPoint !== 0) {
           if (startPointChanged) {
             freeway = startPoint.freeway;
+            if (endPoint !== 0) {
+              if (freeway === "73" && endPoint.freeway !== "73") {
+                return scope.map.local.route.end = 0;
+              } else if (freeway !== "73" && endPoint.freeway === "73") {
+                return scope.map.local.route.end = 0;
+              }
+            }
           } else {
-            freeway = endPoint.freeway;
+            if (endPoint !== 0) {
+              freeway = endPoint.freeway;
+              if (startPoint.freeway === "73" && endPoint.freeway !== "73") {
+                return scope.map.local.route.start = 0;
+              } else {
+                return scope.map.local.route.start = 0;
+              }
+            }
           }
         } else {
           freeway = endPoint.freeway;
@@ -278,7 +292,7 @@ app.controller('mapController', [
         if (freeway === "73") {
           return marker.freeway === "73";
         }
-        return !(marker.freeway === "73");
+        return marker.freeway !== "73";
       });
       sharedProperties.setPoints(points);
       markerService.setMarkerStatus(startPoint, "start");

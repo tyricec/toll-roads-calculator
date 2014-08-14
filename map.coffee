@@ -140,6 +140,7 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
       panoEl.animate({"height": "500px"})
   )
 
+  # Used to change the options displayed for dropdown on certain condition.
   reduceDropdownOptions = (cond) ->
     points = $scope.map.local.points
     newPoints = []
@@ -147,7 +148,8 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
     $scope.map.local.displayPoints = newPoints
 
   $scope.$watchCollection 'map.local.route', (newValues, oldValues, scope) ->
-    startPointChanged = (oldValues.start.id is not newValues.start.id) or oldValues.start.id?
+    # Need to check to see which point has changed. Useful in updating what can be selected later.
+    startPointChanged = (oldValues.start.id is not newValues.start.id) or not oldValues.start.id? or not newValues.start.id?
     startPoint = newValues.start
     endPoint = newValues.end
     # Check is needed just in case the current start is trying to be overwritten by end
@@ -172,10 +174,23 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
     
     reduceDropdownOptions( (marker) ->
       unless startPoint is 0
-        if startPointChanged then freeway = startPoint.freeway else freeway = endPoint.freeway
-      else freeway = endPoint.freeway
+        if startPointChanged 
+          freeway = startPoint.freeway
+          unless endPoint is 0
+            if freeway is "73" and endPoint.freeway isnt "73"
+              return scope.map.local.route.end = 0
+            else if freeway isnt "73" and endPoint.freeway is "73"
+              return scope.map.local.route.end = 0
+        else
+          unless endPoint is 0
+            freeway = endPoint.freeway
+            if startPoint.freeway is "73" and endPoint.freeway isnt "73"
+              return scope.map.local.route.start = 0
+            else
+              return scope.map.local.route.start = 0
+      else freeway = endPoint.freeway 
       return marker.freeway is "73" if freeway is "73"
-      return not(marker.freeway is "73")
+      return marker.freeway isnt "73"
     )
     sharedProperties.setPoints points
     markerService.setMarkerStatus startPoint, "start"
