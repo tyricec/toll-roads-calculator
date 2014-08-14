@@ -52,9 +52,9 @@ app.service('markerService', function() {
         }
         if (marker.type !== "plaza") {
           if (status !== 'focused') {
-            marker.prevIcon = "/states/" + status + ".png";
+            marker.prevIcon = "states/" + status + ".png";
           }
-          return marker.icon = "/states/" + status + ".png";
+          return marker.icon = "states/" + status + ".png";
         }
       }
     },
