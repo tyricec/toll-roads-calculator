@@ -27,7 +27,7 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
  ($scope, $http, $compile, sharedProperties, markerService) ->
 
   initMarkers = -> 
-    $http.get('/php/routes.php?method=getRoutes').success( (points) -> 
+    $http.get('php/routes.php?method=getRoutes').success( (points) -> 
       # Creating the markers
       markerPoints =  []
       markerPlazas = []

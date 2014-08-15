@@ -9,10 +9,10 @@ class Marker
       @typeString = "Plaza: CA #{@freeway}"    
     @glatlng = { lat: @latlng.latitude, lng: @latlng.longitude }
     unless @type is "plaza"
-      @icon = "/states/inactive.png"
-      @prevIcon = "/states/inactive.png"
+      @icon = "states/inactive.png"
+      @prevIcon = "states/inactive.png"
     else
-      @icon = "/states/plaza.png"
-      @prevIcon = "/states/plaza.png"
+      @icon = "states/plaza.png"
+      @prevIcon = "states/plaza.png"
     @showWindow = false
     @refresh = true

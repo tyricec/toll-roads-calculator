@@ -13,8 +13,8 @@
         lat: this.latlng.latitude,
         lng: this.latlng.longitude
       };
-      this.icon = "/states/inactive.png";
-      this.prevIcon = "/states/inactive.png";
+      this.icon = "states/inactive.png";
+      this.prevIcon = "states/inactive.png";
       this.showWindow = false;
     }
 
