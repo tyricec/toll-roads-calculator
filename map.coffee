@@ -137,7 +137,7 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
     if $scope.map.showStreetView is false
       $scope.map.showStreetView = true
       panoEl.show()
-      panoEl.animate({"height": "500px"})
+      panoEl.animate({"height": "45%"})
   )
 
   # Used to change the options displayed for dropdown on certain condition.

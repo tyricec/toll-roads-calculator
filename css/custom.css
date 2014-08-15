@@ -11,7 +11,7 @@ html, body {
     position: absolute;
     top:  0px;
     height: 100%;
-    width: 100%;
+    width: 98%;
     }
     #controls {
         position: absolute;
@@ -22,10 +22,10 @@ html, body {
   #pano {
     position: absolute;
     left: 15px;
-    width: 100%;
+    width: 98%;
     bottom: 0;
     z-index: -1;
-    height: 500px;
+    height: 45%;
    }
    
 .font12{font-size:12px;}.font16{font-size:16px;}.font32{font-size:32px;}
