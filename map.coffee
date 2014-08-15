@@ -67,8 +67,8 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
   initMarkers()
   
   $scope.map = {
-    'center': {'latitude': 33.884388, 'longitude': -117.641235},
-    'zoom': 12,
+    'center': {'latitude': 33.689388, 'longitude': -117.731235},
+    'zoom': 11,
     'streetView': {},
     'innerElementsLoaded': false,
     'local': sharedProperties.Properties(),
@@ -149,21 +149,28 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
 
   $scope.$watchCollection 'map.local.route', (newValues, oldValues, scope) ->
     # Need to check to see which point has changed. Useful in updating what can be selected later.
-    startPointChanged = (oldValues.start.id is not newValues.start.id) or not oldValues.start.id? or not newValues.start.id?
+    if newValues.start is null
+      newValues.start = 0
+      $scope.map.local.points.forEach((marker) ->
+        return markerService.setMarkerStatus(marker, "inactive") unless marker.status is "end"
+      )
+    if newValues.end is null
+      newValues.end = 0
+      $scope.map.local.points.forEach( (marker) ->
+        return markerService.setMarkerStatus(marker, "inactive") unless marker.status is "start"
+      )
+    if newValues.start.freeway is "73" and newValues.end.freeway isnt "73"
+      newValues.end = 0
+    else if newValues.start.freeway isnt "73" and newValues.end.freeway is "73"
+      newValues.end = 0
+    startPointChanged = (oldValues.start.id isnt newValues.start.id) or not oldValues.start.id? or not newValues.start.id?
     startPoint = newValues.start
     endPoint = newValues.end
     # Check is needed just in case the current start is trying to be overwritten by end
     if (startPoint is 0) and (endPoint is 0) or (startPoint.id is endPoint.id)
-      displayPoints  = $scope.map.local.displayPoints
       points = $scope.map.local.points
-      displayPoints = points if (startPoint is 0) and (endPoint is 0)
-      if startPoint.id is endPoint.id and (not(startPoint.id is 0)  and not(endPoint.id is 0))
-        reduceDropdownOptions( (marker) ->
-          if marker.freeway is "73"
-            return marker.freeway is startPoint.freeway or marker.freeway is endPoint.freeway
-          else
-            return marker.freeway is not "73"
-        )
+      console.log startPoint is endPoint and startPoint is 0
+      $scope.map.local.displayPoints = points if (startPoint is 0) and (endPoint is 0)
       return sharedProperties.setStart 0 if oldValues.start.id is startPoint.id
       return sharedProperties.setEnd 0 if oldValues.end.id is endPoint.id
     points = sharedProperties.Properties().points
@@ -173,24 +180,11 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
         markerService.setMarkerStatus marker, "inactive" 
     
     reduceDropdownOptions( (marker) ->
-      unless startPoint is 0
-        if startPointChanged 
-          freeway = startPoint.freeway
-          unless endPoint is 0
-            if freeway is "73" and endPoint.freeway isnt "73"
-              return scope.map.local.route.end = 0
-            else if freeway isnt "73" and endPoint.freeway is "73"
-              return scope.map.local.route.end = 0
-        else
-          unless endPoint is 0
-            freeway = endPoint.freeway
-            if startPoint.freeway is "73" and endPoint.freeway isnt "73"
-              return scope.map.local.route.start = 0
-            else
-              return scope.map.local.route.start = 0
-      else freeway = endPoint.freeway 
-      return marker.freeway is "73" if freeway is "73"
-      return marker.freeway isnt "73"
+      return true if startPoint is ""
+      if startPoint.freeway is "73"
+        return marker.freeway is "73" 
+      else
+        return marker.freeway isnt "73"
     )
     sharedProperties.setPoints points
     markerService.setMarkerStatus startPoint, "start"
