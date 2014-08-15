@@ -1,4 +1,4 @@
-app = angular.module 'mapApp', ['google-maps', 'services']
+app = angular.module 'mapApp', ['google-maps', 'services', 'ui.bootstrap']
 
 # InfoWindow controller
 app.controller 'infoController', ['$scope', 'sharedProperties', ($scope, sharedProperties) ->
@@ -29,13 +29,15 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
   initMarkers = -> 
     $http.get('php/routes.php?method=getRoutes').success( (points) -> 
       # Creating the markers
-      markerPoints =  []
+      markerPoints = []
+      startPoints =  []
+      endPoints = []
       markerPlazas = []
       points.forEach (element) ->
         do -> 
           latlng = {'latitude': parseFloat(element.route_lat), 'longitude': parseFloat(element.route_long)}
           marker = new Marker(parseInt(element.route_id), element.route_name, 
-            element.route_type, latlng, element.route_fwy
+            element.route_type, latlng, element.route_fwy, element.route_point_type
           )
           marker.close = ->
             markerService.setMarkerDefault @model
@@ -53,15 +55,20 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
               $scope.typeString = @model.typeString
               $scope.markerTitle = @model.name
               $scope.$apply()
-
-          if marker.type is "point"
-            markerPoints.push(marker) 
-          else
+          if marker.type is "point" and marker.point_type isnt "exit"
+            markerPoints.push(marker)
+            startPoints.push(marker)
+          if marker.type is "point" and marker.point_type isnt "entry"
+            markerPoints.push(marker)
+            endPoints.push(marker)
+          if marker.type is "plaza"
             markerPlazas.push marker
-      return do -> 
+      return do ->
         $scope.map.local.points = markerPoints
+        $scope.map.local.startPoints = startPoints
+        $scope.map.local.endPoints = endPoints
         $scope.map.local.plazas = markerPlazas
-        $scope.map.local.displayPoints = markerPoints
+        $scope.map.local.displayPoints = endPoints
     )
 
   initMarkers()
@@ -126,6 +133,25 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
 
   }
   
+  preparePeakRates = (peakrates) ->
+	  peakrates.forEach( (rate, index) ->
+      rate.descriptionId = Array(index + 2).join "*"
+    )
+
+  
+  # Form submit function
+  $scope.getRate = ->
+    startId = $scope.map.local.route.start.id
+    endId = $scope.map.local.route.end.id
+    type = $scope.map.local.route.type
+    axles = $scope.map.local.route.axles
+    $http.get("php/rates.php?method=getRate&entry=#{startId}&exit=#{endId}&type=#{type}&axles=#{axles}").success( (resp) ->
+      rateObj = $scope.map.local.route.rateObj = resp
+      if rateObj.rates?
+        preparePeakRates(rateObj.rates.peak) if rateObj.rates.peak?
+				
+    )
+
   $scope.$on("street-view-clicked", ->
     panoEl = angular.element("#pano")
     # Initial state of map. Needed to bring map up.
@@ -142,7 +168,7 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
 
   # Used to change the options displayed for dropdown on certain condition.
   reduceDropdownOptions = (cond) ->
-    points = $scope.map.local.points
+    points = $scope.map.local.endPoints
     newPoints = []
     newPoints.push point for point in points when cond(point)
     $scope.map.local.displayPoints = newPoints
@@ -169,7 +195,6 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
     # Check is needed just in case the current start is trying to be overwritten by end
     if (startPoint is 0) and (endPoint is 0) or (startPoint.id is endPoint.id)
       points = $scope.map.local.points
-      console.log startPoint is endPoint and startPoint is 0
       $scope.map.local.displayPoints = points if (startPoint is 0) and (endPoint is 0)
       return sharedProperties.setStart 0 if oldValues.start.id is startPoint.id
       return sharedProperties.setEnd 0 if oldValues.end.id is endPoint.id

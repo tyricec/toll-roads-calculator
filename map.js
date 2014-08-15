@@ -2,14 +2,16 @@
 var Marker, app;
 
 Marker = (function() {
-  function Marker(id, name, type, latlng, freeway) {
+  function Marker(id, name, type, latlng, freeway, point_type) {
     this.id = id;
     this.name = name;
     this.type = type;
     this.latlng = latlng;
     this.freeway = freeway;
+    this.point_type = point_type;
     this.start = null;
     this.end = null;
+    this.displayName = this.freeway + " " + this.name;
     if (this.type !== "plaza") {
       this.typeString = "Access Point: CA " + this.freeway;
     } else {
@@ -34,7 +36,7 @@ Marker = (function() {
 
 })();
 
-app = angular.module('mapApp', ['google-maps', 'services']);
+app = angular.module('mapApp', ['google-maps', 'services', 'ui.bootstrap']);
 
 app.controller('infoController', [
   '$scope', 'sharedProperties', function($scope, sharedProperties) {
@@ -68,11 +70,13 @@ app.controller('infoController', [
 
 app.controller('mapController', [
   '$scope', '$http', '$compile', 'sharedProperties', 'markerService', function($scope, $http, $compile, sharedProperties, markerService) {
-    var initMarkers, reduceDropdownOptions;
+    var initMarkers, preparePeakRates, reduceDropdownOptions;
     initMarkers = function() {
       return $http.get('php/routes.php?method=getRoutes').success(function(points) {
-        var markerPlazas, markerPoints;
+        var endPoints, markerPlazas, markerPoints, startPoints;
         markerPoints = [];
+        startPoints = [];
+        endPoints = [];
         markerPlazas = [];
         points.forEach(function(element) {
           return (function() {
@@ -81,7 +85,7 @@ app.controller('mapController', [
               'latitude': parseFloat(element.route_lat),
               'longitude': parseFloat(element.route_long)
             };
-            marker = new Marker(parseInt(element.route_id), element.route_name, element.route_type, latlng, element.route_fwy);
+            marker = new Marker(parseInt(element.route_id), element.route_name, element.route_type, latlng, element.route_fwy, element.route_point_type);
             marker.close = function() {
               markerService.setMarkerDefault(this.model);
               return $scope.$apply();
@@ -111,17 +115,25 @@ app.controller('mapController', [
                 };
               })(this));
             };
-            if (marker.type === "point") {
-              return markerPoints.push(marker);
-            } else {
+            if (marker.type === "point" && marker.point_type !== "exit") {
+              markerPoints.push(marker);
+              startPoints.push(marker);
+            }
+            if (marker.type === "point" && marker.point_type !== "entry") {
+              markerPoints.push(marker);
+              endPoints.push(marker);
+            }
+            if (marker.type === "plaza") {
               return markerPlazas.push(marker);
             }
           })();
         });
         return (function() {
           $scope.map.local.points = markerPoints;
+          $scope.map.local.startPoints = startPoints;
+          $scope.map.local.endPoints = endPoints;
           $scope.map.local.plazas = markerPlazas;
-          return $scope.map.local.displayPoints = markerPoints;
+          return $scope.map.local.displayPoints = endPoints;
         })();
       });
     };
@@ -200,6 +212,27 @@ app.controller('mapController', [
         }
       }
     };
+    preparePeakRates = function(peakrates) {
+      return peakrates.forEach(function(rate, index) {
+        return rate.descriptionId = Array(index + 2).join("*");
+      });
+    };
+    $scope.getRate = function() {
+      var axles, endId, startId, type;
+      startId = $scope.map.local.route.start.id;
+      endId = $scope.map.local.route.end.id;
+      type = $scope.map.local.route.type;
+      axles = $scope.map.local.route.axles;
+      return $http.get("php/rates.php?method=getRate&entry=" + startId + "&exit=" + endId + "&type=" + type + "&axles=" + axles).success(function(resp) {
+        var rateObj;
+        rateObj = $scope.map.local.route.rateObj = resp;
+        if (rateObj.rates != null) {
+          if (rateObj.rates.peak != null) {
+            return preparePeakRates(rateObj.rates.peak);
+          }
+        }
+      });
+    };
     $scope.$on("street-view-clicked", function() {
       var panoEl;
       panoEl = angular.element("#pano");
@@ -221,7 +254,7 @@ app.controller('mapController', [
     });
     reduceDropdownOptions = function(cond) {
       var newPoints, point, points, _i, _len;
-      points = $scope.map.local.points;
+      points = $scope.map.local.endPoints;
       newPoints = [];
       for (_i = 0, _len = points.length; _i < _len; _i++) {
         point = points[_i];
@@ -259,7 +292,6 @@ app.controller('mapController', [
       endPoint = newValues.end;
       if ((startPoint === 0) && (endPoint === 0) || (startPoint.id === endPoint.id)) {
         points = $scope.map.local.points;
-        console.log(startPoint === endPoint && startPoint === 0);
         if ((startPoint === 0) && (endPoint === 0)) {
           $scope.map.local.displayPoints = points;
         }

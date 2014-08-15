@@ -3,7 +3,7 @@ app = angular.module 'services', []
 # Services used by controllers
 app.service 'sharedProperties', ->
   props = {
-    route: { start: 0, end: 0 },
+    route: { start: 0, end: 0, type: 'fasttrak', axles: 2 },
     points: [],
     plazas: [],
     panorama: {},

@@ -16,7 +16,7 @@ class routes {
 	
 	public function getRoutes() {
 		$_db = Db::init();
-	    $sth = $_db->prepare('SELECT route_id, route_name, route_lat, route_long, route_type, route_fwy FROM routes');
+	    $sth = $_db->prepare('SELECT route_id, route_name, route_lat, route_long, route_type, route_point_type, route_fwy FROM routes');
         $sth->execute();
         $result = $sth->fetchAll();
 		return json_encode($result);

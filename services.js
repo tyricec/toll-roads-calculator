@@ -9,7 +9,9 @@ app.service('sharedProperties', function() {
   props = {
     route: {
       start: 0,
-      end: 0
+      end: 0,
+      type: 'fasttrak',
+      axles: 2
     },
     points: [],
     plazas: [],

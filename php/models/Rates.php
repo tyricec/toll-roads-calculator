@@ -41,11 +41,11 @@ class rates {
 	}
 	
 	public function buildDisplay($result) {
-		$new_result['off_peak'] = '$'.$result['off_peak'];
+		$new_result['off_peak'] = '$'.number_format($result['off_peak'],2);
 		$i = 0;
 		if($result['peak']):
 		foreach($result['peak'] as $peak) {
-			$new_result['peak'][$i]['rate'] = '$'.($result['off_peak'] + $peak['adjust_variable']);
+			$new_result['peak'][$i]['rate'] = '$'.number_format(($result['off_peak'] + $peak['adjust_variable']),2);
 			$new_result['peak'][$i]['description'] = $peak['adjust_description'];
 			$i++;
 		}

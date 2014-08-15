@@ -17,77 +17,75 @@
   <body>
   <div class="container">
   <div class="row">
-      <div id="calc-outer" class="col-md-12">
+      <div id="calc-outer" class="col-md-12" ng-controller="mapController">
       <h1>Toll Rates</h1>
       <p>The Toll Roads (State Routes 73, 133, 241 and 261) are going cashless and converting to all-electronic toll collection. With all electronic tolling (AET) all tolls are collected electronically, eliminating delays caused by stopping to pay with cash, searching for cash or fumbling for exact change</p>
       <h3>Toll Calculator</h3>
       <hr>
       <p>Calculate your toll by selecting your options below:</p>
-      	<div style="display:block; height:782px; width:100%; border:1px solid #b6b6b6;" ng-controller="mapController">
+      	<div style="display:block; height:782px; width:100%; border:1px solid #b6b6b6;">
           <div id="calc-form-container" class="col-md-3">
-          <form id="calc-form" role="form" ng-submit="calc-form.$valid" novalidate>
+          <form id="calc-form" role="form" novalidate>
           
       <label for="exampleInputEmail1" class="font16">Vehicle Axles:</label>      
-        <div id="choice-axle" class="btn-group" data-toggle="buttons">
-            <label class="btn btn-default btn-custom btn-silver font12">
-            <input type="radio" name="axles" value="2" id="axle1">2 or less
+        <div id="choice-axle" class="btn-group">
+            <label class="btn btn-default btn-custom btn-silver font12" ng-model="map.local.route.axles" btn-radio="2">2 or less
             </label>
-            <label class="btn btn-default btn-custom btn-silver font12" style="width:95px;">
-            <input type="radio" name="axles" value="3" id="axle2">3 or 4
+            <label class="btn btn-default btn-custom btn-silver font12" style="width:95px;" ng-model="map.local.route.axles" btn-radio="3">3 or 4
             </label>
-            <label class="btn btn-default btn-custom btn-silver font12">
-            <input type="radio" name="axles" value="5" id="axle2">5 or more
+            <label class="btn btn-default btn-custom btn-silver font12" ng-model="map.local.route.axles" btn-radio="5">5 or more
             </label>
         </div>
+   
+        
+        
+        
 <label for="exampleInputEmail1" class="font16">Pay by:</label>
-<div class="btn-group" data-toggle="buttons">
-            <label class="btn btn-default btn-custom btn-silver font12">
-            <input type="radio" name="type" value="fasttrak" id="type1">FasTrak
+        <div id="choice-axle" class="btn-group">
+            <label class="btn btn-default btn-custom btn-silver font12" ng-model="map.local.route.type" btn-radio="'fasttrak'">FastTrak
             </label>
-            <label class="btn btn-default btn-custom btn-silver font12" style="width:75px;">
-            <input type="radio" name="type" value="express" id="type2">Express
+            <label class="btn btn-default btn-custom btn-silver font12" style="width:75px;" ng-model="map.local.route.type" btn-radio="'express'">Express
             </label>
-            <label class="btn btn-default btn-custom btn-silver font12">
-            <input type="radio" name="type" value="onetime" id="type3">One-Time-Toll
+            <label class="btn btn-default btn-custom btn-silver font12" ng-model="map.local.route.type" btn-radio="'onetime'">One-Time-Toll
             </label>
-</div>     
+        </div> 
           
   <div class="form-group">
     <label for="exampleInputEmail1" class="font16" required>Start:</label>
     <select class="form-control" ng-model="map.local.route.start" 
-          ng-options="marker as marker.name for marker in map.local.points">
+          ng-options="marker as marker.displayName for marker in map.local.startPoints">
       <option value="">--Select Start Point--</option>
     </select>
   </div>
   <div class="form-group">
     <label for="exampleInputPassword1" class="font16" required>End:</label>
     <select class="form-control" ng-model="map.local.route.end" 
-          ng-options="marker as marker.name for marker in map.local.displayPoints">
+          ng-options="marker as marker.displayName for marker in map.local.displayPoints">
       <option value="">--Select End Point--</option>
     </select>
   </div>
 
-  <button type="submit" class="btn btn-default btn-custom btn-blue">Find Your Toll</button>
+  <button type="submit" ng-click="getRate()"class="btn btn-default btn-custom btn-blue">Find Your Toll</button>
 </form>
       
       <div id="calc-results" class="bg-yellow">
-      	<div class="row text-black">
-            <div class="col-md-6 font32"><strong>$6.75</strong></div>
-            <div class="col-md-6"><strong>Peak*</strong></div>
+      	<div class="row text-black" ng-model="map.local.route.rateObj.rates.peak" ng-repeat="rate in map.local.route.rateObj.rates.peak">
+            <div class="col-md-6 font32"><strong>{{rate.rate}}</strong></div>
+            <div class="col-md-6"><strong>Peak{{rate.descriptionId}}</strong></div>
         </div>
         <div class="row text-primary text-black">
-            <div class="col-md-6 font32"><strong>$6.00</strong></div>
+            <div class="col-md-6 font32"><strong>{{map.local.route.rateObj.rates.off_peak}}</strong></div>
             <div class="col-md-6"><strong>Off Peak</strong></div>
         </div>
         <div class="row text-primary text-black">
-            <div class="col-md-6 font32"><strong>$5.75</strong></div>
-            <div class="col-md-6"><strong>Weekend</strong></div>
+            <div class="col-md-6 font32"><strong ng-cloak>{{map.local.route.rateObj.rates.off_peak}}</strong></div>
+            <div class="col-md-6"><strong ng-cloak>Weekend</strong></div>
         </div>
         <p class="font12">
-            <span>2-Axle or Motorcycle</span>
-            <span>FasTrak</span>
-            <span>Start: 73 - Exit Name</span>
-            <span>End: 73 - Exit Name</span>
+            <span ng-cloak><strong>Vehicle Axles:</strong> {{map.local.route.rateObj.axles}}</span>
+            <span ng-cloak><strong>Pay By:</strong> {{map.local.route.rateObj.payment}}</span>
+            <span ng-cloak><strong>Start:</strong> {{map.local.route.rateObj.start}}</span>
+            <span ng-cloak><strong>Exit:</strong> {{map.local.route.rateObj.end}}</span>
         </p>
       </div>    
 	  <div id="calc-savings" class="bg-gray">
@@ -141,7 +139,7 @@
 </div>
         </div>
         <div class="col-md-12 font12">
-        *PEAK = Monday-Friday, Northbound 7-9 a.m. and Southbound 4-7 p.m.<br /> 
+        <div ng-model="map.local.route.rateObj.rates.peak" ng-repeat="rate in map.local.route.rateObj.rates.peak">Peak{{rate.descriptionId}} = {{rate.description}}</div><br /> 
  		OFF PEAK = All other weekday hours.<br /> 
  		WEEKEND = Saturday and Sunday.<br />
  </div>
@@ -158,6 +156,7 @@
     <script src="//maps.googleapis.com/maps/api/js?sensor=false"></script>
     <!--<script src="bower_components/jquery/dist/jquery.js"></script>-->
 	<script src="bower_components/angular/angular.js"></script>
+  <script src="bower_components/angular-ui-bootstrap/ui-bootstrap-custom-0.10.0.js"></script>
 	<script src="bower_components/lodash/dist/lodash.underscore.js"></script>
 	<script src="bower_components/angular-google-maps/dist/angular-google-maps.js"></script>
 	<script src="map.js"></script>
