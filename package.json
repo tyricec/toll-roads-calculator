@@ -1,0 +1,31 @@
+{
+  "name": "toll-roads-calculator",
+  "version": "0.0.0",
+  "description": "PHP app that uses angular for data bind for calculations of toll rates.",
+  "main": "map.js",
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {
+    "http-server": "^0.6.1"
+  },
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-uglify": "^0.5.1",
+    "grunt-deployments": "^0.2.0",
+    "grunt-text-replace": "^0.3.12"
+  },
+  "scripts": {
+    "test": "protractor"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tyricec/toll-roads-calculator.git"
+  },
+  "author": "Kevin Graves",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tyricec/toll-roads-calculator/issues"
+  },
+  "homepage": "https://github.com/tyricec/toll-roads-calculator"
+}

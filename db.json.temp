@@ -1,0 +1,15 @@
+{
+  "local": {
+    "host": "host",
+    "db_name": "db_name",
+    "db_user": "username",
+    "db_password": "password"
+  },
+  "remote": {
+    "host": "host",
+    "db_name": "db_name",
+    "db_user": "username",
+    "db_password": "password",
+    "ssh_host": "user@host"
+  }
+}
