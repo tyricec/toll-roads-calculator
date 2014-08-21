@@ -10,42 +10,52 @@ describe 'map-controller', ->
   scope = {}
   $httpBackend = {}
   controller = {}
+  points = []
+  timeout = {}
 
   beforeEach module('mapApp')
 
-  beforeEach inject (_$httpBackend_, $rootScope, sharedProperties, $controller) -> 
+  beforeEach inject (_$httpBackend_, $rootScope, $timeout, sharedProperties, $controller) -> 
       $httpBackend = _$httpBackend_
+      timeout = $timeout
       $httpBackend.expectGET('php/routes.php?method=getRoutes').respond(200, routeObjs)
-      scope = $rootScope
+      scope = $rootScope.$new()
       controller = $controller('mapController', {$scope: scope})
       $httpBackend.flush()
       scope.map.local.points.forEach (point) ->
         point.clickStart = () -> scope.map.local.start = @id
         point.clickEnd = () -> scope.map.local.end = @id
         point.model = point
+
+      points = scope.map.local.points
         
   
-  it('should correctly place markers in correct models.', ->
-    debugger
+  xit('should correctly place markers in correct models.', ->
     expect(scope.map.local.points.length).toBe(4)
     expect(scope.map.local.startPoints.length).toBe(3)
     expect(scope.map.local.endPoints.length).toBe(3)
   ) 
 
-  it('should set current marker focused when clicked.', ->
+  xit('should set current marker focused when clicked.', ->
     scope.map.local.points.forEach (point) ->
       point.onClick()
       expect(point.status).toBe("focused")
       scope.map.local.points.forEach (point) -> expect(point.prevIcon).toMatch(new RegExp(point.status)) unless point.status is "focused"
   )
 
-  it('should set marker back to original when info window is closed.', ->
+  xit('should set marker back to original when info window is closed.', ->
     scope.map.local.points.forEach (point) ->
       point.close()
       expect(point.prevIcon).toMatch(point.status)
   )
 
-  it('should correctly save start and end points', ->
+  describe 'the start and end points', ->
+
+    it('should save each marker if it correctly corresponds to an entry or exit', ->
+      scope.$apply()
+      scope.test = 1
+      scope.$apply()
+      expect(scope.test).toBe(2)
+    )
     
-  )
     

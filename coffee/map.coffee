@@ -163,15 +163,23 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
       panoEl.animate({"height": "45%"})
   )
 
+  $scope.test = 0
+
+  $scope.$watch('test', (newValue) ->
+    newValue = newValue + 1
+  )
+
   # Used to change the options displayed for dropdown on certain condition.
   reduceDropdownOptions = (cond) ->
     points = $scope.map.local.endPoints
     newPoints = []
     newPoints.push point for point in points when cond(point)
     $scope.map.local.displayPoints = newPoints
-
+  
   $scope.$watchCollection 'map.local.route', (newValues, oldValues, scope) ->
     # Need to check to see which point has changed. Useful in updating what can be selected later.
+    $scope.test = $scope.test + 1 unless not $scope.test?
+    $scope.test = 1 unless $scope.test
     if newValues.start is null
       newValues.start = 0
       $scope.map.local.points.forEach((marker) ->

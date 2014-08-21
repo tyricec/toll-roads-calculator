@@ -251,6 +251,10 @@ app.controller('mapController', [
         });
       }
     });
+    $scope.test = 0;
+    $scope.$watch('test', function(newValue) {
+      return newValue = newValue + 1;
+    });
     reduceDropdownOptions = function(cond) {
       var newPoints, point, points, _i, _len;
       points = $scope.map.local.endPoints;
@@ -265,6 +269,12 @@ app.controller('mapController', [
     };
     return $scope.$watchCollection('map.local.route', function(newValues, oldValues, scope) {
       var endPoint, points, startPoint, startPointChanged;
+      if (!($scope.test == null)) {
+        $scope.test = $scope.test + 1;
+      }
+      if (!$scope.test) {
+        $scope.test = 1;
+      }
       if (newValues.start === null) {
         newValues.start = 0;
         $scope.map.local.points.forEach(function(marker) {
