@@ -1,9 +1,40 @@
 module.exports = (grunt) ->
   grunt.initConfig({
     "db": grunt.file.readJSON('db.json'),
+    "shell": {
+      "createTestDB": {
+        "command": "mysql -utyricec -e\"DROP DATABASE IF EXISTS ditisfu_calculator; CREATE DATABASE IF NOT EXISTS ditisfu_calculator;\""
+      }    
+    },
+    "coffee": {
+      "compileMain": {
+        "options": {
+          "bare": true,
+          "join": true
+        },
+        "files": {
+          "js/map.js": ["coffee/marker.coffee", "coffee/map.coffee"]
+        }
+      },
+      "compileServices": {
+        "options": {
+          "bare": true
+        },
+        "files": {
+          "js/services.js": ["coffee/services.coffee"]
+        }
+      }
+    },
+    "watch": {
+      "coffee": {
+        "files": ["coffee/*.coffee"],
+        "tasks": ["coffee:compileMain", "coffee:compileServices"]
+      }
+    },
     "deployments": {
       "options": {
-        "backups_dir": "db_backups"
+        "backups_dir": "db_backups",
+        "target": "develop_test"
       },
       "local": {
         "title": "Local",
@@ -78,3 +109,7 @@ module.exports = (grunt) ->
   })
   grunt.loadNpmTasks('grunt-text-replace')
   grunt.loadNpmTasks('grunt-deployments')
+  grunt.loadNpmTasks('grunt-shell')
+  grunt.loadNpmTasks('grunt-contrib-coffee')
+  grunt.loadNpmTasks('grunt-contrib-watch')
+  grunt.registerTask('loadTestDB', ['shell:createTestDB', 'db_pull'])

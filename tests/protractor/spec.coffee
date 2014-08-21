@@ -7,34 +7,27 @@ describe('tollroads calculator page', ->
   axelSelections = element.all(By.model('map.local.route.axles'))
   paymentTypes = element.all(By.model('map.local.route.type'))
 
-  selectDropdownbyNum = (element, optionNum) ->
-    if optionNum
-      options = element.findElements(By.tagName('option')).then((options) ->
-        options[optionNum].click()
-      )
-  
   beforeEach -> 
-    browser.get('http://localhost:8000')
+    browser.get('http://localhost:65513')
     browser.waitForAngular()
 
-
-  it('should have a title', ->
+  xit('should have a title', ->
     expect(browser.getTitle()).toEqual('The Toll Roads | Toll Cost Calculator')
   )
 
-  it('should have default options', ->
+  xit('should have default options', ->
     expect(startPoint.$('option:checked').getText()).toMatch(/select/gi)
     expect(startPoint.$('option:checked').getText()).toMatch(/select/gi)
   )
 
-  it('should be able to click each point on start', ->
+  xit('should be able to click each point on start', ->
     expect(pointOptions.count()).toEqual(9)
     pointOptions.each((element, index) ->
       element.click()
       expect(startPoint.$('option:checked').getText()).toEqual(element.getText())
     )
   )
-  it('should switch end options depending on start point options', ->
+  xit('should switch end options depending on start point options', ->
     expect(endOptions.count()).toEqual(9)
     optionData = pointOptions.map((element, index) -> 
       checkExitsMatch = (cond) ->
@@ -65,24 +58,43 @@ describe('tollroads calculator page', ->
     start = element(By.binding('map.local.route.rateObj.start'))
     end = element(By.binding('map.local.route.rateObj.end'))
 
-    pointOptions.each( (startElement, index) ->
-      if index < 2 and index > 0
-        startElement.click()
-        endOption = endOptions.get(index + 3)
-        endOption.click()
-        axelSelections.each( (element, axelIndex) ->
-          element.click()
-          paymentTypes.each( (element, index) ->
-            element.click()
-            getRateBtn.click()
-            expect(off_peak.getText()).toMatch(new RegExp(axelIndex + index + 1))
-#            expect(weekend.getText()).toMatch(new RegExp(axelIndex + index + 1))
-            expect(payment.getText()).toMatch(element.getText())
-            expect(start.getText()).toMatch(new RegExp(startElement.getText()))
-            expect(end.getText()).toMatch(new RegExp(endOption.getText()))
-          )
-        )
+    firstElement = pointOptions.get(1)
+    firstElement.click()
+    endOption = endOptions.get(4)
+    endOption.click()
+    axelSelections.each( (element, axelIndex) ->
+      element.click()
+      paymentTypes.each( (element, index) ->
+        element.click()
+        getRateBtn.click()
+        expect(off_peak.getText()).toMatch(new RegExp(axelIndex + index + 1))
+#       expect(weekend.getText()).toMatch(new RegExp(axelIndex + index + 1))
+        expect(payment.getText()).toMatch(element.getText())
+        expect(start.getText()).toMatch(new RegExp(firstElement.getText()))
+        expect(end.getText()).toMatch(new RegExp(endOption.getText()))
+      )
+    )
+  )
+
+  xit('should show adjustments when available', ->
+    descriptionIds = element.all(By.repeater('rate in map.local.route.rateObj.rates.peak').column('{{rate.descriptionIds}}'))
+    descriptions = element.all(By.repeater('rate in map.local.route.rateObj.rates.peak').column('{{rate.description}}'))
+    rates = element.all(By.repeater('rate in map.local.route.rateObj.rates.peak').column('{{rate.rate}}'))
+    descriptionArray = ["Addition for 73", "Subtraction for 73"]
+    adjustmentsArray = [0.25, -0.25]
+    # Check Only Adjustment in table
+    pointOptions.get(8).click()
+    endOptions.get(2).click()
+    axelSelections.each( (axelElement, axelIndex) ->
+      do -> 
+        axelElement.click()
+        getRateBtn.click()
+        descriptionIds.each( (id) -> expect(id.getText()).toBe( Array(typeIndex + 1).join("*") ) )
+        descriptions.each( (description, index) -> expect(description.getText()).toMatch(new RegExp(descriptionArray[index])) )
+        rates.each( (rate, index) -> expect(rate.getText()).toMatch(1 + axelIndex + adjustmentsArray[index] ) )
     )
   )
 
 )
+
+
