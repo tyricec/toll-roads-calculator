@@ -163,6 +163,12 @@ app.controller('mapController', [
       'showTraffic': false,
       'showStartBtn': true,
       'showStreetView': true,
+      'switchPoints': (function() {
+        var tempPoint;
+        tempPoint = $scope.map.local.route.start;
+        $scope.map.local.route.start = $scope.map.local.route.end;
+        return $scope.map.local.route.end = tempPoint;
+      }),
       'closeStreetView': (function() {
         var panoEl;
         panoEl = angular.element('#pano');

@@ -93,6 +93,11 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
     'showTraffic': false,
     'showStartBtn': true,
     'showStreetView': true,
+    'switchPoints': ( ->
+      tempPoint = $scope.map.local.route.start
+      $scope.map.local.route.start = $scope.map.local.route.end
+      $scope.map.local.route.end = tempPoint
+    ),
     'closeStreetView': ( -> 
       panoEl = angular.element('#pano')
       panoEl.animate({"height": 0}, {"complete": -> $scope.map.showStreetView = false})
