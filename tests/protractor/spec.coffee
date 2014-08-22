@@ -1,8 +1,8 @@
 describe('tollroads calculator page', ->
   startPoint = element(By.model('map.local.route.start'))
   endPoint = element(By.model('map.local.route.end'))
-  pointOptions = element.all(By.options('marker as marker.displayName for marker in map.local.startPoints'))
-  endOptions = element.all(By.options('marker as marker.displayName for marker in map.local.displayPoints'))
+  pointOptions = element.all(By.options('marker as marker.displayName for marker in map.local.startDisplayOpts'))
+  endOptions = element.all(By.options('marker as marker.displayName for marker in map.local.endDisplayOpts'))
   getRateBtn = element(By.buttonText('Find Your Toll'))
   axelSelections = element.all(By.model('map.local.route.axles'))
   paymentTypes = element.all(By.model('map.local.route.type'))
@@ -11,23 +11,25 @@ describe('tollroads calculator page', ->
     browser.get('http://localhost:65513')
     browser.waitForAngular()
 
-  xit('should have a title', ->
+  it('should have a title', ->
     expect(browser.getTitle()).toEqual('The Toll Roads | Toll Cost Calculator')
   )
 
-  xit('should have default options', ->
+  it('should have default options', ->
     expect(startPoint.$('option:checked').getText()).toMatch(/select/gi)
     expect(startPoint.$('option:checked').getText()).toMatch(/select/gi)
   )
 
-  xit('should be able to click each point on start', ->
+  it('should be able to click each point on start', ->
     expect(pointOptions.count()).toEqual(9)
     pointOptions.each((element, index) ->
       element.click()
       expect(startPoint.$('option:checked').getText()).toEqual(element.getText())
     )
   )
-  xit('should switch end options depending on start point options', ->
+
+  it('should switch end options depending on start point options', ->
+    browser.waitForAngular()
     expect(endOptions.count()).toEqual(9)
     optionData = pointOptions.map((element, index) -> 
       checkExitsMatch = (cond) ->
@@ -76,7 +78,7 @@ describe('tollroads calculator page', ->
     )
   )
 
-  xit('should show adjustments when available', ->
+  it('should show adjustments when available', ->
     descriptionIds = element.all(By.repeater('rate in map.local.route.rateObj.rates.peak').column('{{rate.descriptionIds}}'))
     descriptions = element.all(By.repeater('rate in map.local.route.rateObj.rates.peak').column('{{rate.description}}'))
     rates = element.all(By.repeater('rate in map.local.route.rateObj.rates.peak').column('{{rate.rate}}'))
