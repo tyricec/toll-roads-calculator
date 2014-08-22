@@ -7,7 +7,9 @@ app.service 'sharedProperties', ->
     points: [],
     plazas: [],
     panorama: {},
-    displayPoints: []                # The points allowed for user to select.
+    displayPoints: [],                # The points allowed for user to select.
+    showStartBtn: true,
+    showEndBtn: true
   }
   
   return {

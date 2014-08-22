@@ -2,22 +2,34 @@ app = angular.module 'mapApp', ['google-maps', 'services', 'ui.bootstrap']
 
 # InfoWindow controller
 app.controller 'infoController', ['$scope', 'sharedProperties', ($scope, sharedProperties) ->
-  $scope.onStartClick = () -> 
-    props = sharedProperties.Properties()
+  
+  props = $scope.props = sharedProperties.Properties()
+
+  $scope.$on('marker-clicked', (event, point) ->
+    if point.point_type isnt "exit" 
+      $scope.props.showStartBtn = true 
+    else 
+      $scope.props.showStartBtn = false  
+    if point.point_type isnt "entry" 
+      $scope.props.showEndBtn = true 
+    else 
+      $scope.props.showEndBtn = false
+    $scope.$apply()
+  )
+
+  $scope.onStartClick = () ->     
     id = $scope.model.id
-    sharedProperties.setEnd 0 if props.route.end is id
+    sharedProperties.setEnd 0 if props.route.end.id is id
     sharedProperties.setStart($scope.model) 
   
   $scope.onEndClick = () -> 
-    props = sharedProperties.Properties()
     id = $scope.model.id
-    sharedProperties.setStart 0 if props.route.start is id
+    sharedProperties.setStart 0 if props.route.start.id is id
     sharedProperties.setEnd($scope.model) 
 
   $scope.onStreetViewClick = ->
-    properties = sharedProperties.Properties()
     currentMarker = $scope.model
-    properties.panorama.setPosition currentMarker.glatlng
+    props.panorama.setPosition currentMarker.glatlng
     $scope.$emit('street-view-clicked')
 ]
 
@@ -43,6 +55,7 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
           $scope.$apply()
 	  
         marker.onClick = ->
+          $scope.$broadcast('marker-clicked', @model)
           # Set all markers to their default just in case one that was focused wasn't closed
           setMarkersDefault = (cb) -> 
             $scope.map.local.points.forEach((element) -> do -> markerService.setMarkerDefault element)
@@ -67,7 +80,8 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
       $scope.map.local.startPoints = startPoints
       $scope.map.local.endPoints = endPoints
       $scope.map.local.plazas = markerPlazas
-      $scope.map.local.displayPoints = endPoints
+      $scope.map.local.startDisplayOpts = startPoints
+      $scope.map.local.endDisplayOpts = endPoints
   )
   
   $scope.map = {
@@ -77,6 +91,7 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
     'innerElementsLoaded': false,
     'local': sharedProperties.Properties(),
     'showTraffic': false,
+    'showStartBtn': true,
     'showStreetView': true,
     'closeStreetView': ( -> 
       panoEl = angular.element('#pano')
@@ -163,60 +178,35 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
       panoEl.animate({"height": "45%"})
   )
 
-  $scope.test = 0
-
-  $scope.$watch('test', (newValue) ->
-    newValue = newValue + 1
-  )
-
   # Used to change the options displayed for dropdown on certain condition.
   reduceDropdownOptions = (cond) ->
     points = $scope.map.local.endPoints
     newPoints = []
     newPoints.push point for point in points when cond(point)
-    $scope.map.local.displayPoints = newPoints
+    $scope.map.local.endDisplayOpts = newPoints
   
   $scope.$watchCollection 'map.local.route', (newValues, oldValues, scope) ->
-    # Need to check to see which point has changed. Useful in updating what can be selected later.
-    $scope.test = $scope.test + 1 unless not $scope.test?
-    $scope.test = 1 unless $scope.test
-    if newValues.start is null
-      newValues.start = 0
-      $scope.map.local.points.forEach((marker) ->
-        return markerService.setMarkerStatus(marker, "inactive") unless marker.status is "end"
-      )
-    if newValues.end is null
-      newValues.end = 0
-      $scope.map.local.points.forEach( (marker) ->
-        return markerService.setMarkerStatus(marker, "inactive") unless marker.status is "start"
-      )
-    if newValues.start.freeway is "73" and newValues.end.freeway isnt "73"
-      newValues.end = 0
-    else if newValues.start.freeway isnt "73" and newValues.end.freeway is "73"
-      newValues.end = 0
-    startPointChanged = (oldValues.start.id isnt newValues.start.id) or not oldValues.start.id? or not newValues.start.id?
-    startPoint = newValues.start
-    endPoint = newValues.end
-    # Check is needed just in case the current start is trying to be overwritten by end
-    if (startPoint is 0) and (endPoint is 0) or (startPoint.id is endPoint.id)
-      points = $scope.map.local.points
-      $scope.map.local.displayPoints = points if (startPoint is 0) and (endPoint is 0)
-      return sharedProperties.setStart 0 if oldValues.start.id is startPoint.id
-      return sharedProperties.setEnd 0 if oldValues.end.id is endPoint.id
     points = sharedProperties.Properties().points
+    startPoints = $scope.map.local.startPoints
+    endPoints = $scope.map.local.endPoints
+    return false if not startPoints? or not endPoints?
     # Set other markers that were previously start or end to inactive
     points.forEach (marker) ->
       if marker.status is "start" or marker.status is "end"
-        markerService.setMarkerStatus marker, "inactive" 
-    
+        markerService.setMarkerStatus marker, "inactive"
+   
+    $scope.map.local.startDisplayOpts = startPoints.filter (point) -> point isnt newValues.end
+    $scope.map.local.endDisplayOpts = endPoints.filter (point) -> point isnt newValues.start
+
     reduceDropdownOptions( (marker) ->
-      return true if startPoint is ""
-      if startPoint.freeway is "73"
+      return true if newValues.start is ""
+      if newValues.start.freeway is "73"
         return marker.freeway is "73" 
       else
         return marker.freeway isnt "73"
-    )
+    ) unless newValues.start is 0
+    
     sharedProperties.setPoints points
-    markerService.setMarkerStatus startPoint, "start"
-    markerService.setMarkerStatus endPoint, "end"
+    markerService.setMarkerStatus newValues.start, "start"
+    markerService.setMarkerStatus newValues.end, "end"
 ]

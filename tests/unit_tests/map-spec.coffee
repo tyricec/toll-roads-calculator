@@ -9,7 +9,8 @@ describe 'map-controller', ->
 
   scope = {}
   $httpBackend = {}
-  controller = {}
+  mapController = {}
+  infoController = {}
   points = []
   timeout = {}
 
@@ -20,8 +21,11 @@ describe 'map-controller', ->
       timeout = $timeout
       $httpBackend.expectGET('php/routes.php?method=getRoutes').respond(200, routeObjs)
       scope = $rootScope.$new()
-      controller = $controller('mapController', {$scope: scope})
+      mapController = $controller('mapController', {$scope: scope})
+      infoController = $controller('infoController', {$scope: scope})
+      
       $httpBackend.flush()
+      
       scope.map.local.points.forEach (point) ->
         point.clickStart = () -> scope.map.local.start = @id
         point.clickEnd = () -> scope.map.local.end = @id
@@ -30,32 +34,52 @@ describe 'map-controller', ->
       points = scope.map.local.points
         
   
-  xit('should correctly place markers in correct models.', ->
+  it('should correctly place markers in correct models.', ->
     expect(scope.map.local.points.length).toBe(4)
     expect(scope.map.local.startPoints.length).toBe(3)
     expect(scope.map.local.endPoints.length).toBe(3)
   ) 
 
-  xit('should set current marker focused when clicked.', ->
+  it('should set current marker focused when clicked.', ->
     scope.map.local.points.forEach (point) ->
       point.onClick()
       expect(point.status).toBe("focused")
       scope.map.local.points.forEach (point) -> expect(point.prevIcon).toMatch(new RegExp(point.status)) unless point.status is "focused"
   )
 
-  xit('should set marker back to original when info window is closed.', ->
+  it('should set marker back to original when info window is closed.', ->
     scope.map.local.points.forEach (point) ->
       point.close()
       expect(point.prevIcon).toMatch(point.status)
   )
 
+  it('should show start/end buttons based on the type of point.', ->
+    points.forEach (point) ->
+      point.onClick()
+      scope.$apply()
+      if point.point_type isnt "exit"
+        expect(scope.props.showStartBtn).toBe(true)
+      if point.point_type isnt "entry"
+        expect(scope.props.showEndBtn).toBe(true)
+  )
+
   describe 'the start and end points', ->
 
-    it('should save each marker if it correctly corresponds to an entry or exit', ->
-      scope.$apply()
-      scope.test = 1
-      scope.$apply()
-      expect(scope.test).toBe(2)
+    it('should save be saved in route object when the start or end button is clicked', ->
+      points.forEach (point) ->
+        point.onClick()
+        scope.model = point.model
+        if point.point_type isnt "exit"  
+          scope.onStartClick()
+          expect(scope.map.local.route.start.id).toBe(point.id)
+        if point.point_type isnt "entry"
+          if scope.map.local.route.start.id is point.id then isSwitch = true else isSwitch = false
+          scope.onEndClick()
+          expect(scope.map.local.route.end.id).toBe(point.id)
+          if not isSwitch
+            expect(scope.map.local.route.start.id).not.toBe(point.id)
+          else
+            expect(scope.map.local.route.start.id).toBeUndefined()
     )
     
     

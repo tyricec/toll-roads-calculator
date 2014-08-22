@@ -41,29 +41,41 @@ app = angular.module('mapApp', ['google-maps', 'services', 'ui.bootstrap']);
 
 app.controller('infoController', [
   '$scope', 'sharedProperties', function($scope, sharedProperties) {
+    var props;
+    props = $scope.props = sharedProperties.Properties();
+    $scope.$on('marker-clicked', function(event, point) {
+      if (point.point_type !== "exit") {
+        $scope.props.showStartBtn = true;
+      } else {
+        $scope.props.showStartBtn = false;
+      }
+      if (point.point_type !== "entry") {
+        $scope.props.showEndBtn = true;
+      } else {
+        $scope.props.showEndBtn = false;
+      }
+      return $scope.$apply();
+    });
     $scope.onStartClick = function() {
-      var id, props;
-      props = sharedProperties.Properties();
+      var id;
       id = $scope.model.id;
-      if (props.route.end === id) {
+      if (props.route.end.id === id) {
         sharedProperties.setEnd(0);
       }
       return sharedProperties.setStart($scope.model);
     };
     $scope.onEndClick = function() {
-      var id, props;
-      props = sharedProperties.Properties();
+      var id;
       id = $scope.model.id;
-      if (props.route.start === id) {
+      if (props.route.start.id === id) {
         sharedProperties.setStart(0);
       }
       return sharedProperties.setEnd($scope.model);
     };
     return $scope.onStreetViewClick = function() {
-      var currentMarker, properties;
-      properties = sharedProperties.Properties();
+      var currentMarker;
       currentMarker = $scope.model;
-      properties.panorama.setPosition(currentMarker.glatlng);
+      props.panorama.setPosition(currentMarker.glatlng);
       return $scope.$emit('street-view-clicked');
     };
   }
@@ -92,6 +104,7 @@ app.controller('mapController', [
           };
           marker.onClick = function() {
             var setMarkersDefault;
+            $scope.$broadcast('marker-clicked', this.model);
             setMarkersDefault = function(cb) {
               $scope.map.local.points.forEach(function(element) {
                 return (function() {
@@ -134,7 +147,8 @@ app.controller('mapController', [
         $scope.map.local.startPoints = startPoints;
         $scope.map.local.endPoints = endPoints;
         $scope.map.local.plazas = markerPlazas;
-        return $scope.map.local.displayPoints = endPoints;
+        $scope.map.local.startDisplayOpts = startPoints;
+        return $scope.map.local.endDisplayOpts = endPoints;
       })();
     });
     $scope.map = {
@@ -147,6 +161,7 @@ app.controller('mapController', [
       'innerElementsLoaded': false,
       'local': sharedProperties.Properties(),
       'showTraffic': false,
+      'showStartBtn': true,
       'showStreetView': true,
       'closeStreetView': (function() {
         var panoEl;
@@ -251,10 +266,6 @@ app.controller('mapController', [
         });
       }
     });
-    $scope.test = 0;
-    $scope.$watch('test', function(newValue) {
-      return newValue = newValue + 1;
-    });
     reduceDropdownOptions = function(cond) {
       var newPoints, point, points, _i, _len;
       points = $scope.map.local.endPoints;
@@ -265,71 +276,42 @@ app.controller('mapController', [
           newPoints.push(point);
         }
       }
-      return $scope.map.local.displayPoints = newPoints;
+      return $scope.map.local.endDisplayOpts = newPoints;
     };
     return $scope.$watchCollection('map.local.route', function(newValues, oldValues, scope) {
-      var endPoint, points, startPoint, startPointChanged;
-      if (!($scope.test == null)) {
-        $scope.test = $scope.test + 1;
-      }
-      if (!$scope.test) {
-        $scope.test = 1;
-      }
-      if (newValues.start === null) {
-        newValues.start = 0;
-        $scope.map.local.points.forEach(function(marker) {
-          if (marker.status !== "end") {
-            return markerService.setMarkerStatus(marker, "inactive");
-          }
-        });
-      }
-      if (newValues.end === null) {
-        newValues.end = 0;
-        $scope.map.local.points.forEach(function(marker) {
-          if (marker.status !== "start") {
-            return markerService.setMarkerStatus(marker, "inactive");
-          }
-        });
-      }
-      if (newValues.start.freeway === "73" && newValues.end.freeway !== "73") {
-        newValues.end = 0;
-      } else if (newValues.start.freeway !== "73" && newValues.end.freeway === "73") {
-        newValues.end = 0;
-      }
-      startPointChanged = (oldValues.start.id !== newValues.start.id) || (oldValues.start.id == null) || (newValues.start.id == null);
-      startPoint = newValues.start;
-      endPoint = newValues.end;
-      if ((startPoint === 0) && (endPoint === 0) || (startPoint.id === endPoint.id)) {
-        points = $scope.map.local.points;
-        if ((startPoint === 0) && (endPoint === 0)) {
-          $scope.map.local.displayPoints = points;
-        }
-        if (oldValues.start.id === startPoint.id) {
-          return sharedProperties.setStart(0);
-        }
-        if (oldValues.end.id === endPoint.id) {
-          return sharedProperties.setEnd(0);
-        }
-      }
+      var endPoints, points, startPoints;
       points = sharedProperties.Properties().points;
+      startPoints = $scope.map.local.startPoints;
+      endPoints = $scope.map.local.endPoints;
+      if ((startPoints == null) || (endPoints == null)) {
+        return false;
+      }
       points.forEach(function(marker) {
         if (marker.status === "start" || marker.status === "end") {
           return markerService.setMarkerStatus(marker, "inactive");
         }
       });
-      reduceDropdownOptions(function(marker) {
-        if (startPoint === "") {
-          return true;
-        }
-        if (startPoint.freeway === "73") {
-          return marker.freeway === "73";
-        } else {
-          return marker.freeway !== "73";
-        }
+      $scope.map.local.startDisplayOpts = startPoints.filter(function(point) {
+        return point !== newValues.end;
       });
+      $scope.map.local.endDisplayOpts = endPoints.filter(function(point) {
+        return point !== newValues.start;
+      });
+      if (newValues.start !== 0) {
+        reduceDropdownOptions(function(marker) {
+          if (newValues.start === "") {
+            return true;
+          }
+          if (newValues.start.freeway === "73") {
+            return marker.freeway === "73";
+          } else {
+            return marker.freeway !== "73";
+          }
+        });
+      }
       sharedProperties.setPoints(points);
-      markerService.setMarkerStatus(startPoint, "start");
-      return markerService.setMarkerStatus(endPoint, "end");
+      markerService.setMarkerStatus(newValues.start, "start");
+      return markerService.setMarkerStatus(newValues.end, "end");
     });
   }
 ]);
