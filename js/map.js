@@ -43,19 +43,6 @@ app.controller('infoController', [
   '$scope', 'sharedProperties', function($scope, sharedProperties) {
     var props;
     props = $scope.props = sharedProperties.Properties();
-    $scope.$on('marker-clicked', function(event, point) {
-      if (point.point_type !== "exit") {
-        $scope.props.showStartBtn = true;
-      } else {
-        $scope.props.showStartBtn = false;
-      }
-      if (point.point_type !== "entry") {
-        $scope.props.showEndBtn = true;
-      } else {
-        $scope.props.showEndBtn = false;
-      }
-      return $scope.$apply();
-    });
     $scope.onStartClick = function() {
       var id;
       id = $scope.model.id;
@@ -92,7 +79,7 @@ app.controller('mapController', [
       markerPlazas = [];
       points.forEach(function(element) {
         return (function() {
-          var latlng, marker;
+          var latlng, marker, showPointAccessBtns;
           latlng = {
             'latitude': parseFloat(element.route_lat),
             'longitude': parseFloat(element.route_long)
@@ -102,9 +89,21 @@ app.controller('mapController', [
             markerService.setMarkerDefault(this.model);
             return $scope.$apply();
           };
+          showPointAccessBtns = function(point) {
+            if (point.point_type !== "exit") {
+              $scope.map.local.showStartBtn = true;
+            } else {
+              $scope.map.local.showStartBtn = false;
+            }
+            if (point.point_type !== "entry") {
+              return $scope.map.local.showEndBtn = true;
+            } else {
+              return $scope.map.local.showEndBtn = false;
+            }
+          };
           marker.onClick = function() {
             var setMarkersDefault;
-            $scope.$broadcast('marker-clicked', this.model);
+            showPointAccessBtns(this.model);
             setMarkersDefault = function(cb) {
               $scope.map.local.points.forEach(function(element) {
                 return (function() {

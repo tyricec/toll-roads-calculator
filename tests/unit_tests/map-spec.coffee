@@ -32,8 +32,6 @@ describe 'map-controller', ->
         point.model = point
 
       points = scope.map.local.points
-
-      spyOn(scope, "$broadcast").andCallThrough()
         
   
   it('should correctly place markers in correct models.', ->
@@ -60,7 +58,6 @@ describe 'map-controller', ->
     points.forEach (point) ->
       point.onClick()
       scope.$apply()
-      expect(scope.$broadcast).toHaveBeenCalledWith('marker-clicked', point)
       if point.point_type isnt "exit"
         expect(scope.props.showStartBtn).toBe(true)
       if point.point_type isnt "entry"

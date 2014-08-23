@@ -8,8 +8,8 @@ app.service 'sharedProperties', ->
     plazas: [],
     panorama: {},
     displayPoints: [],                # The points allowed for user to select.
-    showStartBtn: true,
-    showEndBtn: true
+    showStartBtn: false,
+    showEndBtn: false
   }
   
   return {
