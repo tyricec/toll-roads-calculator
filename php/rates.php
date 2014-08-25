@@ -90,6 +90,6 @@ switch($params['method']) {
 	break;
 }
 
-print_r( $result);
+echo json_encode($result);
 
 ?>
