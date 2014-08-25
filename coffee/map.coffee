@@ -153,15 +153,18 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
   
   # Form submit function
   $scope.getRate = ->
-    startId = $scope.map.local.route.start.id
-    endId = $scope.map.local.route.end.id
-    type = $scope.map.local.route.type
-    axles = $scope.map.local.route.axles
-    $http.get("php/rates.php?method=getRate&entry=#{startId}&exit=#{endId}&type=#{type}&axles=#{axles}").success( (resp) ->
-      rateObj = $scope.map.local.route.rateObj = resp
-      if rateObj.rates?
-        preparePeakRates(rateObj.rates.peak) if rateObj.rates.peak?
-				
+    rateEl = angular.element("#calc-results")
+    rateEl.slideUp(200, -> 
+      startId = $scope.map.local.route.start.id
+      endId = $scope.map.local.route.end.id
+      type = $scope.map.local.route.type
+      axles = $scope.map.local.route.axles
+      $http.get("php/rates.php?method=getRate&entry=#{startId}&exit=#{endId}&type=#{type}&axles=#{axles}").success( (resp) ->
+        rateObj = $scope.map.local.route.rateObj = resp
+        if rateObj.rates?
+          preparePeakRates(rateObj.rates.peak) if rateObj.rates.peak?	
+        rateEl.slideDown()		
+      )
     )
 
   $scope.$on("street-view-clicked", ->

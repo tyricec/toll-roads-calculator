@@ -232,19 +232,24 @@ app.controller('mapController', [
       });
     };
     $scope.getRate = function() {
-      var axles, endId, startId, type;
-      startId = $scope.map.local.route.start.id;
-      endId = $scope.map.local.route.end.id;
-      type = $scope.map.local.route.type;
-      axles = $scope.map.local.route.axles;
-      return $http.get("php/rates.php?method=getRate&entry=" + startId + "&exit=" + endId + "&type=" + type + "&axles=" + axles).success(function(resp) {
-        var rateObj;
-        rateObj = $scope.map.local.route.rateObj = resp;
-        if (rateObj.rates != null) {
-          if (rateObj.rates.peak != null) {
-            return preparePeakRates(rateObj.rates.peak);
+      var rateEl;
+      rateEl = angular.element("#calc-results");
+      return rateEl.slideUp(200, function() {
+        var axles, endId, startId, type;
+        startId = $scope.map.local.route.start.id;
+        endId = $scope.map.local.route.end.id;
+        type = $scope.map.local.route.type;
+        axles = $scope.map.local.route.axles;
+        return $http.get("php/rates.php?method=getRate&entry=" + startId + "&exit=" + endId + "&type=" + type + "&axles=" + axles).success(function(resp) {
+          var rateObj;
+          rateObj = $scope.map.local.route.rateObj = resp;
+          if (rateObj.rates != null) {
+            if (rateObj.rates.peak != null) {
+              preparePeakRates(rateObj.rates.peak);
+            }
           }
-        }
+          return rateEl.slideDown();
+        });
       });
     };
     $scope.$on("street-view-clicked", function() {

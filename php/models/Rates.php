@@ -14,8 +14,11 @@ require_once './helpers/db.class.php';
 
 class rates {
 	
+	private $type;
+	
 	public function getRate($entryID,$exitID,$axles,$type) {
 		$_db = Db::init();
+		$this->type = $type;
 		$data = array('entry' => intval($entryID), 'exit' => intval($exitID), 'axles' => intval($axles));
 	    $sth = $_db->prepare('SELECT `rate_'.$type.'` AS `off_peak`, `rate_extra` FROM `rates` WHERE `rate_entry` = :entry AND `rate_exit` = :exit AND `rate_axles` = :axles LIMIT 1');
         $sth->execute($data);
@@ -40,7 +43,12 @@ class rates {
 		return $new_result;
 	}
 	
+	public function getSavings($rates) {
+	}
+	
 	public function buildDisplay($result) {
+		if($this->type != 'fasttrak') {
+		}
 		$new_result['off_peak'] = '$'.number_format($result['off_peak'],2);
 		$i = 0;
 		if($result['peak']):

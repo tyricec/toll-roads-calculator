@@ -9,7 +9,7 @@ app.service('sharedProperties', function() {
     route: {
       start: 0,
       end: 0,
-      type: 'fasttrak',
+      type: 'onetime',
       axles: 2
     },
     points: [],
