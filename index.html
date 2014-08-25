@@ -60,7 +60,7 @@
               <label for="exampleInputEmail1" class="font16" required>Pay by:</label>
               <select class="form-control" ng-model="map.local.route.type">
                 <option value="onetime">One-Time-Toll</option>
-                <option value="fasttrak">FasTrak</option>
+                <option value="fastrak">FasTrak</option>
                 <option value="express">ExpressAccount</option>
               </select>
             </div><!--end dropdown-->
@@ -75,7 +75,7 @@
               </select>
             </div><!--end dropdown-->    
   
-  					<button ng-click="getRate()"class="btn btn-default btn-custom btn-blue">Find Your Toll</button>
+  					<button type="button" ng-click="getRate()"class="btn btn-default btn-custom btn-blue">Find Your Toll</button>
 
 
 					</form>

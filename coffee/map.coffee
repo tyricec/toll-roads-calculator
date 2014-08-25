@@ -162,7 +162,7 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
       endId = $scope.map.local.route.end.id
       type = $scope.map.local.route.type
       axles = $scope.map.local.route.axles
-      $http.get("php/rates.php?method=getRate&entry=#{startId}&exit=#{endId}&type=#{type}&axles=#{axles}").success( (resp) ->
+      $http.get("php/rates.php?method=getRates&start=#{startId}&end=#{endId}&type=#{type}&axles=#{axles}").success( (resp) ->
         rateObj = $scope.map.local.route.rateObj = resp
         if rateObj.rates?
           preparePeakRates(rateObj.rates.peak) if rateObj.rates.peak?	

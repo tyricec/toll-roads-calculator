@@ -73,6 +73,12 @@ html, body {
 	width:90%;
 	margin:10px 0;
 }
+#calc-form button[type="button"] {
+	padding:12px;
+	font-size:16px;
+	font-weight:bold;
+	margin:10px 0;
+}
 #choice-axle button {
 	width:83px;
 }

@@ -245,7 +245,7 @@ app.controller('mapController', [
         endId = $scope.map.local.route.end.id;
         type = $scope.map.local.route.type;
         axles = $scope.map.local.route.axles;
-        return $http.get("php/rates.php?method=getRate&entry=" + startId + "&exit=" + endId + "&type=" + type + "&axles=" + axles).success(function(resp) {
+        return $http.get("php/rates.php?method=getRates&start=" + startId + "&end=" + endId + "&type=" + type + "&axles=" + axles).success(function(resp) {
           var rateObj;
           rateObj = $scope.map.local.route.rateObj = resp;
           if (rateObj.rates != null) {
