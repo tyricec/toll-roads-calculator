@@ -5,18 +5,6 @@ app.controller 'infoController', ['$scope', 'sharedProperties', ($scope, sharedP
   
   props = $scope.props = sharedProperties.Properties()
 
-  $scope.$on('marker-clicked', (event, point) ->
-    if point.point_type isnt "exit" 
-      $scope.props.showStartBtn = true 
-    else 
-      $scope.props.showStartBtn = false  
-    if point.point_type isnt "entry" 
-      $scope.props.showEndBtn = true 
-    else 
-      $scope.props.showEndBtn = false
-    $scope.$apply()
-  )
-
   $scope.onStartClick = () ->     
     id = $scope.model.id
     sharedProperties.setEnd 0 if props.route.end.id is id
@@ -53,9 +41,19 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
         marker.close = ->
           markerService.setMarkerDefault @model
           $scope.$apply()
-	  
+
+        showPointAccessBtns = (point) ->
+          if point.point_type isnt "exit" 
+            $scope.map.local.showStartBtn = true 
+          else 
+            $scope.map.local.showStartBtn = false  
+          if point.point_type isnt "entry" 
+            $scope.map.local.showEndBtn = true 
+          else 
+            $scope.map.local.showEndBtn = false
+
         marker.onClick = ->
-          $scope.$broadcast('marker-clicked', @model)
+          showPointAccessBtns(@model)
           # Set all markers to their default just in case one that was focused wasn't closed
           setMarkersDefault = (cb) -> 
             $scope.map.local.points.forEach((element) -> do -> markerService.setMarkerDefault element)
@@ -93,6 +91,11 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
     'showTraffic': false,
     'showStartBtn': true,
     'showStreetView': true,
+    'switchPoints': ( ->
+      tempPoint = $scope.map.local.route.start
+      $scope.map.local.route.start = $scope.map.local.route.end
+      $scope.map.local.route.end = tempPoint
+    ),
     'closeStreetView': ( -> 
       panoEl = angular.element('#pano')
       panoEl.animate({"height": 0}, {"complete": -> $scope.map.showStreetView = false})

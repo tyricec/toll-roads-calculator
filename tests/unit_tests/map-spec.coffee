@@ -32,8 +32,6 @@ describe 'map-controller', ->
         point.model = point
 
       points = scope.map.local.points
-
-      spyOn(scope, "$broadcast").andCallThrough()
         
   
   it('should correctly place markers in correct models.', ->
@@ -60,14 +58,24 @@ describe 'map-controller', ->
     points.forEach (point) ->
       point.onClick()
       scope.$apply()
-      expect(scope.$broadcast).toHaveBeenCalledWith('marker-clicked', point)
       if point.point_type isnt "exit"
         expect(scope.props.showStartBtn).toBe(true)
       if point.point_type isnt "entry"
         expect(scope.props.showEndBtn).toBe(true)
   )
 
+  it('should have a button to switch the start and the end points', ->
+    scope.map.local.route.start = points[0]
+    scope.map.local.route.end = points[1]
+
+    scope.map.switchPoints()
+    expect(scope.map.local.route.start).toBe(points[1])
+    expect(scope.map.local.route.end).toBe(points[0])
+  )
+
   describe 'the start and end points', ->
+
+    afterEach -> scope.map.local.route.start = 0; scope.map.local.route.end = 0
 
     it('should save be saved in route object when the start or end button is clicked', ->
       points.forEach (point) ->
@@ -85,5 +93,22 @@ describe 'map-controller', ->
           else
             expect(scope.map.local.route.start.id).toBeUndefined()
     )
-    
+
+    it('shouldn\'t reduce end options whenever end is changed.', ->
+      origLength = scope.map.local.endDisplayOpts.length
+      points.filter((point) -> point.point_type is "exit").forEach (point) ->
+        point.onClick()
+        scope.model = point.model
+        scope.onEndClick()
+        expect(scope.map.local.endDisplayOpts.length).toBe(origLength)
+    )
+
+    it('should reduce start options whenever start is changed.', ->
+      origLength = scope.map.local.points.length
+      points.filter((point) -> point.point_type isnt "exit").forEach (point) ->
+        point.onClick()
+        scope.model = point.model
+        scope.onStartClick()
+        expect(scope.map.local.endDisplayOpts.length).not.toBe(origLength)
+    )
     

@@ -16,8 +16,8 @@ app.service('sharedProperties', function() {
     plazas: [],
     panorama: {},
     displayPoints: [],
-    showStartBtn: true,
-    showEndBtn: true
+    showStartBtn: false,
+    showEndBtn: false
   };
   return {
     Properties: function() {
