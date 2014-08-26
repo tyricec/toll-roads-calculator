@@ -27,8 +27,9 @@ html, body {
     z-index: -1;
     height: 45%;
    }
-   
-.font12{font-size:12px;}.font16{font-size:16px;}.font32{font-size:32px;}
+
+.pt10{padding-top:10px;}
+.font12{font-size:12px;}.font16{font-size:16px;}.font18{font-size:18px;}.font32{font-size:32px;}
 
 .bg-gray {background-color:#f2f2f2;}.bg-yellow {background-color:#ffdb00;}
 
@@ -40,12 +41,15 @@ html, body {
 	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.33);
 	-webkit-font-smoothing: antialiased;
 	border-radius:8px;
+	width:100%;
+	margin:10px 0;
 }
 
 #calc-results {
 	padding:10px;
 	border-top:1px solid #000;
 	border-bottom:1px solid #000;
+	display:none;
 }
 #calc-savings {
 	padding:10px;
@@ -67,6 +71,12 @@ html, body {
 	font-size:16px;
 	font-weight:bold;
 	width:90%;
+	margin:10px 0;
+}
+#calc-form button[type="button"] {
+	padding:12px;
+	font-size:16px;
+	font-weight:bold;
 	margin:10px 0;
 }
 #choice-axle button {

@@ -6,10 +6,10 @@
     "db_password": "password"
   },
   "remote": {
-    "host": "host",
-    "db_name": "db_name",
-    "db_user": "username",
-    "db_password": "password",
-    "ssh_host": "user@host"
+    "host": "209.59.151.19",
+    "db_name": "ditisfu_calculator",
+    "db_user": "ditisfu_toll",
+    "db_password": "1*x!db!01",
+    "ssh_host": "ditisfu@209.59.151.19"
   }
 }

@@ -18,32 +18,19 @@ $rates = new rates();
 
 switch($params['method']) {
 	
-	case 'getRate':
+	case 'getRates':
 	
-		$entry_id = intval($params['entry']);
-		$exit_id = intval($params['exit']);
+		//set start values
+		$result['startid'] = intval($params['start']);
+		$result['start'] = routes::getRouteById($result['startid']);
+		$result['start'] = 'CA'.$result['start']['route_fwy'].' - '.$result['start']['route_name'];
 		
-		$result['start'] = routes::getRouteById($entry_id);
-		$result['start'] = 'CA-'.$result['start']['route_fwy'].' - '.$result['start']['route_name'];
-		$result['end'] = routes::getRouteById($exit_id);
-		$result['end'] = 'CA-'.$result['end']['route_fwy'].' - '.$result['end']['route_name'];
+		//set end values
+		$result['endid'] = intval($params['end']);
+		$result['end'] = routes::getRouteById($result['endid']);
+		$result['end'] = 'CA'.$result['end']['route_fwy'].' - '.$result['end']['route_name'];
 		
-		switch($params['type']) {
-			
-			case 'fasttrak':
-			$result['payment'] = 'FastTrak';
-			break;
-			
-			case 'express':
-			$result['payment'] = 'ExpressAccount';
-			break;
-			
-			case 'onetime':
-			$result['payment'] = 'One-Time-Toll';
-			break;
-			
-		}
-		
+		//clean axles value
 		switch($params['axles']) {
 			
 			case '2':
@@ -59,8 +46,46 @@ switch($params['method']) {
 			break;
 			
 		}
-	
-		$result['rates'] = $rates->getRate($entry_id,$exit_id,intval($params['axles']),$params['type']);
+		
+		//clean type value
+		switch($params['type']) {
+			
+			case 'fasttrak':
+			$result['payment'] = 'FastTrak';
+			$compare_type = 'onetime';
+			break;
+			
+			case 'express':
+			$result['payment'] = 'ExpressAccount';
+			$compare_type = 'fastrak';
+			break;
+			
+			case 'onetime':
+			$result['payment'] = 'One-Time-Toll';
+			$compare_type = 'fastrak';
+			break;
+			
+		}
+		
+		//request initial rates
+		$result['rates'] = $rates->getRates($result['startid'],$result['endid'],intval($params['axles']),$params['type']);
+		
+		//request price adjustments if relevant
+		if(strlen($result['rates']['rate_extra'])):
+			$result['rates'] = $rates->getAdjustments($result['rates']);
+		endif;
+		
+		$result['rates'] = $rates->getOutput($result['rates']);
+		
+		//request fastrak savings
+		$result['fastrak_savings'] = $rates->getRates($result['startid'],$result['endid'],intval($params['axles']),$compare_type);
+		
+		//request price adjustments if relevant
+		if(strlen($result['fastrak_savings']['rate_extra'])):
+			$result['fastrak_savings'] = $rates->getAdjustments($result['fastrak_savings']);
+		endif;
+		
+		$result['fastrak_savings'] = $rates->getOutput($result['fastrak_savings']);
 
 	break;
 }

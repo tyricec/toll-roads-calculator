@@ -7,6 +7,7 @@
     <!-- Bootstrap core CSS -->
     <link href="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/css/bootstrap.css" rel="stylesheet" media="screen">
     <link href="css/custom.css" rel="stylesheet" media="screen">
+    <link href="css/animate.css" rel="stylesheet" media="screen">
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -26,72 +27,82 @@
       	<div style="display:block; height:782px; width:100%; border:1px solid #b6b6b6;">
           <div id="calc-form-container" class="col-md-3">
           <form id="calc-form" role="form" novalidate>
-          
-      <label for="exampleInputEmail1" class="font16">Vehicle Axles:</label>      
-        <div id="choice-axle" class="btn-group">
-            <label class="btn btn-default btn-custom btn-silver font12" ng-model="map.local.route.axles" btn-radio="2">2 or less
-            </label>
-            <label class="btn btn-default btn-custom btn-silver font12" style="width:95px;" ng-model="map.local.route.axles" btn-radio="3">3 or 4
-            </label>
-            <label class="btn btn-default btn-custom btn-silver font12" ng-model="map.local.route.axles" btn-radio="5">5 or more
-            </label>
-        </div>
-   
-        
-        
-        
-<label for="exampleInputEmail1" class="font16">Pay by:</label>
-        <div id="choice-axle" class="btn-group">
-            <label class="btn btn-default btn-custom btn-silver font12" ng-model="map.local.route.type" btn-radio="'fasttrak'">FastTrak
-            </label>
-            <label class="btn btn-default btn-custom btn-silver font12" style="width:75px;" ng-model="map.local.route.type" btn-radio="'express'">Express
-            </label>
-            <label class="btn btn-default btn-custom btn-silver font12" ng-model="map.local.route.type" btn-radio="'onetime'">One-Time-Toll
-            </label>
-        </div> 
-          
-  <div class="form-group">
-    <label for="exampleInputEmail1" class="font16" required>Start:</label>
-    <select class="form-control" ng-model="map.local.route.start" 
-          ng-options="marker as marker.displayName for marker in map.local.startDisplayOpts">
-      <option value="">--Select Start Point--</option>
-    </select>
-  </div>
-  <button ng-click="map.switchPoints()">Switch</button>
-  <div class="form-group">
-    <label for="exampleInputPassword1" class="font16" required>End:</label>
-    <select class="form-control" ng-model="map.local.route.end" 
-          ng-options="marker as marker.displayName for marker in map.local.endDisplayOpts">
-      <option value="">--Select End Point--</option>
-    </select>
-  </div>
+ 
+						<!--Road dropdown-->        
+            <div class="form-group">
+              <label for="exampleInputEmail1" class="font16" required>Road:</label>
+              <select class="form-control" ng-model="map.local.route.fwy">
+                <option value="fasttrak">73</option>
+                <option value="express">133/241/261</option>
+              </select>
+            </div><!--end dropdown-->
+            
+            <!--Start dropdown-->        
+            <div class="form-group">
+              <label for="exampleInputEmail1" class="font16" required>Start:</label>
+              <select class="form-control" ng-model="map.local.route.start" 
+                    ng-options="marker as marker.displayName for marker in map.local.startDisplayOpts">
+                <option value="">--Select Start Point--</option>
+              </select>
+            </div><!--end dropdown-->
+            <button ng-click="map.switchPoints()">Switch</button>
+            <!--End dropdown-->
+            <div class="form-group">
+              <label for="exampleInputPassword1" class="font16" required>End:</label>
+              <select class="form-control" ng-model="map.local.route.end" 
+                    ng-options="marker as marker.displayName for marker in map.local.endDisplayOpts">
+                <option value="">--Select End Point--</option>
+              </select>
+            </div><!--end dropdown-->
+            
+            <!--Pay By dropdown-->
+            <div class="form-group">
+              <label for="exampleInputEmail1" class="font16" required>Pay by:</label>
+              <select class="form-control" ng-model="map.local.route.type">
+                <option value="onetime">One-Time-Toll</option>
+                <option value="fastrak">FasTrak</option>
+                <option value="express">ExpressAccount</option>
+              </select>
+            </div><!--end dropdown-->
+            
+            <!--Vehicle Axles dropdown-->
+            <div class="form-group">
+              <label for="exampleInputEmail1" class="font16" required>Vehicle Axles:</label>
+              <select class="form-control" ng-model="map.local.route.axles">
+                <option value="2">2 or less</option>
+                <option value="3">3 or 4</option>
+                <option value="5">5 or more</option>
+              </select>
+            </div><!--end dropdown-->    
+  
+  					<button type="button" ng-click="getRate()"class="btn btn-default btn-custom btn-blue">Find Your Toll</button>
 
-  <button ng-click="getRate()"class="btn btn-default btn-custom btn-blue">Find Your Toll</button>
-</form>
+
+					</form>
       
-      <div id="calc-results" class="bg-yellow">
+      <div id="calc-results" class="bg-yellow animated">
       	<div class="row text-black" ng-model="map.local.route.rateObj.rates.peak" ng-repeat="rate in map.local.route.rateObj.rates.peak">
             <div class="col-md-6 font32"><strong>{{rate.rate}}</strong></div>
-            <div class="col-md-6"><strong>Peak{{rate.descriptionId}}</strong></div>
+            <div class="col-md-6 font18 pt10"><strong>Peak{{rate.descriptionId}}</strong></div>
         </div>
         <div class="row text-primary text-black">
             <div class="col-md-6 font32"><strong>{{map.local.route.rateObj.rates.off_peak}}</strong></div>
-            <div class="col-md-6"><strong>Off Peak</strong></div>
+            <div class="col-md-6 font18 pt10"><strong>Off Peak</strong></div>
         </div>
         <div class="row text-primary text-black">
             <div class="col-md-6 font32"><strong ng-cloak>{{map.local.route.rateObj.rates.off_peak}}</strong></div>
-            <div class="col-md-6"><strong ng-cloak>Weekend</strong></div>
+            <div class="col-md-6 font18 pt10"><strong ng-cloak>Weekend</strong></div>
         </div>
-        <p class="font12">
+       <!-- <p class="font12">
             <span ng-cloak><strong>Vehicle Axles:</strong> {{map.local.route.rateObj.axles}}</span>
             <span ng-cloak><strong>Pay By:</strong> {{map.local.route.rateObj.payment}}</span>
             <span ng-cloak><strong>Start:</strong> {{map.local.route.rateObj.start}}</span>
             <span ng-cloak><strong>Exit:</strong> {{map.local.route.rateObj.end}}</span>
-        </p>
+        </p>-->
       </div>    
 	  <div id="calc-savings" class="bg-gray">
       	<span class="text-black font16"><strong>You Can Save:</strong></span>
-        <span><strong>$0.70</strong> with Fastrak (Peak Hours)</span>
+        <span><strong>$0.70</strong> with FasTrak (Peak Hours)</span>
 		<span>(That's about $21 a month!)</span>
         <span class="text-center"><button type="button" class="btn btn-default btn-custom btn-purple">Sign Up for FasTrak</button></span>
       </div>

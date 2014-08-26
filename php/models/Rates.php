@@ -14,19 +14,28 @@ require_once './helpers/db.class.php';
 
 class rates {
 	
-	public function getRate($entryID,$exitID,$axles,$type) {
+	public function getRates($start,$end,$axles,$type) {
+		$_db = Db::init();
+		$data = array('entry' => intval($start), 'exit' => intval($end), 'axles' => intval($axles));
+		$sth = $_db->prepare('SELECT `rate_'.$type.'` AS `off_peak`,`rate_extra` FROM `rates` WHERE `rate_entry` = :entry AND `rate_exit` = :exit AND `rate_axles` = :axles LIMIT 1');
+		$sth->execute($data);
+		return $result = $sth->fetch();
+	}
+	
+	public function getRate1($entryID,$exitID,$axles,$type) {
 		$_db = Db::init();
 		$data = array('entry' => intval($entryID), 'exit' => intval($exitID), 'axles' => intval($axles));
-	    $sth = $_db->prepare('SELECT `rate_'.$type.'` AS `off_peak`, `rate_extra` FROM `rates` WHERE `rate_entry` = :entry AND `rate_exit` = :exit AND `rate_axles` = :axles LIMIT 1');
-        $sth->execute($data);
-        $result = $sth->fetch();
-		if(strlen($result['rate_extra'])):
-			$result = $this->adjustRate($result);
+		$sth = $_db->prepare('SELECT `rate_'.$type.'` AS `off_peak`,`rate_extra` FROM `rates` WHERE `rate_entry` = :entry AND `rate_exit` = :exit AND `rate_axles` = :axles LIMIT 1');
+		$sth->execute($data);
+		$result = $sth->fetch();
+
+		if($type != 'fastrak'):
+			$result =  $this->getSavings($result);
 		endif;
 		return $this->buildDisplay($result);
 	}
-	
-	public function adjustRate($result) {
+
+	public function getAdjustments($result) {
 		$_db = Db::init();
 		$new_result = $result;
 		$adjustments = explode(',',$new_result['rate_extra']);
@@ -40,7 +49,8 @@ class rates {
 		return $new_result;
 	}
 	
-	public function buildDisplay($result) {
+
+	public function getOutput($result) {
 		$new_result['off_peak'] = '$'.number_format($result['off_peak'],2);
 		$i = 0;
 		if($result['peak']):
