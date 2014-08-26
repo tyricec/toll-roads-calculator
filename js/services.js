@@ -12,6 +12,7 @@ app.service('sharedProperties', function() {
       type: 'onetime',
       axles: 2
     },
+    mapObj: {},
     points: [],
     plazas: [],
     panorama: {},
@@ -35,7 +36,7 @@ app.service('sharedProperties', function() {
     setPlazas: function(val) {
       return props.plazas = val;
     },
-    setPanorama: function(val) {
+    setPanorama: function() {
       var currentMarker, panoEl;
       currentMarker = props.points[0];
       panoEl = document.getElementById('pano');

@@ -119,10 +119,16 @@ app.controller('mapController', [
             };
             return setMarkersDefault((function(_this) {
               return function() {
+                var bounds, neBound, swBound;
                 markerService.setMarkerStatus(_this.model, "focused");
                 $scope.id = _this.model.id;
                 $scope.typeString = _this.model.typeString;
                 $scope.markerTitle = _this.model.name;
+                points = $scope.map.local.points;
+                swBound = new google.maps.LatLng(points[points.length - 1].glatlng);
+                neBound = new google.maps.LatLng(points[0].glatng);
+                bounds = new google.maps.LatLngBounds(swBound, neBound);
+                $scope.map.local.mapObj.panToBounds(bounds);
                 return $scope.$apply();
               };
             })(this));
@@ -155,8 +161,10 @@ app.controller('mapController', [
         'latitude': 33.689388,
         'longitude': -117.731235
       },
-      'zoom': 11,
+      'zoom': 17,
       'streetView': {},
+      'fitMarkers': true,
+      'pan': true,
       'innerElementsLoaded': false,
       'local': sharedProperties.Properties(),
       'showTraffic': false,
@@ -197,6 +205,7 @@ app.controller('mapController', [
       'events': {
         'idle': function(map) {
           var addCloseStreetBtn, addTrafficBtn, loadStreetView;
+          $scope.map.local.mapObj = map;
           if (!$scope.map.innerElementsLoaded) {
             angular.element('.infoWindow').show();
             addTrafficBtn = function() {

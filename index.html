@@ -118,9 +118,9 @@
 </div>
 
 <google-map control="map.streetView" center="map.center" zoom="map.zoom" 
-    options="map.mapOptions" draggable="true" events="map.events" ng-cloak>
+    options="map.mapOptions" draggable="true" events="map.events" pan="map.pan" ng-cloak>
   <layer type="TrafficLayer"  show="map.showTraffic"></layer>
-  <markers models="map.local.points" coords="'latlng'" click="'onClick'" icon="'icon'">
+  <markers models="map.local.points" fit="map.fitMarkers" coords="'latlng'" click="'onClick'" icon="'icon'">
     <windows show="'showWindow'" closeClick="'close'" options="map.infoWindowOptions" ng-cloak>
       <div class="info-window">
           {{ typeString }}
