@@ -4,6 +4,7 @@ app = angular.module 'services', []
 app.service 'sharedProperties', ->
   props = {
     route: { start: 0, end: 0, type: 'fasttrak', axles: 2 },
+    mapObj: {},
     points: [],
     plazas: [],
     panorama: {},
@@ -18,7 +19,7 @@ app.service 'sharedProperties', ->
     setEnd: (val) -> return props.route.end = val,
     setPoints: (val) -> return props.points = val,
     setPlazas: (val) -> return props.plazas= val,
-    setPanorama: (val) -> 
+    setPanorama: () -> 
       currentMarker = props.points[0]
       panoEl = document.getElementById('pano')
       props.panorama = new google.maps.StreetViewPanorama(panoEl)

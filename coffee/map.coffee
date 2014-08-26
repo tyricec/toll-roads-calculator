@@ -64,6 +64,11 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
             $scope.id = @model.id
             $scope.typeString = @model.typeString
             $scope.markerTitle = @model.name
+            points = $scope.map.local.points
+            swBound = new google.maps.LatLng(points[points.length - 1].glatlng)
+            neBound = new google.maps.LatLng(points[0].glatng)
+            bounds = new google.maps.LatLngBounds(swBound, neBound)
+            $scope.map.local.mapObj.panToBounds(bounds)
             $scope.$apply()
         if marker.type is "point"
           allPoints.push(marker)
@@ -84,8 +89,10 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
   
   $scope.map = {
     'center': {'latitude': 33.689388, 'longitude': -117.731235},
-    'zoom': 11,
+    'zoom': 17,
     'streetView': {},
+    'fitMarkers': true,
+    'pan': true,
     'innerElementsLoaded': false,
     'local': sharedProperties.Properties(),
     'showTraffic': false,
@@ -116,6 +123,7 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
     'events': {
       # Invoked when the map is loaded
       'idle': (map) ->
+        $scope.map.local.mapObj = map
         unless $scope.map.innerElementsLoaded
           angular.element('.infoWindow').show()
           # Add traffic layer btn to map
