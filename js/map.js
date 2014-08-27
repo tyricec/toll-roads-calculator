@@ -44,24 +44,26 @@ app.controller('infoController', [
     var props;
     props = $scope.props = sharedProperties.Properties();
     $scope.onStartClick = function() {
-      var id;
-      id = $scope.model.id;
+      var id, marker;
+      marker = $scope.props.currentMarker;
+      id = marker.id;
       if (props.route.end.id === id) {
         sharedProperties.setEnd(0);
       }
-      return sharedProperties.setStart($scope.model);
+      return sharedProperties.setStart(marker);
     };
     $scope.onEndClick = function() {
-      var id;
-      id = $scope.model.id;
+      var id, marker;
+      marker = $scope.props.currentMarker;
+      id = marker.id;
       if (props.route.start.id === id) {
         sharedProperties.setStart(0);
       }
-      return sharedProperties.setEnd($scope.model);
+      return sharedProperties.setEnd(marker);
     };
     return $scope.onStreetViewClick = function() {
       var currentMarker;
-      currentMarker = $scope.model;
+      currentMarker = $scope.props.currentMarker;
       props.panorama.setPosition(currentMarker.glatlng);
       return $scope.$emit('street-view-clicked');
     };
@@ -72,11 +74,17 @@ app.controller('mapController', [
   '$scope', '$http', '$compile', 'sharedProperties', 'markerService', function($scope, $http, $compile, sharedProperties, markerService) {
     var preparePeakRates, reduceDropdownOptions;
     $http.get('php/routes.php?method=getRoutes').success(function(points) {
-      var allPoints, endPoints, markerPlazas, startPoints;
+      var allPoints, endPoints, endPoints73, endPointsRest, markerPlazas, points73, pointsRest, startPointRest, startPoints, startPoints73;
       allPoints = [];
       startPoints = [];
       endPoints = [];
       markerPlazas = [];
+      points73 = [];
+      pointsRest = [];
+      startPoints73 = [];
+      endPoints73 = [];
+      startPointRest = [];
+      endPointsRest = [];
       points.forEach(function(element) {
         return (function() {
           var latlng, marker, showPointAccessBtns;
@@ -85,10 +93,6 @@ app.controller('mapController', [
             'longitude': parseFloat(element.route_long)
           };
           marker = new Marker(parseInt(element.route_id), element.route_name, element.route_type, latlng, element.route_fwy, element.route_point_type);
-          marker.close = function() {
-            markerService.setMarkerDefault(this.model);
-            return $scope.$apply();
-          };
           showPointAccessBtns = function(point) {
             if (point.point_type !== "exit") {
               $scope.map.local.showStartBtn = true;
@@ -104,6 +108,12 @@ app.controller('mapController', [
           marker.onClick = function() {
             var setMarkersDefault;
             showPointAccessBtns(this.model);
+            $scope.map.currentMarker = this.model;
+            if ($scope.map.currentMarker.type !== 'plaza') {
+              $scope.map.showWindow = true;
+            } else {
+              $scope.map.showWindow = false;
+            }
             setMarkersDefault = function(cb) {
               $scope.map.local.points.forEach(function(element) {
                 return (function() {
@@ -119,16 +129,11 @@ app.controller('mapController', [
             };
             return setMarkersDefault((function(_this) {
               return function() {
-                var bounds, neBound, swBound;
                 markerService.setMarkerStatus(_this.model, "focused");
+                $scope.map.local.currentMarker = _this.model;
                 $scope.id = _this.model.id;
                 $scope.typeString = _this.model.typeString;
                 $scope.markerTitle = _this.model.name;
-                points = $scope.map.local.points;
-                swBound = new google.maps.LatLng(points[points.length - 1].glatlng);
-                neBound = new google.maps.LatLng(points[0].glatng);
-                bounds = new google.maps.LatLngBounds(swBound, neBound);
-                $scope.map.local.mapObj.panToBounds(bounds);
                 return $scope.$apply();
               };
             })(this));
@@ -143,17 +148,36 @@ app.controller('mapController', [
             endPoints.push(marker);
           }
           if (marker.type === "plaza") {
-            return markerPlazas.push(marker);
+            markerPlazas.push(marker);
+          }
+          if (marker.freeway === '73' && marker.type === "point") {
+            return points73.push(marker);
+          } else if (marker.type === "point") {
+            return pointsRest.push(marker);
           }
         })();
       });
       return (function() {
-        $scope.map.local.points = allPoints;
+        $scope.map.local.points = [];
         $scope.map.local.startPoints = startPoints;
         $scope.map.local.endPoints = endPoints;
         $scope.map.local.plazas = markerPlazas;
-        $scope.map.local.startDisplayOpts = startPoints;
-        return $scope.map.local.endDisplayOpts = endPoints;
+        $scope.map.local.startDisplayOpts = [];
+        $scope.map.local.endDisplayOpts = [];
+        $scope.map.local.points73 = points73;
+        $scope.map.local.pointsRest = pointsRest;
+        $scope.map.local.startPoints73 = startPoints.filter(function(point) {
+          return point.freeway === "73";
+        });
+        $scope.map.local.endPoints73 = endPoints.filter(function(point) {
+          return point.freeway === "73";
+        });
+        $scope.map.local.startPointsRest = startPoints.filter(function(point) {
+          return point.freeway !== "73";
+        });
+        return $scope.map.local.endPointsRest = endPoints.filter(function(point) {
+          return point.freeway !== "73";
+        });
       })();
     });
     $scope.map = {
@@ -161,20 +185,27 @@ app.controller('mapController', [
         'latitude': 33.689388,
         'longitude': -117.731235
       },
-      'zoom': 17,
+      'zoom': 11,
       'streetView': {},
-      'fitMarkers': true,
-      'pan': true,
+      'fitMarkers': false,
+      'pan': false,
       'innerElementsLoaded': false,
       'local': sharedProperties.Properties(),
       'showTraffic': false,
       'showStartBtn': true,
       'showStreetView': true,
+      'currentMarker': {},
+      'showWindow': false,
+      'closeWindow': (function() {
+        markerService.setMarkerDefault(this.currentMarker);
+        return $scope.$apply();
+      }),
       'switchPoints': (function() {
-        var tempPoint;
-        tempPoint = $scope.map.local.route.start;
-        $scope.map.local.route.start = $scope.map.local.route.end;
-        return $scope.map.local.route.end = tempPoint;
+        var tempEndPoint, tempStartPoint;
+        tempStartPoint = $scope.map.local.route.start;
+        tempEndPoint = $scope.map.local.route.end;
+        $scope.map.local.route.start = tempEndPoint;
+        return $scope.map.local.route.end = tempStartPoint;
       }),
       'closeStreetView': (function() {
         var panoEl;
@@ -202,10 +233,12 @@ app.controller('mapController', [
       'infoWindowOptions': {
         'pixelOffset': new google.maps.Size(0, -30)
       },
+      'markerOptions': {
+        'visible': true
+      },
       'events': {
         'idle': function(map) {
           var addCloseStreetBtn, addTrafficBtn, loadStreetView;
-          $scope.map.local.mapObj = map;
           if (!$scope.map.innerElementsLoaded) {
             angular.element('.infoWindow').show();
             addTrafficBtn = function() {
@@ -297,11 +330,31 @@ app.controller('mapController', [
       }
       return $scope.map.local.endDisplayOpts = newPoints;
     };
+    $scope.$watch('map.local.route.fwy', function(newValue, oldValue, scope) {
+      $scope.map.local.route.start = 0;
+      $scope.map.local.route.end = 0;
+      if (newValue === '73') {
+        $scope.map.local.points = $scope.map.local.points73;
+        $scope.map.local.startDisplayOpts = $scope.map.local.startPoints73;
+        return $scope.map.local.endDisplayOpts = $scope.map.local.endPoints73;
+      } else {
+        $scope.map.local.points = $scope.map.local.pointsRest;
+        $scope.map.local.startDisplayOpts = $scope.map.local.startPointsRest;
+        return $scope.map.local.endDisplayOpts = $scope.map.local.endPointsRest;
+      }
+    });
     return $scope.$watchCollection('map.local.route', function(newValues, oldValues, scope) {
-      var endPoints, points, startPoints;
+      var endPoints, endPointsOpts, points, startPoints, startPointsOpts;
       points = sharedProperties.Properties().points;
       startPoints = $scope.map.local.startPoints;
       endPoints = $scope.map.local.endPoints;
+      if (newValues.fwy === "73" || newValues.fwy === "73") {
+        startPointsOpts = $scope.map.local.startPoints73;
+        endPointsOpts = $scope.map.local.endPoints73;
+      } else {
+        startPointsOpts = $scope.map.local.startPointsRest;
+        endPointsOpts = $scope.map.local.endPointsRest;
+      }
       if ((startPoints == null) || (endPoints == null)) {
         return false;
       }
@@ -310,25 +363,24 @@ app.controller('mapController', [
           return markerService.setMarkerStatus(marker, "inactive");
         }
       });
-      $scope.map.local.startDisplayOpts = startPoints.filter(function(point) {
+      $scope.map.local.startDisplayOpts = startPointsOpts.filter(function(point) {
         return point !== newValues.end;
       });
-      $scope.map.local.endDisplayOpts = endPoints.filter(function(point) {
+      $scope.map.local.endDisplayOpts = endPointsOpts.filter(function(point) {
         return point !== newValues.start;
       });
-      if (newValues.start !== 0) {
-        reduceDropdownOptions(function(marker) {
-          if (newValues.start === "") {
-            return true;
-          }
-          if (newValues.start.freeway === "73") {
-            return marker.freeway === "73";
-          } else {
-            return marker.freeway !== "73";
-          }
-        });
-      }
+
+      /*
+      reduceDropdownOptions( (marker) ->
+        return true if newValues.start is ""
+        if newValues.start.freeway is "73"
+          return marker.freeway is "73" 
+        else
+          return marker.freeway isnt "73"
+      ) unless newValues.start is 0
+       */
       sharedProperties.setPoints(points);
+      console.log(newValues.start);
       markerService.setMarkerStatus(newValues.start, "start");
       return markerService.setMarkerStatus(newValues.end, "end");
     });

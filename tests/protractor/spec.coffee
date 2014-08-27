@@ -8,7 +8,7 @@ describe('tollroads calculator page', ->
   paymentTypes = element.all(By.model('map.local.route.type'))
 
   beforeEach -> 
-    browser.get('http://localhost:65513')
+    browser.get('http://localhost:18492')
     browser.waitForAngular()
 
   it('should have a title', ->

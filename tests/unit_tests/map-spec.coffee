@@ -3,7 +3,7 @@ describe 'map-controller', ->
     {"route_id": '1', "route_name": "test1", "route_lat": 0, "route_long": 0, "route_type": "point", "route_point_type": "entry/exit", "route_fwy": 241},
     {"route_id": '2', "route_name": "test2", "route_lat": 0, "route_long": 0, "route_type": "point", "route_point_type": "entry", "route_fwy": 241},
     {"route_id": '3', "route_name": "test3", "route_lat": 0, "route_long": 0, "route_type": "point", "route_point_type": "exit", "route_fwy": 241},
-    {"route_id": '4', "route_name": "test4", "route_lat": 0, "route_long": 0, "route_type": "point", "route_point_type": "entry/exit", "route_fwy": 73},
+    {"route_id": '4', "route_name": "test4", "route_lat": 0, "route_long": 0, "route_type": "point", "route_point_type": "entry/exit", "route_fwy": '73'},
     {"route_id": '5', "route_name": "test5", "route_lat": 0, "route_long": 0, "route_type": "plaza", "route_point_type": "null", "route_fwy": 241}
   ]
 
@@ -32,16 +32,24 @@ describe 'map-controller', ->
         point.model = point
 
       points = scope.map.local.points
-        
+      
+      scope.map.local.route.fwy = "rest"
+      scope.$apply()  
   
   it('should correctly place markers in correct models.', ->
-    expect(scope.map.local.points.length).toBe(4)
+    scope.map.local.route.fwy = "73"
+    scope.$apply()
+    expect(scope.map.local.points.length).toBe(1)
+    scope.map.local.route.fwy = "rest"
+    scope.$apply()
+    expect(scope.map.local.points.length).toBe(3)
     expect(scope.map.local.startPoints.length).toBe(3)
     expect(scope.map.local.endPoints.length).toBe(3)
   ) 
 
   it('should set current marker focused when clicked.', ->
     scope.map.local.points.forEach (point) ->
+      point.model = point
       point.onClick()
       expect(point.status).toBe("focused")
       # Check if the rest are default
@@ -50,12 +58,13 @@ describe 'map-controller', ->
 
   it('should set marker back to original when info window is closed.', ->
     scope.map.local.points.forEach (point) ->
-      point.close()
+      scope.map.closeWindow()
       expect(point.prevIcon).toMatch(point.status)
   )
 
   it('should show start/end buttons based on the type of point.', ->
     points.forEach (point) ->
+      point.model = point
       point.onClick()
       scope.$apply()
       if point.point_type isnt "exit"
@@ -79,6 +88,7 @@ describe 'map-controller', ->
 
     it('should save be saved in route object when the start or end button is clicked', ->
       points.forEach (point) ->
+        point.model = point
         point.onClick()
         scope.model = point.model
         if point.point_type isnt "exit"  
@@ -97,6 +107,7 @@ describe 'map-controller', ->
     it('shouldn\'t reduce end options whenever end is changed.', ->
       origLength = scope.map.local.endDisplayOpts.length
       points.filter((point) -> point.point_type is "exit").forEach (point) ->
+        point.model = point
         point.onClick()
         scope.model = point.model
         scope.onEndClick()
@@ -106,6 +117,7 @@ describe 'map-controller', ->
     it('should reduce start options whenever start is changed.', ->
       origLength = scope.map.local.points.length
       points.filter((point) -> point.point_type isnt "exit").forEach (point) ->
+        point.model = point
         point.onClick()
         scope.model = point.model
         scope.onStartClick()
