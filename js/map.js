@@ -10,11 +10,12 @@ Marker = (function() {
     this.point_type = point_type;
     this.start = null;
     this.end = null;
-    this.displayName = this.freeway + " " + this.name;
+    this.displayName = "SR " + this.freeway + " -- " + this.name;
+    this.typeString = "SR " + this.freeway;
     if (this.type !== "plaza") {
-      this.typeString = "Access Point: CA " + this.freeway;
+      this.markerType = "Access Point:";
     } else {
-      this.typeString = "Plaza: CA " + this.freeway;
+      this.markerType = "Toll Plaza:";
     }
     this.glatlng = {
       lat: this.latlng.latitude,
@@ -133,6 +134,7 @@ app.controller('mapController', [
                 $scope.map.local.currentMarker = _this.model;
                 $scope.id = _this.model.id;
                 $scope.typeString = _this.model.typeString;
+                $scope.markerType = _this.model.markerType;
                 $scope.markerTitle = _this.model.name;
                 return $scope.$apply();
               };
@@ -240,6 +242,9 @@ app.controller('mapController', [
         'idle': function(map) {
           var addCloseStreetBtn, addTrafficBtn, loadStreetView;
           if (!$scope.map.innerElementsLoaded) {
+            $scope.map.local.points = $scope.map.local.pointsRest;
+            $scope.map.local.startDisplayOpts = $scope.map.local.startPointsRest;
+            $scope.map.local.endDisplayOpts = $scope.map.local.endPointsRest;
             angular.element('.infoWindow').show();
             addTrafficBtn = function() {
               var el, element;

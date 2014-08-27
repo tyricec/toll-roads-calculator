@@ -17,7 +17,6 @@ app.controller 'infoController', ['$scope', 'sharedProperties', ($scope, sharedP
       sharedProperties.setStart 0 if props.route.start.id is id
       sharedProperties.setEnd(marker) 
    
-
   $scope.onStreetViewClick = ->
     currentMarker = $scope.props.currentMarker  
     props.panorama.setPosition currentMarker.glatlng
@@ -75,6 +74,8 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
             $scope.map.local.currentMarker = @model
             $scope.id = @model.id
             $scope.typeString = @model.typeString
+            #$scope.markerTitle = @model.name
+            $scope.markerType = @model.markerType
             $scope.markerTitle = @model.name
             $scope.$apply()
         if marker.type is "point"
@@ -152,6 +153,10 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
       'idle': (map) ->
         #$scope.map.local.mapObj = map
         unless $scope.map.innerElementsLoaded
+          # Add initial points, startDisplayOpts, and endDisplayOpts
+          $scope.map.local.points = $scope.map.local.pointsRest
+          $scope.map.local.startDisplayOpts = $scope.map.local.startPointsRest
+          $scope.map.local.endDisplayOpts = $scope.map.local.endPointsRest
           angular.element('.infoWindow').show()
           # Add traffic layer btn to map
           addTrafficBtn = () ->

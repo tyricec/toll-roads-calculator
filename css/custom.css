@@ -135,3 +135,21 @@ background-image: linear-gradient(#bf00f9, #710093);
     height: 500px;
     width: 100%
 }
+
+/* Info Window Styles */
+div.info-window {
+	width:350px;
+}
+div.info-window p {
+	font-size:16px;
+}
+div.info-window p span {
+	display:block;
+}
+div.info-window-controls {
+	text-align:center;
+	padding-left:28px;
+}
+div.info-window-controls button {
+	margin:10px 5px;
+}
