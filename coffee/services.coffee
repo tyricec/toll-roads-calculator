@@ -10,7 +10,7 @@ app.service 'sharedProperties', ->
     panorama: {},
     displayPoints: [],                # The points allowed for user to select.
     showStartBtn: false,
-    showEndBtn: false
+    showEndBtn: false,
   }
   
   return {
@@ -20,7 +20,7 @@ app.service 'sharedProperties', ->
     setPoints: (val) -> return props.points = val,
     setPlazas: (val) -> return props.plazas= val,
     setPanorama: () -> 
-      currentMarker = props.points[0]
+     # currentMarker = props.points[0]
       panoEl = document.getElementById('pano')
       props.panorama = new google.maps.StreetViewPanorama(panoEl)
   }

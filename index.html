@@ -7,7 +7,7 @@
     <!-- Bootstrap core CSS -->
     <link href="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/css/bootstrap.css" rel="stylesheet" media="screen">
     <link href="css/custom.css" rel="stylesheet" media="screen">
-    <link href="css/animate.css" rel="stylesheet" media="screen">
+    <!--<link href="css/animate.css" rel="stylesheet" media="screen">-->
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -32,8 +32,8 @@
             <div class="form-group">
               <label for="exampleInputEmail1" class="font16" required>Road:</label>
               <select class="form-control" ng-model="map.local.route.fwy">
-                <option value="fasttrak">73</option>
-                <option value="express">133/241/261</option>
+                <option value="73">73</option>
+                <option value="rest">133/241/261</option>
               </select>
             </div><!--end dropdown-->
             
@@ -118,10 +118,11 @@
 </div>
 
 <google-map control="map.streetView" center="map.center" zoom="map.zoom" 
-    options="map.mapOptions" draggable="true" events="map.events" pan="map.pan" ng-cloak>
+    options="map.mapOptions" draggable="true" events="map.events"  ng-cloak>
   <layer type="TrafficLayer"  show="map.showTraffic"></layer>
-  <markers models="map.local.points" fit="map.fitMarkers" coords="'latlng'" click="'onClick'" icon="'icon'">
-    <windows show="'showWindow'" closeClick="'close'" options="map.infoWindowOptions" ng-cloak>
+  <markers options="map.markerOptions" models="map.local.points" coords="'latlng'" click="'onClick'" icon="'icon'">
+  </markers>
+  <window show="map.showWindow" closeClick="map.closeWindow()" coords="map.currentMarker.latlng" options="map.infoWindowOptions" ng-cloak>
       <div class="info-window">
           {{ typeString }}
           <br>
@@ -132,8 +133,7 @@
              <button ng-click="onStreetViewClick()">Street View</button>
           </div>
       </div>
-    </windows>
-  </markers>
+    </window>
   <markers models="map.local.plazas" coords="'latlng'" click="'onClick'" icon="'icon'" >
     <windows show="'showWindow'" closeClick="'close'" options="map.infoWindowOptions" ng-cloak>
         <div>

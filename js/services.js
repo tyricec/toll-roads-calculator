@@ -9,7 +9,7 @@ app.service('sharedProperties', function() {
     route: {
       start: 0,
       end: 0,
-      type: 'onetime',
+      type: 'fasttrak',
       axles: 2
     },
     mapObj: {},
@@ -37,8 +37,7 @@ app.service('sharedProperties', function() {
       return props.plazas = val;
     },
     setPanorama: function() {
-      var currentMarker, panoEl;
-      currentMarker = props.points[0];
+      var panoEl;
       panoEl = document.getElementById('pano');
       return props.panorama = new google.maps.StreetViewPanorama(panoEl);
     }
