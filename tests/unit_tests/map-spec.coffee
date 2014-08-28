@@ -103,6 +103,46 @@ describe 'map-controller', ->
             expect(scope.map.local.route.start.id).toBeUndefined()
     )
 
+    it('should set all markers that aren\'t start or end to inactive.', ->
+      points.filter((point) -> point.point_type isnt "exit").forEach (point) ->
+        point.onClick()
+        scope.model = point.model
+        scope.onStartClick()
+        points.filter((thisPoint) -> thisPoint isnt point).forEach (point) ->
+          expect(point.status).toBe('inactive')
+          expect(point.prevIcon).toMatch(new RegExp(point.status))
+
+    )
+
+    it('should have errors thrown if start and end functions are invoked without current marker having them.', ->
+      points.filter((point) -> point.point_type is "entry").forEach (point) ->
+        point.onClick()
+        scope.model = point.model
+        expect(scope.onStartClick).not.toThrow()
+        expect(scope.onEndClick).toThrow()
+
+      points.filter((point) -> point.point_type is "exit").forEach (point) ->
+        point.onClick()
+        scope.model = point.model
+        expect(scope.onEndClick).not.toThrow()
+        expect(scope.onStartClick).toThrow()
+        
+    )
+
+    it('should set current marker to inactive if start is selected to be different independent of window.', ->
+      points.forEach (point) ->
+        point.onClick()
+        scope.model = point.model
+        scope.onStartClick() unless point.point_type is "exit"
+        point.onClick()
+        points.filter((thisPoint) -> thisPoint isnt point).forEach (thisPoint) ->
+          scope.map.local.route.start = thisPoint
+          scope.$apply()
+          expect(point.status).toBe("inactive")
+          expect(scope.map.currentMarker.status).toBe("inactive")
+
+    )
+
     it('shouldn\'t reduce end options whenever end is changed.', ->
       origLength = scope.map.local.endDisplayOpts.length
       points.filter((point) -> point.point_type is "exit").forEach (point) ->

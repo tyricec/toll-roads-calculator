@@ -82,7 +82,7 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
     'control': {},
     'innerElementsLoaded': false,
     'local': sharedProperties.Properties(),
-    'showTraffic': false,
+    'showTraffic': true,
     'showStartBtn': true,
     'showStreetView': true,
     'currentMarker': {},
@@ -101,10 +101,11 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
       panoEl.animate({"height": 0}, {"complete": -> $scope.map.showStreetView = false})
       return true    # Only needed because coffeescript returns dom elements which scares angular
     ),
-    'toggleTrafficLayer': -> $scope.map.showTraffic = !$scope.map.showTraffic,
+    'toggleTrafficLayer': -> $scope.map.local.showTraffic = !$scope.map.local.showTraffic,
     'mapOptions': {
       'panControl': false,
       'rotateControl': false,
+      'mapTypeControl': false,
       'streetViewControl': false,
       'zoomControlOptions': {
         'position': google.maps.ControlPosition.BOTTOM_LEFT
@@ -119,22 +120,7 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
     'events': {
       # Invoked when the map is loaded
       'idle': (map) ->
-        #$scope.map.local.mapObj = map
         unless $scope.map.innerElementsLoaded
-          # Add initial points, startDisplayOpts, and endDisplayOpts
-          $scope.map.local.points = $scope.map.local.pointsRest
-          $scope.map.local.startDisplayOpts = $scope.map.local.startPointsRest
-          $scope.map.local.endDisplayOpts = $scope.map.local.endPointsRest
-          angular.element('.infoWindow').show()
-          # Add traffic layer btn to map
-          addTrafficBtn = () ->
-            element = document.createElement 'div'
-            el = angular.element element
-            el.append '<button ng-click="map.toggleTrafficLayer()">Traffic</button>'
-          
-            # Need to invoke compile for click event to be registered to button
-            $compile(el)($scope)
-            map.controls[google.maps.ControlPosition.TOP_RIGHT].push el[0]
 
           addCloseStreetBtn = (callback) ->
             element = document.createElement 'div'
@@ -151,7 +137,6 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
 
           loadStreetView -> addCloseStreetBtn -> $scope.map.innerElementsLoaded = true
 
-          addTrafficBtn()
     }
 
   }
@@ -225,10 +210,11 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
       startPointsOpts = $scope.map.local.startPointsRest
       endPointsOpts = $scope.map.local.endPointsRest
     return false if not startPoints? or not endPoints?
-    # Set other markers that were previously start or end to inactive
+    # Set all markers back to inactive
     points.forEach (marker) ->
-      if marker.status is "start" or marker.status is "end"
-        markerService.setMarkerStatus marker, "inactive"
+      markerService.setMarkerStatus marker, "inactive"
+      if marker is $scope.map.currentMarker
+        $scope.map.currentMarker = marker
     
     $scope.map.local.startDisplayOpts = startPointsOpts.filter (point) -> point isnt newValues.end
     $scope.map.local.endDisplayOpts = endPointsOpts.filter (point) -> point isnt newValues.start
@@ -236,21 +222,24 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
     sharedProperties.setPoints points
     markerService.setMarkerStatus newValues.start, "start"
     markerService.setMarkerStatus newValues.end, "end"
+    $scope.map.local.fitBounds()
+    markerService.setMarkerDefault $scope.map.currentMarker
+    $scope.map.showWindow = false
 
   $scope.onStartClick = () -> 
-    marker = $scope.map.local.currentMarker    
+    marker = $scope.map.local.currentMarker
+    throw new Error("Point is not type entry.") if marker.point_type is "exit"
     id = marker.id
     sharedProperties.setEnd 0 if $scope.map.local.route.end.id is id
     sharedProperties.setStart(marker)
-    $scope.map.local.fitBounds()
     $scope.map.local.closeWindow($scope)
   
   $scope.onEndClick = () -> 
     marker = $scope.map.local.currentMarker
+    throw new Error("Point is not type exit.") if marker.point_type is "entry"
     id = marker.id
     sharedProperties.setStart 0 if $scope.map.local.route.start.id is id
     sharedProperties.setEnd(marker) 
-    $scope.map.local.fitBounds()
     $scope.map.local.closeWindow($scope)
    
   $scope.onStreetViewClick = ->
