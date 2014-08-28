@@ -7,9 +7,10 @@ app.service('sharedProperties', function() {
   var props;
   props = {
     route: {
+      fwy: 'rest',
       start: 0,
       end: 0,
-      type: 'fasttrak',
+      type: 'fastrak',
       axles: 2
     },
     mapObj: {},

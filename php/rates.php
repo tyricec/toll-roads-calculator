@@ -50,7 +50,7 @@ switch($params['method']) {
 		//clean type value
 		switch($params['type']) {
 			
-			case 'fasttrak':
+			case 'fastrak':
 			$result['payment'] = 'FastTrak';
 			$compare_type = 'onetime';
 			break;
@@ -67,7 +67,7 @@ switch($params['method']) {
 			
 		}
 		
-		//request initial rates
+		//request rates for selected type
 		$result['rates'] = $rates->getRates($result['startid'],$result['endid'],intval($params['axles']),$params['type']);
 		
 		//request price adjustments if relevant
@@ -75,19 +75,22 @@ switch($params['method']) {
 			$result['rates'] = $rates->getAdjustments($result['rates']);
 		endif;
 		
+		//clean rates output
 		$result['rates'] = $rates->getOutput($result['rates']);
 		
 		//request fastrak savings
-		$result['fastrak_savings'] = $rates->getRates($result['startid'],$result['endid'],intval($params['axles']),$compare_type);
-		
-		//request price adjustments if relevant
-		if(strlen($result['fastrak_savings']['rate_extra'])):
-			$result['fastrak_savings'] = $rates->getAdjustments($result['fastrak_savings']);
-		endif;
-		
-		$result['fastrak_savings'] = $rates->getOutput($result['fastrak_savings']);
+		$result['savings'] = $rates->getRates($result['startid'],$result['endid'],intval($params['axles']),$compare_type);
 
+		//calculate savings
+		$result['savings'] = $rates->getSavings(
+			array(
+			$result['rates']['off_peak'],
+			$result['savings']['off_peak']
+			)
+		);
+		
 	break;
+
 }
 
 echo json_encode($result);
