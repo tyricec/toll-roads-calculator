@@ -10,6 +10,10 @@ class Marker
     else
       @markerType = "Toll Plaza:"    
     @glatlng = { lat: @latlng.latitude, lng: @latlng.longitude }
+    @maplatlng = new google.maps.LatLng(@glatlng.lat, @glatlng.lng)
+    @markerOptions = {
+      'optimized': true
+    }
     unless @type is "plaza"
       @status = "inactive"
       @icon = "states/inactive.png"
@@ -19,4 +23,5 @@ class Marker
       @icon = "states/plaza.png"
       @prevIcon = "states/plaza.png"
     @showWindow = false
-    @refresh = true
+    if @point_type isnt "exit" then @showStartBtn = true else @showStartBtn = false
+    if @point_type isnt "entry" then @showEndBtn = true else @showEndBtn = false

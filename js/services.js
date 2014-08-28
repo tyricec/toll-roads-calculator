@@ -3,47 +3,68 @@ var app,
 
 app = angular.module('services', []);
 
-app.service('sharedProperties', function() {
-  var props;
-  props = {
-    route: {
-      fwy: 'rest',
-      start: 0,
-      end: 0,
-      type: 'fastrak',
-      axles: 2
-    },
-    mapObj: {},
-    points: [],
-    plazas: [],
-    panorama: {},
-    displayPoints: [],
-    showStartBtn: false,
-    showEndBtn: false
-  };
-  return {
-    Properties: function() {
-      return props;
-    },
-    setStart: function(val) {
-      return props.route.start = val;
-    },
-    setEnd: function(val) {
-      return props.route.end = val;
-    },
-    setPoints: function(val) {
-      return props.points = val;
-    },
-    setPlazas: function(val) {
-      return props.plazas = val;
-    },
-    setPanorama: function() {
-      var panoEl;
-      panoEl = document.getElementById('pano');
-      return props.panorama = new google.maps.StreetViewPanorama(panoEl);
-    }
-  };
-});
+app.service('sharedProperties', [
+  'markerService', function(markerService) {
+    var props;
+    props = {
+      route: {
+        fwy: '',
+        start: 0,
+        end: 0,
+        type: 'fastrak',
+        axles: 2
+      },
+      mapControl: {},
+      mapObj: {},
+      points: [],
+      plazas: [],
+      panorama: {},
+      displayPoints: [],
+      fitBounds: function() {
+        var bounds;
+        if (this.points == null) {
+          return console.log(false);
+        }
+        bounds = new google.maps.LatLngBounds();
+        this.points.forEach(function(point) {
+          if (!isNaN(point.latlng.latitude) && !isNaN(point.latlng.longitude)) {
+            return bounds.extend(point.maplatlng);
+          }
+        });
+        if (this.mapControl.getGMap != null) {
+          return this.mapControl.getGMap().fitBounds(bounds);
+        }
+      },
+      closeWindow: (function(scope) {
+        markerService.setMarkerDefault(scope.map.currentMarker);
+        scope.map.showWindow = false;
+        return scope.$apply();
+      })
+    };
+    return {
+      Properties: function() {
+        return props;
+      },
+      setStart: function(val) {
+        return props.route.start = val;
+      },
+      setEnd: function(val) {
+        return props.route.end = val;
+      },
+      setPoints: function(val) {
+        return props.points = val;
+      },
+      setPlazas: function(val) {
+        return props.plazas = val;
+      },
+      setPanorama: function() {
+        var panoEl;
+        panoEl = document.getElementById('pano');
+        return props.panorama = new google.maps.StreetViewPanorama(panoEl);
+      }
+    };
+  }
+]);
 
 app.service('markerService', function() {
   return {
@@ -64,7 +85,6 @@ app.service('markerService', function() {
       }
     },
     setMarkerDefault: function(marker) {
-      marker.showWindow = false;
       return marker.icon = marker.prevIcon;
     },
     applyToMarkers: function() {

@@ -1,16 +1,28 @@
 app = angular.module 'services', []
 
 # Services used by controllers
-app.service 'sharedProperties', ->
+app.service 'sharedProperties', [ 'markerService', (markerService) ->
   props = {
-    route: { fwy: 'rest', start: 0, end: 0, type: 'fastrak', axles: 2 },
+    route: { fwy: '', start: 0, end: 0, type: 'fastrak', axles: 2 },
+    mapControl: {},
     mapObj: {},
     points: [],
     plazas: [],
     panorama: {},
     displayPoints: [],                # The points allowed for user to select.
-    showStartBtn: false,
-    showEndBtn: false,
+    fitBounds: ->
+      return console.log false if not @points?
+      bounds = new google.maps.LatLngBounds()
+      @points.forEach (point) -> 
+        if not isNaN(point.latlng.latitude) and not isNaN(point.latlng.longitude)
+          bounds.extend(point.maplatlng) 
+      @mapControl.getGMap().fitBounds bounds if @mapControl.getGMap?
+    ,
+    closeWindow: (  (scope) ->
+       markerService.setMarkerDefault scope.map.currentMarker
+       scope.map.showWindow = false
+       scope.$apply()
+    )
   }
   
   return {
@@ -25,6 +37,8 @@ app.service 'sharedProperties', ->
       props.panorama = new google.maps.StreetViewPanorama(panoEl)
   }
 
+]
+
 app.service 'markerService', ->
   return {
     setMarkerStatus: (marker, status) ->
@@ -38,7 +52,6 @@ app.service 'markerService', ->
           marker.icon = "states/#{status}.png"
     ,
     setMarkerDefault: (marker) ->
-      marker.showWindow = false
       marker.icon = marker.prevIcon
     ,
     applyToMarkers: (serviceFunction, markers, fargs...) ->

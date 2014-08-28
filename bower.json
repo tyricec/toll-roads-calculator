@@ -1,0 +1,30 @@
+{
+  "name": "toll-roads-calculator",
+  "version": "0.0.0",
+  "homepage": "https://github.com/tyricec/toll-roads-calculator",
+  "authors": [
+    "Tyrice Clark <tyricec@live.com>"
+  ],
+  "description": "Interactive page for customers to find rates for toll roads in california",
+  "main": "index.html",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-ui-bootstrap": "~0.11.0",
+    "platform": "Polymer/platform#>=0.3.0 <1.0.0",
+    "core-component-page": "Polymer/core-component-page#>=0.3.0 <1.0.0",
+    "angular-mocks": "~1.2.22",
+    "angular-google-maps": "~1.1.11",
+    "jquery": "~2.1.1"
+  },
+  "resolutions": {
+    "angular-google-maps": "~1.2.1"
+  }
+}

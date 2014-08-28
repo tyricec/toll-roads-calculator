@@ -113,18 +113,18 @@
               <button ng-click="map.toggleTrafficLayer()">Traffic</button>
             </div>
   
-            <google-map control="map.streetView" center="map.center" zoom="map.zoom" 
+            <google-map control="map.local.mapControl" center="map.center" zoom="map.zoom" 
                 options="map.mapOptions" draggable="true" events="map.events"  ng-cloak>
               <layer type="TrafficLayer"  show="map.showTraffic"></layer>
-              <markers options="map.markerOptions" models="map.local.points" coords="'latlng'" click="'onClick'" icon="'icon'">
+              <markers options="'markerOptions'" models="map.local.points" coords="'latlng'" click="'onClick'" icon="'icon'">
               </markers>
               <window show="map.showWindow" closeClick="map.closeWindow()" coords="map.currentMarker.latlng" options="map.infoWindowOptions" ng-cloak>
                   <div class="info-window">
                       <p><strong>Route: </strong>{{ typeString }}<span><strong>{{ markerType }}</strong> {{ markerTitle }}</span></p>
-                      <div ng-controller="infoController" class="info-window-controls">
-                         <button ng-click="onStartClick()" ng-show="props.showStartBtn" class="btn btn-success point-control">Start Here</button>
-                         <button ng-click="onEndClick()" ng-show="props.showEndBtn" class="btn btn-danger point-control">End Here</button>
-                         <button ng-click="onStreetViewClick()" class="btn btn-info">Street View</button>
+                      <div class="info-window-controls">
+                         <button ng-click="$parent.onStartClick()" ng-show="$parent.showStartBtn" class="btn btn-success point-control">Start Here</button>
+                         <button ng-click="$parent.onEndClick()" ng-show="$parent.showEndBtn" class="btn btn-danger point-control">End Here</button>
+                         <button ng-click="$parent.onStreetViewClick()" class="btn btn-info">Street View</button>
                       </div>
                   </div>
                 </window>
@@ -132,8 +132,8 @@
                 <windows show="'showWindow'" closeClick="'close'" options="map.infoWindowOptions" ng-cloak>
                     <div class="info-window">
                       <p><strong>Route: </strong>{{ typeString }}<span><strong>{{ markerType }}</strong> {{ markerTitle }}</span></p>
-                      <div ng-controller="infoController" class="info-window-controls">
-                         <button ng-click="onStreetViewClick()" class="btn btn-info">Street View</button>
+                      <div class="info-window-controls">
+                         <button ng-click="$parent.onStreetViewClick()" class="btn btn-info">Street View</button>
                       </div>
                   </div>
                 </windows>

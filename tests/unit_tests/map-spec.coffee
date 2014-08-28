@@ -22,7 +22,6 @@ describe 'map-controller', ->
       $httpBackend.expectGET('php/routes.php?method=getRoutes').respond(200, routeObjs)
       scope = $rootScope.$new()
       mapController = $controller('mapController', {$scope: scope})
-      infoController = $controller('infoController', {$scope: scope})
       
       $httpBackend.flush()
       
@@ -68,9 +67,9 @@ describe 'map-controller', ->
       point.onClick()
       scope.$apply()
       if point.point_type isnt "exit"
-        expect(scope.props.showStartBtn).toBe(true)
+        expect(scope.showStartBtn).toBe(true)
       if point.point_type isnt "entry"
-        expect(scope.props.showEndBtn).toBe(true)
+        expect(scope.showEndBtn).toBe(true)
   )
 
   it('should have a button to switch the start and the end points', ->

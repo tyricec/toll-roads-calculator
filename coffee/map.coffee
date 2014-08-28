@@ -1,28 +1,5 @@
 app = angular.module 'mapApp', ['google-maps', 'services', 'ui.bootstrap']
 
-# InfoWindow controller
-app.controller 'infoController', ['$scope', 'sharedProperties', ($scope, sharedProperties) ->
-  
-  props = $scope.props = sharedProperties.Properties()
-
-  $scope.onStartClick = () -> 
-    marker = $scope.props.currentMarker    
-    id = marker.id
-    sharedProperties.setEnd 0 if props.route.end.id is id
-    sharedProperties.setStart(marker) 
-  
-  $scope.onEndClick = () -> 
-      marker = $scope.props.currentMarker
-      id = marker.id
-      sharedProperties.setStart 0 if props.route.start.id is id
-      sharedProperties.setEnd(marker) 
-   
-  $scope.onStreetViewClick = ->
-    currentMarker = $scope.props.currentMarker  
-    props.panorama.setPosition currentMarker.glatlng
-    $scope.$emit('street-view-clicked')
-]
-
 # Map Controller
 
 app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedProperties', 'markerService', 
@@ -47,18 +24,9 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
           element.route_type, latlng, element.route_fwy, element.route_point_type
         )
 
-        showPointAccessBtns = (point) ->
-          if point.point_type isnt "exit" 
-            $scope.map.local.showStartBtn = true 
-          else 
-            $scope.map.local.showStartBtn = false  
-          if point.point_type isnt "entry" 
-            $scope.map.local.showEndBtn = true 
-          else 
-            $scope.map.local.showEndBtn = false
-
         marker.onClick = ->
-          showPointAccessBtns(@model)
+          $scope.showStartBtn = @model.showStartBtn
+          $scope.showEndBtn = @model.showEndBtn
           $scope.map.currentMarker = @model
           if $scope.map.currentMarker.type isnt 'plaza'
             $scope.map.showWindow = true
@@ -91,7 +59,6 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
         else if marker.type is "point"
           pointsRest.push(marker)
     return do ->
-      $scope.map.local.points = []
       $scope.map.local.startPoints = startPoints
       $scope.map.local.endPoints = endPoints
       $scope.map.local.plazas = markerPlazas
@@ -103,6 +70,7 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
       $scope.map.local.endPoints73 = endPoints.filter (point) -> point.freeway is "73"
       $scope.map.local.startPointsRest = startPoints.filter (point) -> point.freeway isnt "73"
       $scope.map.local.endPointsRest = endPoints.filter (point) -> point.freeway isnt "73"
+      $scope.map.local.route.fwy = "rest"
   )
   
   $scope.map = {
@@ -111,6 +79,7 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
     'streetView': {},
     'fitMarkers': false,
     'pan': false,
+    'control': {},
     'innerElementsLoaded': false,
     'local': sharedProperties.Properties(),
     'showTraffic': false,
@@ -119,8 +88,7 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
     'currentMarker': {},
     'showWindow' : false,
     'closeWindow': ( ->
-       markerService.setMarkerDefault @currentMarker
-       $scope.$apply()
+       $scope.map.local.closeWindow($scope)
     ),
     'switchPoints': ( ->
       tempStartPoint = $scope.map.local.route.start
@@ -210,7 +178,7 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
       )
     )
 
-  $scope.$on("street-view-clicked", ->
+  handleStreetView = ->
     panoEl = angular.element("#pano")
     # Initial state of map. Needed to bring map up.
     if $scope.map.showStreetView is true and panoEl.css('z-index') is "-1"
@@ -222,7 +190,6 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
       $scope.map.showStreetView = true
       panoEl.show()
       panoEl.animate({"height": "45%"})
-  )
 
   # Used to change the options displayed for dropdown on certain condition.
   reduceDropdownOptions = (cond) ->
@@ -244,6 +211,7 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
       $scope.map.local.startDisplayOpts = $scope.map.local.startPointsRest
       $scope.map.local.endDisplayOpts = $scope.map.local.endPointsRest
       
+    $scope.map.local.fitBounds()
 
   $scope.$watchCollection 'map.local.route', (newValues, oldValues, scope) ->
     points = sharedProperties.Properties().points
@@ -264,17 +232,29 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
     
     $scope.map.local.startDisplayOpts = startPointsOpts.filter (point) -> point isnt newValues.end
     $scope.map.local.endDisplayOpts = endPointsOpts.filter (point) -> point isnt newValues.start
-    ###
-    reduceDropdownOptions( (marker) ->
-      return true if newValues.start is ""
-      if newValues.start.freeway is "73"
-        return marker.freeway is "73" 
-      else
-        return marker.freeway isnt "73"
-    ) unless newValues.start is 0
-    ###    
+
     sharedProperties.setPoints points
-    console.log newValues.start
     markerService.setMarkerStatus newValues.start, "start"
     markerService.setMarkerStatus newValues.end, "end"
+
+  $scope.onStartClick = () -> 
+    marker = $scope.map.local.currentMarker    
+    id = marker.id
+    sharedProperties.setEnd 0 if $scope.map.local.route.end.id is id
+    sharedProperties.setStart(marker)
+    $scope.map.local.fitBounds()
+    $scope.map.local.closeWindow($scope)
+  
+  $scope.onEndClick = () -> 
+    marker = $scope.map.local.currentMarker
+    id = marker.id
+    sharedProperties.setStart 0 if $scope.map.local.route.start.id is id
+    sharedProperties.setEnd(marker) 
+    $scope.map.local.fitBounds()
+    $scope.map.local.closeWindow($scope)
+   
+  $scope.onStreetViewClick = ->
+    currentMarker = $scope.map.local.currentMarker  
+    $scope.map.local.panorama.setPosition currentMarker.glatlng
+    handleStreetView()
 ]

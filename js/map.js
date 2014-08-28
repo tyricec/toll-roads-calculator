@@ -21,6 +21,10 @@ Marker = (function() {
       lat: this.latlng.latitude,
       lng: this.latlng.longitude
     };
+    this.maplatlng = new google.maps.LatLng(this.glatlng.lat, this.glatlng.lng);
+    this.markerOptions = {
+      'optimized': true
+    };
     if (this.type !== "plaza") {
       this.status = "inactive";
       this.icon = "states/inactive.png";
@@ -31,7 +35,16 @@ Marker = (function() {
       this.prevIcon = "states/plaza.png";
     }
     this.showWindow = false;
-    this.refresh = true;
+    if (this.point_type !== "exit") {
+      this.showStartBtn = true;
+    } else {
+      this.showStartBtn = false;
+    }
+    if (this.point_type !== "entry") {
+      this.showEndBtn = true;
+    } else {
+      this.showEndBtn = false;
+    }
   }
 
   return Marker;
@@ -40,40 +53,9 @@ Marker = (function() {
 
 app = angular.module('mapApp', ['google-maps', 'services', 'ui.bootstrap']);
 
-app.controller('infoController', [
-  '$scope', 'sharedProperties', function($scope, sharedProperties) {
-    var props;
-    props = $scope.props = sharedProperties.Properties();
-    $scope.onStartClick = function() {
-      var id, marker;
-      marker = $scope.props.currentMarker;
-      id = marker.id;
-      if (props.route.end.id === id) {
-        sharedProperties.setEnd(0);
-      }
-      return sharedProperties.setStart(marker);
-    };
-    $scope.onEndClick = function() {
-      var id, marker;
-      marker = $scope.props.currentMarker;
-      id = marker.id;
-      if (props.route.start.id === id) {
-        sharedProperties.setStart(0);
-      }
-      return sharedProperties.setEnd(marker);
-    };
-    return $scope.onStreetViewClick = function() {
-      var currentMarker;
-      currentMarker = $scope.props.currentMarker;
-      props.panorama.setPosition(currentMarker.glatlng);
-      return $scope.$emit('street-view-clicked');
-    };
-  }
-]);
-
 app.controller('mapController', [
   '$scope', '$http', '$compile', 'sharedProperties', 'markerService', function($scope, $http, $compile, sharedProperties, markerService) {
-    var preparePeakRates, reduceDropdownOptions;
+    var handleStreetView, preparePeakRates, reduceDropdownOptions;
     $http.get('php/routes.php?method=getRoutes').success(function(points) {
       var allPoints, endPoints, endPoints73, endPointsRest, markerPlazas, points73, pointsRest, startPointRest, startPoints, startPoints73;
       allPoints = [];
@@ -88,27 +70,16 @@ app.controller('mapController', [
       endPointsRest = [];
       points.forEach(function(element) {
         return (function() {
-          var latlng, marker, showPointAccessBtns;
+          var latlng, marker;
           latlng = {
             'latitude': parseFloat(element.route_lat),
             'longitude': parseFloat(element.route_long)
           };
           marker = new Marker(parseInt(element.route_id), element.route_name, element.route_type, latlng, element.route_fwy, element.route_point_type);
-          showPointAccessBtns = function(point) {
-            if (point.point_type !== "exit") {
-              $scope.map.local.showStartBtn = true;
-            } else {
-              $scope.map.local.showStartBtn = false;
-            }
-            if (point.point_type !== "entry") {
-              return $scope.map.local.showEndBtn = true;
-            } else {
-              return $scope.map.local.showEndBtn = false;
-            }
-          };
           marker.onClick = function() {
             var setMarkersDefault;
-            showPointAccessBtns(this.model);
+            $scope.showStartBtn = this.model.showStartBtn;
+            $scope.showEndBtn = this.model.showEndBtn;
             $scope.map.currentMarker = this.model;
             if ($scope.map.currentMarker.type !== 'plaza') {
               $scope.map.showWindow = true;
@@ -160,7 +131,6 @@ app.controller('mapController', [
         })();
       });
       return (function() {
-        $scope.map.local.points = [];
         $scope.map.local.startPoints = startPoints;
         $scope.map.local.endPoints = endPoints;
         $scope.map.local.plazas = markerPlazas;
@@ -177,9 +147,10 @@ app.controller('mapController', [
         $scope.map.local.startPointsRest = startPoints.filter(function(point) {
           return point.freeway !== "73";
         });
-        return $scope.map.local.endPointsRest = endPoints.filter(function(point) {
+        $scope.map.local.endPointsRest = endPoints.filter(function(point) {
           return point.freeway !== "73";
         });
+        return $scope.map.local.route.fwy = "rest";
       })();
     });
     $scope.map = {
@@ -191,6 +162,7 @@ app.controller('mapController', [
       'streetView': {},
       'fitMarkers': false,
       'pan': false,
+      'control': {},
       'innerElementsLoaded': false,
       'local': sharedProperties.Properties(),
       'showTraffic': false,
@@ -199,8 +171,7 @@ app.controller('mapController', [
       'currentMarker': {},
       'showWindow': false,
       'closeWindow': (function() {
-        markerService.setMarkerDefault(this.currentMarker);
-        return $scope.$apply();
+        return $scope.map.local.closeWindow($scope);
       }),
       'switchPoints': (function() {
         var tempEndPoint, tempStartPoint;
@@ -304,7 +275,7 @@ app.controller('mapController', [
         });
       });
     };
-    $scope.$on("street-view-clicked", function() {
+    handleStreetView = function() {
       var panoEl;
       panoEl = angular.element("#pano");
       if ($scope.map.showStreetView === true && panoEl.css('z-index') === "-1") {
@@ -322,7 +293,7 @@ app.controller('mapController', [
           "height": "45%"
         });
       }
-    });
+    };
     reduceDropdownOptions = function(cond) {
       var newPoints, point, points, _i, _len;
       points = $scope.map.local.endPoints;
@@ -341,14 +312,15 @@ app.controller('mapController', [
       if (newValue === '73') {
         $scope.map.local.points = $scope.map.local.points73;
         $scope.map.local.startDisplayOpts = $scope.map.local.startPoints73;
-        return $scope.map.local.endDisplayOpts = $scope.map.local.endPoints73;
+        $scope.map.local.endDisplayOpts = $scope.map.local.endPoints73;
       } else {
         $scope.map.local.points = $scope.map.local.pointsRest;
         $scope.map.local.startDisplayOpts = $scope.map.local.startPointsRest;
-        return $scope.map.local.endDisplayOpts = $scope.map.local.endPointsRest;
+        $scope.map.local.endDisplayOpts = $scope.map.local.endPointsRest;
       }
+      return $scope.map.local.fitBounds();
     });
-    return $scope.$watchCollection('map.local.route', function(newValues, oldValues, scope) {
+    $scope.$watchCollection('map.local.route', function(newValues, oldValues, scope) {
       var endPoints, endPointsOpts, points, startPoints, startPointsOpts;
       points = sharedProperties.Properties().points;
       startPoints = $scope.map.local.startPoints;
@@ -374,20 +346,37 @@ app.controller('mapController', [
       $scope.map.local.endDisplayOpts = endPointsOpts.filter(function(point) {
         return point !== newValues.start;
       });
-
-      /*
-      reduceDropdownOptions( (marker) ->
-        return true if newValues.start is ""
-        if newValues.start.freeway is "73"
-          return marker.freeway is "73" 
-        else
-          return marker.freeway isnt "73"
-      ) unless newValues.start is 0
-       */
       sharedProperties.setPoints(points);
-      console.log(newValues.start);
       markerService.setMarkerStatus(newValues.start, "start");
       return markerService.setMarkerStatus(newValues.end, "end");
     });
+    $scope.onStartClick = function() {
+      var id, marker;
+      marker = $scope.map.local.currentMarker;
+      id = marker.id;
+      if ($scope.map.local.route.end.id === id) {
+        sharedProperties.setEnd(0);
+      }
+      sharedProperties.setStart(marker);
+      $scope.map.local.fitBounds();
+      return $scope.map.local.closeWindow($scope);
+    };
+    $scope.onEndClick = function() {
+      var id, marker;
+      marker = $scope.map.local.currentMarker;
+      id = marker.id;
+      if ($scope.map.local.route.start.id === id) {
+        sharedProperties.setStart(0);
+      }
+      sharedProperties.setEnd(marker);
+      $scope.map.local.fitBounds();
+      return $scope.map.local.closeWindow($scope);
+    };
+    return $scope.onStreetViewClick = function() {
+      var currentMarker;
+      currentMarker = $scope.map.local.currentMarker;
+      $scope.map.local.panorama.setPosition(currentMarker.glatlng);
+      return handleStreetView();
+    };
   }
 ]);

@@ -8,14 +8,17 @@ angular.module("google-maps.directives.api.models.child")
                     @googleMapsHandles = []
                     @$log = Logger
                     @createGWin()
-                    # Open window on click
+
                     @markerCtrl.setClickable(true) if @markerCtrl?
 
-                    @handleClick()
                     @watchElement()
+                    @watchOptions()
                     @watchShow()
                     @watchCoords()
+                    @scope.$on "$destroy", =>
+                      @destroy()
                     @$log.info(@)
+                    #todo: watch model in here, and recreate / clean gWin on change
 
                 watchElement:=>
                     @scope.$watch =>
@@ -36,13 +39,15 @@ angular.module("google-maps.directives.api.models.child")
                             defaults = @opts
                         if @element
                           @html = if _.isObject(@element) then @element.html() else @element
-                        @opts = @createWindowOptions(@markerCtrl, @scope, @html, defaults)
+                        _opts = if @scope.options then @scope.options else defaults
+                        @opts = @createWindowOptions(@markerCtrl, @scope, @html, _opts)
 
                     if @opts? and !@gWin
                         if @opts.boxClass and (window.InfoBox && typeof window.InfoBox == 'function')
                             @gWin = new window.InfoBox(@opts)
                         else
                             @gWin = new google.maps.InfoWindow(@opts)
+                        @handleClick() if @gWin
 
                         # Set visibility of marker back to what it was before opening the window
                         @googleMapsHandles.push google.maps.event.addListener @gWin, 'closeclick', =>
@@ -85,6 +90,15 @@ angular.module("google-maps.directives.api.models.child")
                                 @opts.position = pos if @opts
                     , true)
 
+                watchOptions: ()=>
+                    scope = if @markerCtrl? then @scope.$parent else @scope
+                    scope.$watch('options', (newValue, oldValue) =>
+                        if (newValue != oldValue)
+                            @opts = newValue
+                            if @gWin?
+                                @gWin.setOptions(@opts)
+                    , true)
+
                 handleClick: (forceClick)=>
                     # Show the window and hide the marker on click
                     click = =>
@@ -121,7 +135,7 @@ angular.module("google-maps.directives.api.models.child")
                       show()
 
                 showHide: ->
-                    if @scope.show
+                    if @scope.show || !@scope.show?
                         @showWindow()
                     else
                         @hideWindow()
@@ -141,6 +155,7 @@ angular.module("google-maps.directives.api.models.child")
                     google.maps.event.removeListener h
                   @googleMapsHandles.length = 0
                   delete @gWin
+                  delete @opts
 
                 destroy: (manualOverride = false)=>
                     @remove()
