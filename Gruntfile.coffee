@@ -21,7 +21,8 @@ module.exports = (grunt) ->
           "bare": true
         },
         "files": {
-          "js/services.js": ["coffee/services.coffee"]
+          "js/services.js": ["coffee/services.coffee"],
+          "js/alert.js": ["coffee/alert.coffee"]
         }
       }
     },
@@ -105,6 +106,28 @@ module.exports = (grunt) ->
           },
         ]
       },
+      "db_with_test" : {
+        "src": "php/config.php",
+        "dest": "php/config.php",
+        "replacements": [
+          {
+            "from": /\('DB_HOST'.*(?!\))/,
+            "to": "('DB_HOST', '<%= db.remote_test.host %>');"
+          },
+          {
+            "from": /\('DB_NAME'.*(?!\))/,
+            "to": "('DB_NAME', '<%= db.remote_test.db_name %>');"
+          },
+          {
+            "from": /\('DB_USER'.*(?!\))/,
+            "to": "('DB_USER', '<%= db.remote_test.db_user %>');"
+          },
+          {
+            "from": /\('DB_PASS'.*(?!\))/,
+            "to": "('DB_PASS', '<%= db.remote_test.db_password %>');"
+          },
+        ]
+      }
     }
   })
   grunt.loadNpmTasks('grunt-text-replace')

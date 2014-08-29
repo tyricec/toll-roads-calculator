@@ -51,7 +51,7 @@ Marker = (function() {
 
 })();
 
-app = angular.module('mapApp', ['google-maps', 'services', 'ui.bootstrap']);
+app = angular.module('mapApp', ['google-maps', 'services', 'ui.bootstrap', 'Alert']);
 
 app.controller('mapController', [
   '$scope', '$http', '$compile', 'sharedProperties', 'markerService', function($scope, $http, $compile, sharedProperties, markerService) {
@@ -186,6 +186,10 @@ app.controller('mapController', [
         var tempEndPoint, tempStartPoint;
         tempStartPoint = $scope.map.local.route.start;
         tempEndPoint = $scope.map.local.route.end;
+        if (tempStartPoint.point_type === "entry" || tempEndPoint.point_type === "exit") {
+          $("#map-alert").html('These two can\'t be switched. One of them is either not an entry or not an exit.');
+          return $scope.map.local.showMapAlert = true;
+        }
         $scope.map.local.route.start = tempEndPoint;
         return $scope.map.local.route.end = tempStartPoint;
       }),

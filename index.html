@@ -112,10 +112,10 @@
             <div id="controls">
               <button ng-click="map.toggleTrafficLayer()">Traffic</button>
             </div>
-  
             <google-map control="map.local.mapControl" center="map.center" zoom="map.zoom" 
                 options="map.mapOptions" draggable="true" events="map.events"  ng-cloak>
               <layer type="TrafficLayer"  show="map.showTraffic"></layer>
+              <map-control template="alert.tpl.html" position="top-left" controller="AlertController"></map-control>
               <markers options="'markerOptions'" models="map.local.points" coords="'latlng'" click="'onClick'" icon="'icon'">
               </markers>
               <window show="map.showWindow" closeClick="map.closeWindow()" coords="map.currentMarker.latlng" options="map.infoWindowOptions" ng-cloak>
@@ -165,5 +165,6 @@
 	<script src="bower_components/angular-google-maps/dist/angular-google-maps.js"></script>
 	<script src="js/map.js"></script>
 	<script src="js/services.js"></script>
+      <script src="js/alert.js"></script>
   </body>
 </html>

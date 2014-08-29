@@ -1,4 +1,4 @@
-app = angular.module 'mapApp', ['google-maps', 'services', 'ui.bootstrap']
+app = angular.module 'mapApp', ['google-maps', 'services', 'ui.bootstrap', 'Alert']
 
 # Map Controller
 
@@ -101,6 +101,9 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
     'switchPoints': ( ->
       tempStartPoint = $scope.map.local.route.start
       tempEndPoint = $scope.map.local.route.end
+      if tempStartPoint.point_type is "entry" or tempEndPoint.point_type is "exit"
+        $("#map-alert").html('These two can\'t be switched. One of them is either not an entry or not an exit.')
+        return $scope.map.local.showMapAlert = true
       $scope.map.local.route.start = tempEndPoint
       $scope.map.local.route.end = tempStartPoint
     ),
@@ -128,7 +131,6 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
     'events': {
       # Invoked when the map is loaded
       'idle': (map) ->
-        #$scope.map.local.mapObj = map
         unless $scope.map.innerElementsLoaded
           # Add traffic layer btn to map
           addTrafficBtn = () ->
