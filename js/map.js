@@ -57,11 +57,13 @@ app.controller('mapController', [
   '$scope', '$http', '$compile', 'sharedProperties', 'markerService', function($scope, $http, $compile, sharedProperties, markerService) {
     var handleStreetView, preparePeakRates, reduceDropdownOptions;
     $http.get('php/routes.php?method=getRoutes').success(function(points) {
-      var allPoints, endPoints, endPoints73, endPointsRest, markerPlazas, points73, pointsRest, startPointRest, startPoints, startPoints73;
+      var allPoints, endPoints, endPoints73, endPointsRest, markerPlazas, markerPlazas73, markerPlazasRest, points73, pointsRest, startPointRest, startPoints, startPoints73;
       allPoints = [];
       startPoints = [];
       endPoints = [];
       markerPlazas = [];
+      markerPlazas73 = [];
+      markerPlazasRest = [];
       points73 = [];
       pointsRest = [];
       startPoints73 = [];
@@ -123,21 +125,28 @@ app.controller('mapController', [
           if (marker.type === "plaza") {
             markerPlazas.push(marker);
           }
-          if (marker.freeway === '73' && marker.type === "point") {
-            return points73.push(marker);
+          if (marker.freeway === '73') {
+            if (marker.type === "point") {
+              return points73.push(marker);
+            } else {
+              return markerPlazas73.push(marker);
+            }
           } else if (marker.type === "point") {
             return pointsRest.push(marker);
+          } else {
+            return markerPlazasRest.push(marker);
           }
         })();
       });
       return (function() {
         $scope.map.local.startPoints = startPoints;
         $scope.map.local.endPoints = endPoints;
-        $scope.map.local.plazas = markerPlazas;
         $scope.map.local.startDisplayOpts = [];
         $scope.map.local.endDisplayOpts = [];
         $scope.map.local.points73 = points73;
         $scope.map.local.pointsRest = pointsRest;
+        $scope.map.local.plazas73 = markerPlazas73;
+        $scope.map.local.plazasRest = markerPlazasRest;
         $scope.map.local.startPoints73 = startPoints.filter(function(point) {
           return point.freeway === "73";
         });
@@ -214,10 +223,6 @@ app.controller('mapController', [
         'idle': function(map) {
           var addCloseStreetBtn, addTrafficBtn, loadStreetView;
           if (!$scope.map.innerElementsLoaded) {
-            $scope.map.local.points = $scope.map.local.pointsRest;
-            $scope.map.local.startDisplayOpts = $scope.map.local.startPointsRest;
-            $scope.map.local.endDisplayOpts = $scope.map.local.endPointsRest;
-            angular.element('.infoWindow').show();
             addTrafficBtn = function() {
               var el, element;
               element = document.createElement('div');
@@ -312,10 +317,12 @@ app.controller('mapController', [
       $scope.map.local.route.end = 0;
       if (newValue === '73') {
         $scope.map.local.points = $scope.map.local.points73;
+        $scope.map.local.plazas = $scope.map.local.plazas73;
         $scope.map.local.startDisplayOpts = $scope.map.local.startPoints73;
         $scope.map.local.endDisplayOpts = $scope.map.local.endPoints73;
       } else {
         $scope.map.local.points = $scope.map.local.pointsRest;
+        $scope.map.local.plazas = $scope.map.local.plazasRest;
         $scope.map.local.startDisplayOpts = $scope.map.local.startPointsRest;
         $scope.map.local.endDisplayOpts = $scope.map.local.endPointsRest;
       }

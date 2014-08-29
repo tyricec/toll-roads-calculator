@@ -11,6 +11,8 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
     startPoints =  []
     endPoints = []
     markerPlazas = []
+    markerPlazas73 = []
+    markerPlazasRest = []
     points73 = []
     pointsRest = []
     startPoints73 = []
@@ -54,18 +56,24 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
           endPoints.push(marker)
         if marker.type is "plaza"
           markerPlazas.push(marker)
-        if marker.freeway is '73' and marker.type is "point"
-          points73.push(marker)
+        if marker.freeway is '73'
+          if marker.type is "point"
+            points73.push(marker)
+          else 
+            markerPlazas73.push(marker)
         else if marker.type is "point"
           pointsRest.push(marker)
+        else
+          markerPlazasRest.push(marker)
     return do ->
       $scope.map.local.startPoints = startPoints
       $scope.map.local.endPoints = endPoints
-      $scope.map.local.plazas = markerPlazas
       $scope.map.local.startDisplayOpts = []
       $scope.map.local.endDisplayOpts = []
       $scope.map.local.points73 = points73
       $scope.map.local.pointsRest = pointsRest
+      $scope.map.local.plazas73 = markerPlazas73
+      $scope.map.local.plazasRest = markerPlazasRest
       $scope.map.local.startPoints73 = startPoints.filter (point) -> point.freeway is "73"
       $scope.map.local.endPoints73 = endPoints.filter (point) -> point.freeway is "73"
       $scope.map.local.startPointsRest = startPoints.filter (point) -> point.freeway isnt "73"
@@ -122,11 +130,6 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
       'idle': (map) ->
         #$scope.map.local.mapObj = map
         unless $scope.map.innerElementsLoaded
-          # Add initial points, startDisplayOpts, and endDisplayOpts
-          $scope.map.local.points = $scope.map.local.pointsRest
-          $scope.map.local.startDisplayOpts = $scope.map.local.startPointsRest
-          $scope.map.local.endDisplayOpts = $scope.map.local.endPointsRest
-          angular.element('.infoWindow').show()
           # Add traffic layer btn to map
           addTrafficBtn = () ->
             element = document.createElement 'div'
@@ -205,10 +208,12 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
 
     if newValue is '73'
       $scope.map.local.points = $scope.map.local.points73
+      $scope.map.local.plazas = $scope.map.local.plazas73
       $scope.map.local.startDisplayOpts = $scope.map.local.startPoints73
       $scope.map.local.endDisplayOpts = $scope.map.local.endPoints73
     else
       $scope.map.local.points = $scope.map.local.pointsRest
+      $scope.map.local.plazas = $scope.map.local.plazasRest
       $scope.map.local.startDisplayOpts = $scope.map.local.startPointsRest
       $scope.map.local.endDisplayOpts = $scope.map.local.endPointsRest
       
