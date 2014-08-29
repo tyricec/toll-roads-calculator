@@ -199,6 +199,7 @@ app.controller('mapController', [
         'panControl': false,
         'rotateControl': false,
         'streetViewControl': false,
+        'mapTypeControl': false,
         'zoomControlOptions': {
           'position': google.maps.ControlPosition.BOTTOM_LEFT
         }
@@ -348,7 +349,12 @@ app.controller('mapController', [
       });
       sharedProperties.setPoints(points);
       markerService.setMarkerStatus(newValues.start, "start");
-      return markerService.setMarkerStatus(newValues.end, "end");
+      markerService.setMarkerStatus(newValues.end, "end");
+      if ($scope.map.local.currentMarker != null) {
+        markerService.setMarkerDefault($scope.map.local.currentMarker);
+      }
+      $scope.map.local.closeWindow($scope);
+      return $scope.map.local.fitBounds();
     });
     $scope.onStartClick = function() {
       var id, marker;

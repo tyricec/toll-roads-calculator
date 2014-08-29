@@ -21,7 +21,6 @@ app.service 'sharedProperties', [ 'markerService', (markerService) ->
     closeWindow: (  (scope) ->
        markerService.setMarkerDefault scope.map.currentMarker
        scope.map.showWindow = false
-       scope.$apply()
     )
   }
   

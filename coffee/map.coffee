@@ -106,6 +106,7 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
       'panControl': false,
       'rotateControl': false,
       'streetViewControl': false,
+      'mapTypeControl': false,
       'zoomControlOptions': {
         'position': google.maps.ControlPosition.BOTTOM_LEFT
       }
@@ -236,6 +237,10 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
     sharedProperties.setPoints points
     markerService.setMarkerStatus newValues.start, "start"
     markerService.setMarkerStatus newValues.end, "end"
+
+    markerService.setMarkerDefault $scope.map.local.currentMarker if $scope.map.local.currentMarker?
+    $scope.map.local.closeWindow($scope)
+    $scope.map.local.fitBounds()
 
   $scope.onStartClick = () -> 
     marker = $scope.map.local.currentMarker    

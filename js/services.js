@@ -37,8 +37,7 @@ app.service('sharedProperties', [
       },
       closeWindow: (function(scope) {
         markerService.setMarkerDefault(scope.map.currentMarker);
-        scope.map.showWindow = false;
-        return scope.$apply();
+        return scope.map.showWindow = false;
       })
     };
     return {
