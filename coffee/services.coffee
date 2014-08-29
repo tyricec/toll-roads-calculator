@@ -9,10 +9,9 @@ app.service 'sharedProperties', [ 'markerService', (markerService) ->
     points: [],
     plazas: [],
     panorama: {},
-    showTraffic: false,
     displayPoints: [],                # The points allowed for user to select.
     fitBounds: ->
-      return false if not @points?
+      return console.log false if not @points?
       bounds = new google.maps.LatLngBounds()
       @points.forEach (point) -> 
         if not isNaN(point.latlng.latitude) and not isNaN(point.latlng.longitude)

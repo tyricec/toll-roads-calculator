@@ -115,8 +115,7 @@
   
             <google-map control="map.local.mapControl" center="map.center" zoom="map.zoom" 
                 options="map.mapOptions" draggable="true" events="map.events"  ng-cloak>
-              <map-control template="traffic-ctrl.tpl.html" controller="mapController" position="top-right"></map-control>              
-              <layer type="TrafficLayer" show="map.local.showTraffic"></layer>
+              <layer type="TrafficLayer"  show="map.showTraffic"></layer>
               <markers options="'markerOptions'" models="map.local.points" coords="'latlng'" click="'onClick'" icon="'icon'">
               </markers>
               <window show="map.showWindow" closeClick="map.closeWindow()" coords="map.currentMarker.latlng" options="map.infoWindowOptions" ng-cloak>

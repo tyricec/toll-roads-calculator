@@ -19,12 +19,11 @@ app.service('sharedProperties', [
       points: [],
       plazas: [],
       panorama: {},
-      showTraffic: false,
       displayPoints: [],
       fitBounds: function() {
         var bounds;
         if (this.points == null) {
-          return false;
+          return console.log(false);
         }
         bounds = new google.maps.LatLngBounds();
         this.points.forEach(function(point) {
