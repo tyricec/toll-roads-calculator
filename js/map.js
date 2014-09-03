@@ -55,7 +55,7 @@ app = angular.module('mapApp', ['google-maps', 'services', 'ui.bootstrap', 'Aler
 
 app.controller('mapController', [
   '$scope', '$http', '$compile', 'sharedProperties', 'markerService', function($scope, $http, $compile, sharedProperties, markerService) {
-    var formValidated, handleStreetView, preparePeakRates, reduceDropdownOptions, showAlert;
+    var formValidated, handleStreetView, isUnknown, preparePeakRates, reduceDropdownOptions, reduceToOneTime, setAllTypes, showAlert;
     $http.get('php/routes.php?method=getRoutes').success(function(points) {
       var allPoints, endPoints, endPoints73, endPointsRest, markerPlazas, markerPlazas73, markerPlazasRest, points73, pointsRest, startPointRest, startPoints, startPoints73;
       allPoints = [];
@@ -338,6 +338,32 @@ app.controller('mapController', [
       }
       return $scope.map.local.endDisplayOpts = newPoints;
     };
+    isUnknown = function(value) {
+      var unknownRegX;
+      if (value == null) {
+        return false;
+      }
+      unknownRegX = new RegExp(/unknown/i);
+      if (unknownRegX.test(value.name)) {
+        return true;
+      }
+      return false;
+    };
+    reduceToOneTime = function() {
+      return $scope.map.local.displayTypes.forEach(function(type, index) {
+        $scope.map.local.route.type = "onetime";
+        if (type.id !== "onetime") {
+          $scope.map.local.displayTypes = [];
+          return $scope.map.local.displayTypes = $scope.map.local.onetimetype;
+        }
+      });
+    };
+    setAllTypes = function() {
+      $scope.map.local.displayTypes = [];
+      return $scope.map.local.types.forEach(function(type) {
+        return $scope.map.local.displayTypes.push(type);
+      });
+    };
     $scope.$watch('map.local.route.fwy', function(newValue, oldValue, scope) {
       $scope.map.local.route.start = null;
       $scope.map.local.route.end = null;
@@ -359,6 +385,11 @@ app.controller('mapController', [
       points = sharedProperties.Properties().points;
       startPoints = $scope.map.local.startPoints;
       endPoints = $scope.map.local.endPoints;
+      if (isUnknown(newValues.start) || isUnknown(newValues.end)) {
+        reduceToOneTime();
+      } else {
+        setAllTypes();
+      }
       if (newValues.fwy === "73" || newValues.fwy === "73") {
         startPointsOpts = $scope.map.local.startPoints73;
         endPointsOpts = $scope.map.local.endPoints73;

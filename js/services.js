@@ -19,6 +19,25 @@ app.service('sharedProperties', [
       points: [],
       plazas: [],
       panorama: {},
+      types: [
+        {
+          "id": "onetime",
+          "displayName": 'One-Time-Toll'
+        }, {
+          "id": "fastrak",
+          "displayName": 'Fastrak'
+        }, {
+          "id": 'express',
+          "displayName": "ExpressAccount"
+        }
+      ],
+      onetimetype: [
+        {
+          "id": "onetime",
+          "displayName": 'One-Time-Toll'
+        }
+      ],
+      displayTypes: [],
       showMapAlert: false,
       displayPoints: [],
       fitBounds: function() {

@@ -58,10 +58,10 @@
               <!--Pay By dropdown-->
               <div class="form-group">
                 <label for="exampleInputEmail1" class="font16" required>Pay by:</label>
-                <select class="form-control" ng-model="map.local.route.type">
-                  <option value="onetime">One-Time-Toll</option>
+                <select class="form-control" ng-model="map.local.route.type" ng-options="type.id as type.displayName for type in map.local.displayTypes">
+                  <!--<option value="onetime">One-Time-Toll</option>
                   <option value="fastrak">FasTrak</option>
-                  <option value="express">ExpressAccount</option>
+                  <option value="express">ExpressAccount</option>-->
                 </select>
               </div><!--end dropdown-->
               

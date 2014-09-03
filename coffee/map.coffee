@@ -216,6 +216,25 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
     newPoints.push point for point in points when cond(point)
     $scope.map.local.endDisplayOpts = newPoints
   
+
+  isUnknown = (value) ->
+    return false if not value?
+    unknownRegX = new RegExp(/unknown/i)
+    return true if unknownRegX.test value.name
+    return false
+
+  reduceToOneTime = ->
+    $scope.map.local.displayTypes.forEach (type, index) ->
+      $scope.map.local.route.type = "onetime"
+      if type.id isnt "onetime"
+        $scope.map.local.displayTypes = []
+        $scope.map.local.displayTypes = $scope.map.local.onetimetype
+
+  setAllTypes = ->
+    $scope.map.local.displayTypes = []
+    $scope.map.local.types.forEach (type) ->
+       $scope.map.local.displayTypes.push type
+
   $scope.$watch 'map.local.route.fwy' , (newValue,oldValue,scope) ->
     $scope.map.local.route.start = null
     $scope.map.local.route.end = null
@@ -237,6 +256,10 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
     points = sharedProperties.Properties().points
     startPoints = $scope.map.local.startPoints
     endPoints = $scope.map.local.endPoints
+
+    # Check if start and end are unknown. Switch pay by value to only have one time
+    if isUnknown(newValues.start) or isUnknown(newValues.end) then reduceToOneTime() else setAllTypes()
+
     #populate dd list depending in fwy
     if newValues.fwy == "73" or newValues.fwy == "73"
       startPointsOpts = $scope.map.local.startPoints73
