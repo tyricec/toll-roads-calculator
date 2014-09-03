@@ -102,8 +102,7 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
       tempStartPoint = $scope.map.local.route.start
       tempEndPoint = $scope.map.local.route.end
       if tempStartPoint.point_type is "entry" or tempEndPoint.point_type is "exit"
-        $("#map-alert").html('These two can\'t be switched. One of them is either not an entry or not an exit.')
-        return $scope.map.local.showMapAlert = true
+        return showAlert 'These points cannot be switched. One is either entry or exit only.'
       $scope.map.local.route.start = tempEndPoint
       $scope.map.local.route.end = tempStartPoint
     ),
@@ -140,7 +139,7 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
           
             # Need to invoke compile for click event to be registered to button
             $compile(el)($scope)
-            map.controls[google.maps.ControlPosition.TOP_RIGHT].push el[0]
+            map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push el[0]
 
           addCloseStreetBtn = (callback) ->
             element = document.createElement 'div'
@@ -161,6 +160,10 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
     }
 
   }
+
+  showAlert = (message) ->
+    $("#map-alert").html(message)
+    $scope.map.local.showMapAlert = true
   
   preparePeakRates = (peakrates) ->
     peakrates.forEach( (rate, index) ->
@@ -168,8 +171,16 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
     )
 
   
+  formValidated = ->
+    return false if not $scope.map.local.route.start?
+    return false if not $scope.map.local.route.end?
+    return false if not $scope.map.local.route.type?
+    return false if not $scope.map.local.route.axles?
+    return true
+  
   # Form submit function
   $scope.getRate = ->
+    return showAlert 'Need to enter start or end to get a rate.' if not formValidated()
     rateEl = angular.element("#calc-results")
     rateEl.slideUp(200, -> 
       startId = $scope.map.local.route.start.id
@@ -180,9 +191,10 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
         rateObj = $scope.map.local.route.rateObj = resp
         if rateObj.rates?
           preparePeakRates(rateObj.rates.peak) if rateObj.rates.peak?	
-        rateEl.slideDown()		
+        rateEl.slideDown()
       )
     )
+    return true
 
   handleStreetView = ->
     panoEl = angular.element("#pano")
@@ -205,8 +217,8 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
     $scope.map.local.endDisplayOpts = newPoints
   
   $scope.$watch 'map.local.route.fwy' , (newValue,oldValue,scope) ->
-    $scope.map.local.route.start = 0
-    $scope.map.local.route.end = 0
+    $scope.map.local.route.start = null
+    $scope.map.local.route.end = null
 
     if newValue is '73'
       $scope.map.local.points = $scope.map.local.points73
@@ -252,7 +264,8 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
   $scope.onStartClick = () -> 
     marker = $scope.map.local.currentMarker    
     id = marker.id
-    sharedProperties.setEnd 0 if $scope.map.local.route.end.id is id
+    if $scope.map.local.route.end?
+      sharedProperties.setEnd null if $scope.map.local.route.end.id is id
     sharedProperties.setStart(marker)
     $scope.map.local.fitBounds()
     $scope.map.local.closeWindow($scope)
@@ -260,7 +273,8 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
   $scope.onEndClick = () -> 
     marker = $scope.map.local.currentMarker
     id = marker.id
-    sharedProperties.setStart 0 if $scope.map.local.route.start.id is id
+    if $scope.map.local.route.start?
+      sharedProperties.setStart null if $scope.map.local.route.start.id is id
     sharedProperties.setEnd(marker) 
     $scope.map.local.fitBounds()
     $scope.map.local.closeWindow($scope)

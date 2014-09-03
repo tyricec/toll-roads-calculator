@@ -55,7 +55,7 @@ app = angular.module('mapApp', ['google-maps', 'services', 'ui.bootstrap', 'Aler
 
 app.controller('mapController', [
   '$scope', '$http', '$compile', 'sharedProperties', 'markerService', function($scope, $http, $compile, sharedProperties, markerService) {
-    var handleStreetView, preparePeakRates, reduceDropdownOptions;
+    var formValidated, handleStreetView, preparePeakRates, reduceDropdownOptions, showAlert;
     $http.get('php/routes.php?method=getRoutes').success(function(points) {
       var allPoints, endPoints, endPoints73, endPointsRest, markerPlazas, markerPlazas73, markerPlazasRest, points73, pointsRest, startPointRest, startPoints, startPoints73;
       allPoints = [];
@@ -187,8 +187,7 @@ app.controller('mapController', [
         tempStartPoint = $scope.map.local.route.start;
         tempEndPoint = $scope.map.local.route.end;
         if (tempStartPoint.point_type === "entry" || tempEndPoint.point_type === "exit") {
-          $("#map-alert").html('These two can\'t be switched. One of them is either not an entry or not an exit.');
-          return $scope.map.local.showMapAlert = true;
+          return showAlert('These points cannot be switched. One is either entry or exit only.');
         }
         $scope.map.local.route.start = tempEndPoint;
         return $scope.map.local.route.end = tempStartPoint;
@@ -233,7 +232,7 @@ app.controller('mapController', [
               el = angular.element(element);
               el.append('<button ng-click="map.toggleTrafficLayer()">Traffic</button>');
               $compile(el)($scope);
-              return map.controls[google.maps.ControlPosition.TOP_RIGHT].push(el[0]);
+              return map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push(el[0]);
             };
             addCloseStreetBtn = function(callback) {
               var el, element, panorama;
@@ -259,15 +258,37 @@ app.controller('mapController', [
         }
       }
     };
+    showAlert = function(message) {
+      $("#map-alert").html(message);
+      return $scope.map.local.showMapAlert = true;
+    };
     preparePeakRates = function(peakrates) {
       return peakrates.forEach(function(rate, index) {
         return rate.descriptionId = Array(index + 2).join("*");
       });
     };
+    formValidated = function() {
+      if ($scope.map.local.route.start == null) {
+        return false;
+      }
+      if ($scope.map.local.route.end == null) {
+        return false;
+      }
+      if ($scope.map.local.route.type == null) {
+        return false;
+      }
+      if ($scope.map.local.route.axles == null) {
+        return false;
+      }
+      return true;
+    };
     $scope.getRate = function() {
       var rateEl;
+      if (!formValidated()) {
+        return showAlert('Need to enter start or end to get a rate.');
+      }
       rateEl = angular.element("#calc-results");
-      return rateEl.slideUp(200, function() {
+      rateEl.slideUp(200, function() {
         var axles, endId, startId, type;
         startId = $scope.map.local.route.start.id;
         endId = $scope.map.local.route.end.id;
@@ -284,6 +305,7 @@ app.controller('mapController', [
           return rateEl.slideDown();
         });
       });
+      return true;
     };
     handleStreetView = function() {
       var panoEl;
@@ -317,8 +339,8 @@ app.controller('mapController', [
       return $scope.map.local.endDisplayOpts = newPoints;
     };
     $scope.$watch('map.local.route.fwy', function(newValue, oldValue, scope) {
-      $scope.map.local.route.start = 0;
-      $scope.map.local.route.end = 0;
+      $scope.map.local.route.start = null;
+      $scope.map.local.route.end = null;
       if (newValue === '73') {
         $scope.map.local.points = $scope.map.local.points73;
         $scope.map.local.plazas = $scope.map.local.plazas73;
@@ -371,8 +393,10 @@ app.controller('mapController', [
       var id, marker;
       marker = $scope.map.local.currentMarker;
       id = marker.id;
-      if ($scope.map.local.route.end.id === id) {
-        sharedProperties.setEnd(0);
+      if ($scope.map.local.route.end != null) {
+        if ($scope.map.local.route.end.id === id) {
+          sharedProperties.setEnd(null);
+        }
       }
       sharedProperties.setStart(marker);
       $scope.map.local.fitBounds();
@@ -382,8 +406,10 @@ app.controller('mapController', [
       var id, marker;
       marker = $scope.map.local.currentMarker;
       id = marker.id;
-      if ($scope.map.local.route.start.id === id) {
-        sharedProperties.setStart(0);
+      if ($scope.map.local.route.start != null) {
+        if ($scope.map.local.route.start.id === id) {
+          sharedProperties.setStart(null);
+        }
       }
       sharedProperties.setEnd(marker);
       $scope.map.local.fitBounds();

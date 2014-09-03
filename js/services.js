@@ -9,8 +9,8 @@ app.service('sharedProperties', [
     props = {
       route: {
         fwy: '',
-        start: 0,
-        end: 0,
+        start: null,
+        end: null,
         type: 'fastrak',
         axles: 2
       },
