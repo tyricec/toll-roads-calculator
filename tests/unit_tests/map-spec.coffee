@@ -81,6 +81,15 @@ describe 'map-controller', ->
     expect(scope.map.local.route.end).toBe(points[0])
   )
 
+  it('should not switch points if not possible', ->
+    scope.map.local.route.start = routeObjs[1]
+    scope.map.switchPoints()
+    expect(scope.map.local.route.start).toBe(routeObjs[1])
+    #scope.map.local.route.start = null
+    #scope.map.local.route.end = routeObjs[1]
+    #expect(scope.map.local.route.end).toBe(routeObjs[1])
+  )
+
   describe 'the start and end points', ->
 
     afterEach -> scope.map.local.route.start = 0; scope.map.local.route.end = 0

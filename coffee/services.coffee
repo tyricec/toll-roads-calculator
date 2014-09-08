@@ -25,8 +25,11 @@ app.service 'sharedProperties', [ 'markerService', (markerService) ->
       @mapControl.getGMap().fitBounds bounds if @mapControl.getGMap?
     ,
     closeWindow: (  (scope) ->
-       markerService.setMarkerDefault scope.map.currentMarker
-       scope.map.showWindow = false
+       if scope.map.showWindow or scope.map.showPlazaWindow
+         markerService.setMarkerDefault scope.map.currentMarker
+         scope.map.showWindow = false
+         scope.map.showPlazaWindow = false
+         scope.$apply()
     )
   }
   

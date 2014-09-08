@@ -59,7 +59,7 @@ app = angular.module('mapApp', ['google-maps', 'services', 'ui.bootstrap', 'Aler
 
 app.controller('mapController', [
   '$scope', '$http', '$compile', 'sharedProperties', 'markerService', function($scope, $http, $compile, sharedProperties, markerService) {
-    var formValidated, handleStreetView, isUnknown, preparePeakRates, reduceDropdownOptions, reduceToOneTime, setAllTypes, showAlert;
+    var formValidated, handleStreetView, isUnknown, preparePeakRates, reduceDropdownOptions, reduceToOneTime, setAllTypes, showAlert, switchablePoint;
     $http.get('php/routes.php?method=getRoutes').success(function(points) {
       var allPoints, endPoints, endPoints73, endPointsRest, markerPlazas, markerPlazas73, markerPlazasRest, points73, pointsRest, startPointRest, startPoints, startPoints73;
       allPoints = [];
@@ -87,10 +87,12 @@ app.controller('mapController', [
             $scope.showStartBtn = this.model.showStartBtn;
             $scope.showEndBtn = this.model.showEndBtn;
             $scope.map.currentMarker = this.model;
-            if ($scope.map.currentMarker.type !== 'plaza') {
+            if (this.model.type === "point") {
               $scope.map.showWindow = true;
+              $scope.map.showPlazaWindow = false;
             } else {
               $scope.map.showWindow = false;
+              $scope.map.showPlazaWindow = true;
             }
             setMarkersDefault = function(cb) {
               $scope.map.local.points.forEach(function(element) {
@@ -166,6 +168,12 @@ app.controller('mapController', [
         return $scope.map.local.route.fwy = "rest";
       })();
     });
+    switchablePoint = function(point) {
+      if ((point != null) || point.point_type === "entry/exit") {
+        return true;
+      }
+      return false;
+    };
     $scope.map = {
       'center': {
         'latitude': 33.689388,
@@ -183,6 +191,9 @@ app.controller('mapController', [
       'showStreetView': true,
       'currentMarker': {},
       'showWindow': false,
+      'showPlazaWindow': false,
+      'showFwyRest': true,
+      'showFwy73': false,
       'closeWindow': (function() {
         return $scope.map.local.closeWindow($scope);
       }),
@@ -190,7 +201,7 @@ app.controller('mapController', [
         var tempEndPoint, tempStartPoint;
         tempStartPoint = $scope.map.local.route.start;
         tempEndPoint = $scope.map.local.route.end;
-        if (tempStartPoint.point_type === "entry" || tempEndPoint.point_type === "exit") {
+        if (!switchablePoint(tempStartPoint || !switchablePoint(tempEndPoint))) {
           return showAlert('Reverse Trip cannot be completed. One of your selections is a one-way access point and cannot be swtiched.');
         }
         $scope.map.local.route.start = tempEndPoint;
@@ -227,6 +238,12 @@ app.controller('mapController', [
       },
       'markerOptions': {
         'visible': true
+      },
+      'restLayerOptions': {
+        'url': 'http://ditisfl.org/toll-roads-calculator/kml/TCA_Toll_Roads_090514_Projec-133_241_261.kml'
+      },
+      'layer73Options': {
+        'url': 'http://ditisfl.org/toll-roads-calculator/kml/TCA_Toll_Roads_090514_Projec-73.kml'
       },
       'events': {
         'idle': function(map) {
@@ -266,7 +283,8 @@ app.controller('mapController', [
     };
     showAlert = function(message) {
       $("#map-alert").html(message);
-      return $scope.map.local.showMapAlert = true;
+      $scope.map.local.showMapAlert = true;
+      return false;
     };
     preparePeakRates = function(peakrates) {
       return peakrates.forEach(function(rate, index) {
@@ -327,10 +345,11 @@ app.controller('mapController', [
       if ($scope.map.showStreetView === false) {
         $scope.map.showStreetView = true;
         panoEl.show();
-        return panoEl.animate({
+        panoEl.animate({
           "height": "45%"
         });
       }
+      return true;
     };
     reduceDropdownOptions = function(cond) {
       var newPoints, point, points, _i, _len;
@@ -378,11 +397,15 @@ app.controller('mapController', [
         $scope.map.local.plazas = $scope.map.local.plazas73;
         $scope.map.local.startDisplayOpts = $scope.map.local.startPoints73;
         $scope.map.local.endDisplayOpts = $scope.map.local.endPoints73;
+        $scope.map.showFwy73 = true;
+        $scope.map.showFwyRest = false;
       } else {
         $scope.map.local.points = $scope.map.local.pointsRest;
         $scope.map.local.plazas = $scope.map.local.plazasRest;
         $scope.map.local.startDisplayOpts = $scope.map.local.startPointsRest;
         $scope.map.local.endDisplayOpts = $scope.map.local.endPointsRest;
+        $scope.map.showFwy73 = false;
+        $scope.map.showFwyRest = true;
       }
       return $scope.map.local.fitBounds();
     });

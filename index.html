@@ -115,7 +115,7 @@
               <h4><strong>You Can Save:</strong></h4>
               <div><strong>{{map.local.route.rateObj.savings.single | currency}}</strong> with FasTrak (Peak Hours)</div>
               <div>(That's about {{map.local.route.rateObj.savings.total | currency}} a month!)</div>
-              <div class="text-center"><button type="button" class="btn btn-default btn-custom btn-purple">Sign Up for FasTrak</button></div>
+              <div class="text-center"><a href="" class="btn btn-default btn-custom btn-purple">Sign Up for FasTrak</a></div>
             </div>
           </div>
           <div id="map-container" class="col-md-9">
@@ -126,9 +126,10 @@
             <google-map control="map.local.mapControl" center="map.center" zoom="map.zoom" 
                 options="map.mapOptions" draggable="true" events="map.events"  ng-cloak>
               <layer type="TrafficLayer"  show="map.showTraffic"></layer>
+              <layer type="KmlLayer" options="map.layer73Options" show="map.showFwy73"></layer>
+              <layer type="KmlLayer" options="map.restLayerOptions" show="map.showFwyRest"></layer>
               <map-control template="alert.tpl.html" position="top-left" controller="AlertController"></map-control>
-              <markers options="'markerOptions'" models="map.local.points" coords="'latlng'" click="'onClick'" icon="'icon'">
-              </markers>
+              <markers options="'markerOptions'" models="map.local.points" coords="'latlng'" click="'onClick'" icon="'icon'"></markers>
               <window show="map.showWindow" closeClick="map.closeWindow()" coords="map.currentMarker.latlng" options="map.infoWindowOptions" ng-cloak>
                   <div class="info-window">
                       <p><strong>Route: </strong>{{ typeString }}<span><strong>{{ markerType }}</strong> {{ markerTitle }}</span></p>
@@ -138,17 +139,16 @@
                          <button ng-click="$parent.onStreetViewClick()" class="btn btn-info">Street View</button>
                       </div>
                   </div>
-                </window>
-              <markers models="map.local.plazas" coords="'latlng'" click="'onClick'" icon="'icon'" >
-                <windows show="'showWindow'" closeClick="'close'" options="map.infoWindowOptions" ng-cloak>
-                    <div class="info-window">
-                      <p><strong>Route: </strong>{{ typeString }}<span><strong>{{ markerType }}</strong> {{ markerTitle }}</span></p>
-                      <div class="info-window-controls">
-                         <button ng-click="$parent.onStreetViewClick()" class="btn btn-info">Street View</button>
-                      </div>
+              </window>
+              <markers models="map.local.plazas" coords="'latlng'" click="'onClick'" icon="'icon'"></markers>
+              <window show="map.showPlazaWindow" closeClick="map.closeWindow()" coords="map.currentMarker.latlng" options="map.infoWindowOptions" ng-cloak>
+                <div class="info-window">
+                  <p><strong>Route: </strong>{{ typeString }}<span><strong>{{ markerType }}</strong> {{ markerTitle }}</span></p>
+                  <div class="info-window-controls">
+                    <button ng-click="$parent.onStreetViewClick()" class="btn btn-info">Street View</button>
                   </div>
-                </windows>
-              </markers>
+                </div>
+              </window>
             </google-map>
             
             <div id="pano" ng-show="map.showStreetView" class=""></div>

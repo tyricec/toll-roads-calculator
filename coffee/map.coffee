@@ -30,10 +30,12 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
           $scope.showStartBtn = @model.showStartBtn
           $scope.showEndBtn = @model.showEndBtn
           $scope.map.currentMarker = @model
-          if $scope.map.currentMarker.type isnt 'plaza'
+          if @model.type is "point" 
             $scope.map.showWindow = true
-          else
+            $scope.map.showPlazaWindow = false
+          else 
             $scope.map.showWindow = false
+            $scope.map.showPlazaWindow = true
           # Set all markers to their default just in case one that was focused wasn't closed
           setMarkersDefault = (cb) -> 
             $scope.map.local.points.forEach((element) -> do -> markerService.setMarkerDefault element)
@@ -80,6 +82,10 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
       $scope.map.local.endPointsRest = endPoints.filter (point) -> point.freeway isnt "73"
       $scope.map.local.route.fwy = "rest"
   )
+
+  switchablePoint = (point) ->
+    return true if point? or point.point_type is "entry/exit"
+    return false
   
   $scope.map = {
     'center': {'latitude': 33.689388, 'longitude': -117.731235},
@@ -95,13 +101,16 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
     'showStreetView': true,
     'currentMarker': {},
     'showWindow' : false,
+    'showPlazaWindow': false,
+    'showFwyRest': true,
+    'showFwy73': false,
     'closeWindow': ( ->
        $scope.map.local.closeWindow($scope)
     ),
     'switchPoints': ( ->
       tempStartPoint = $scope.map.local.route.start
       tempEndPoint = $scope.map.local.route.end
-      if tempStartPoint.point_type is "entry" or tempEndPoint.point_type is "exit"
+      if not switchablePoint tempStartPoint or not switchablePoint tempEndPoint
         return showAlert 'Reverse Trip cannot be completed. One of your selections is a one-way access point and cannot be swtiched.'
       $scope.map.local.route.start = tempEndPoint
       $scope.map.local.route.end = tempStartPoint
@@ -128,7 +137,13 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
     },
     'markerOptions' :{
       'visible': true
-    }
+    },
+    'restLayerOptions': {
+      'url': 'http://ditisfl.org/toll-roads-calculator/kml/TCA_Toll_Roads_090514_Projec-133_241_261.kml'
+    },
+    'layer73Options': {
+      'url': 'http://ditisfl.org/toll-roads-calculator/kml/TCA_Toll_Roads_090514_Projec-73.kml'
+    },
     'events': {
       # Invoked when the map is loaded
       'idle': (map) ->
@@ -166,6 +181,7 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
   showAlert = (message) ->
     $("#map-alert").html(message)
     $scope.map.local.showMapAlert = true
+    return false
   
   preparePeakRates = (peakrates) ->
     peakrates.forEach( (rate, index) ->
@@ -210,6 +226,7 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
       $scope.map.showStreetView = true
       panoEl.show()
       panoEl.animate({"height": "45%"})
+    return true
 
   # Used to change the options displayed for dropdown on certain condition.
   reduceDropdownOptions = (cond) ->
@@ -246,11 +263,15 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
       $scope.map.local.plazas = $scope.map.local.plazas73
       $scope.map.local.startDisplayOpts = $scope.map.local.startPoints73
       $scope.map.local.endDisplayOpts = $scope.map.local.endPoints73
+      $scope.map.showFwy73 = true
+      $scope.map.showFwyRest = false
     else
       $scope.map.local.points = $scope.map.local.pointsRest
       $scope.map.local.plazas = $scope.map.local.plazasRest
       $scope.map.local.startDisplayOpts = $scope.map.local.startPointsRest
       $scope.map.local.endDisplayOpts = $scope.map.local.endPointsRest
+      $scope.map.showFwy73 = false
+      $scope.map.showFwyRest = true
       
     $scope.map.local.fitBounds()
 
