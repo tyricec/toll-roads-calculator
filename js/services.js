@@ -56,8 +56,12 @@ app.service('sharedProperties', [
         }
       },
       closeWindow: (function(scope) {
-        markerService.setMarkerDefault(scope.map.currentMarker);
-        return scope.map.showWindow = false;
+        if (scope.map.showWindow || scope.map.showPlazaWindow) {
+          markerService.setMarkerDefault(scope.map.currentMarker);
+          scope.map.showWindow = false;
+          scope.map.showPlazaWindow = false;
+          return scope.$apply();
+        }
       })
     };
     return {

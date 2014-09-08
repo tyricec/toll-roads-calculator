@@ -55,7 +55,7 @@ app = angular.module('mapApp', ['google-maps', 'services', 'ui.bootstrap', 'Aler
 
 app.controller('mapController', [
   '$scope', '$http', '$compile', 'sharedProperties', 'markerService', function($scope, $http, $compile, sharedProperties, markerService) {
-    var formValidated, handleStreetView, isUnknown, preparePeakRates, reduceDropdownOptions, reduceToOneTime, setAllTypes, showAlert;
+    var formValidated, handleStreetView, isUnknown, preparePeakRates, reduceDropdownOptions, reduceToOneTime, setAllTypes, showAlert, switchablePoint;
     $http.get('php/routes.php?method=getRoutes').success(function(points) {
       var allPoints, endPoints, endPoints73, endPointsRest, markerPlazas, markerPlazas73, markerPlazasRest, points73, pointsRest, startPointRest, startPoints, startPoints73;
       allPoints = [];
@@ -83,10 +83,12 @@ app.controller('mapController', [
             $scope.showStartBtn = this.model.showStartBtn;
             $scope.showEndBtn = this.model.showEndBtn;
             $scope.map.currentMarker = this.model;
-            if ($scope.map.currentMarker.type !== 'plaza') {
+            if (this.model.type === "point") {
               $scope.map.showWindow = true;
+              $scope.map.showPlazaWindow = false;
             } else {
               $scope.map.showWindow = false;
+              $scope.map.showPlazaWindow = true;
             }
             setMarkersDefault = function(cb) {
               $scope.map.local.points.forEach(function(element) {
@@ -162,6 +164,12 @@ app.controller('mapController', [
         return $scope.map.local.route.fwy = "rest";
       })();
     });
+    switchablePoint = function(point) {
+      if ((point != null) || point.point_type === "entry/exit") {
+        return true;
+      }
+      return false;
+    };
     $scope.map = {
       'center': {
         'latitude': 33.689388,
@@ -179,6 +187,8 @@ app.controller('mapController', [
       'showStreetView': true,
       'currentMarker': {},
       'showWindow': false,
+      'showPlazaWindow': false,
+      'showKml': true,
       'closeWindow': (function() {
         return $scope.map.local.closeWindow($scope);
       }),
@@ -186,7 +196,7 @@ app.controller('mapController', [
         var tempEndPoint, tempStartPoint;
         tempStartPoint = $scope.map.local.route.start;
         tempEndPoint = $scope.map.local.route.end;
-        if (tempStartPoint.point_type === "entry" || tempEndPoint.point_type === "exit") {
+        if (!switchablePoint(tempStartPoint || !switchablePoint(tempEndPoint))) {
           return showAlert('These points cannot be switched. One is either entry or exit only.');
         }
         $scope.map.local.route.start = tempEndPoint;
@@ -221,6 +231,9 @@ app.controller('mapController', [
       },
       'markerOptions': {
         'visible': true
+      },
+      'kmlOptions': {
+        'url': 'http://ditisfl.org/toll-roads-calculator/kml/TCA_Toll_Roads_090514_Projec.kml'
       },
       'events': {
         'idle': function(map) {
@@ -260,7 +273,8 @@ app.controller('mapController', [
     };
     showAlert = function(message) {
       $("#map-alert").html(message);
-      return $scope.map.local.showMapAlert = true;
+      $scope.map.local.showMapAlert = true;
+      return false;
     };
     preparePeakRates = function(peakrates) {
       return peakrates.forEach(function(rate, index) {
@@ -321,10 +335,11 @@ app.controller('mapController', [
       if ($scope.map.showStreetView === false) {
         $scope.map.showStreetView = true;
         panoEl.show();
-        return panoEl.animate({
+        panoEl.animate({
           "height": "45%"
         });
       }
+      return true;
     };
     reduceDropdownOptions = function(cond) {
       var newPoints, point, points, _i, _len;
