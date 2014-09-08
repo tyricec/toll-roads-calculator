@@ -102,7 +102,8 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
     'currentMarker': {},
     'showWindow' : false,
     'showPlazaWindow': false,
-    'showKml': true,
+    'showFwyRest': true,
+    'showFwy73': false,
     'closeWindow': ( ->
        $scope.map.local.closeWindow($scope)
     ),
@@ -135,8 +136,11 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
     'markerOptions' :{
       'visible': true
     },
-    'kmlOptions': {
-      'url': 'http://ditisfl.org/toll-roads-calculator/kml/TCA_Toll_Roads_090514_Projec.kml'
+    'restLayerOptions': {
+      'url': 'http://ditisfl.org/toll-roads-calculator/kml/TCA_Toll_Roads_090514_Projec-133_241_261.kml'
+    },
+    'layer73Options': {
+      'url': 'http://ditisfl.org/toll-roads-calculator/kml/TCA_Toll_Roads_090514_Projec-73.kml'
     },
     'events': {
       # Invoked when the map is loaded
@@ -257,11 +261,15 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
       $scope.map.local.plazas = $scope.map.local.plazas73
       $scope.map.local.startDisplayOpts = $scope.map.local.startPoints73
       $scope.map.local.endDisplayOpts = $scope.map.local.endPoints73
+      $scope.map.showFwy73 = true
+      $scope.map.showFwyRest = false
     else
       $scope.map.local.points = $scope.map.local.pointsRest
       $scope.map.local.plazas = $scope.map.local.plazasRest
       $scope.map.local.startDisplayOpts = $scope.map.local.startPointsRest
       $scope.map.local.endDisplayOpts = $scope.map.local.endPointsRest
+      $scope.map.showFwy73 = false
+      $scope.map.showFwyRest = true
       
     $scope.map.local.fitBounds()
 
