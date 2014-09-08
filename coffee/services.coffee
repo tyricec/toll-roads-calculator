@@ -3,12 +3,17 @@ app = angular.module 'services', []
 # Services used by controllers
 app.service 'sharedProperties', [ 'markerService', (markerService) ->
   props = {
-    route: { fwy: '', start: 0, end: 0, type: 'onetime', axles: 2 },
+    route: { fwy: '', start: null, end: null, type: 'onetime', axles: 2 },
     mapControl: {},
     mapObj: {},
     points: [],
     plazas: [],
     panorama: {},
+    types: [{ "id": "onetime", "displayName": 'One-Time-Toll'}, { "id": "fastrak", "displayName": 'Fastrak'}, 
+      {"id": 'express', "displayName": "ExpressAccount"}
+    ],
+    onetimetype:  [{ "id": "onetime", "displayName": 'One-Time-Toll'}], 
+    displayTypes: [],
     showMapAlert: false,
     displayPoints: [],                # The points allowed for user to select.
     fitBounds: ->

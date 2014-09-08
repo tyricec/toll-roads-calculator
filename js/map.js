@@ -59,7 +59,7 @@ app = angular.module('mapApp', ['google-maps', 'services', 'ui.bootstrap', 'Aler
 
 app.controller('mapController', [
   '$scope', '$http', '$compile', 'sharedProperties', 'markerService', function($scope, $http, $compile, sharedProperties, markerService) {
-    var handleStreetView, preparePeakRates, reduceDropdownOptions;
+    var formValidated, handleStreetView, isUnknown, preparePeakRates, reduceDropdownOptions, reduceToOneTime, setAllTypes, showAlert;
     $http.get('php/routes.php?method=getRoutes').success(function(points) {
       var allPoints, endPoints, endPoints73, endPointsRest, markerPlazas, markerPlazas73, markerPlazasRest, points73, pointsRest, startPointRest, startPoints, startPoints73;
       allPoints = [];
@@ -191,8 +191,7 @@ app.controller('mapController', [
         tempStartPoint = $scope.map.local.route.start;
         tempEndPoint = $scope.map.local.route.end;
         if (tempStartPoint.point_type === "entry" || tempEndPoint.point_type === "exit") {
-          $("#map-alert").html('Reverse Trip cannot be completed. One of your selections is a one-way access point and cannot be swtiched.');
-          return $scope.map.local.showMapAlert = true;
+          return showAlert('Reverse Trip cannot be completed. One of your selections is a one-way access point and cannot be swtiched.');
         }
         $scope.map.local.route.start = tempEndPoint;
         return $scope.map.local.route.end = tempStartPoint;
@@ -265,15 +264,37 @@ app.controller('mapController', [
         }
       }
     };
+    showAlert = function(message) {
+      $("#map-alert").html(message);
+      return $scope.map.local.showMapAlert = true;
+    };
     preparePeakRates = function(peakrates) {
       return peakrates.forEach(function(rate, index) {
         return rate.descriptionId = Array(index + 2).join("*");
       });
     };
+    formValidated = function() {
+      if ($scope.map.local.route.start == null) {
+        return false;
+      }
+      if ($scope.map.local.route.end == null) {
+        return false;
+      }
+      if ($scope.map.local.route.type == null) {
+        return false;
+      }
+      if ($scope.map.local.route.axles == null) {
+        return false;
+      }
+      return true;
+    };
     $scope.getRate = function() {
       var rateEl;
+      if (!formValidated()) {
+        return showAlert('Find Your Toll cannot be completed.  Start and end points must be selected to get a toll rate.');
+      }
       rateEl = angular.element("#calculator-results");
-      return rateEl.slideUp(200, function() {
+      rateEl.slideUp(200, function() {
         var axles, endId, startId, type;
         startId = $scope.map.local.route.start.id;
         endId = $scope.map.local.route.end.id;
@@ -290,6 +311,7 @@ app.controller('mapController', [
           return rateEl.slideDown();
         });
       });
+      return true;
     };
     handleStreetView = function() {
       var panoEl;
@@ -322,9 +344,35 @@ app.controller('mapController', [
       }
       return $scope.map.local.endDisplayOpts = newPoints;
     };
+    isUnknown = function(value) {
+      var unknownRegX;
+      if (value == null) {
+        return false;
+      }
+      unknownRegX = new RegExp(/unknown/i);
+      if (unknownRegX.test(value.name)) {
+        return true;
+      }
+      return false;
+    };
+    reduceToOneTime = function() {
+      return $scope.map.local.displayTypes.forEach(function(type, index) {
+        $scope.map.local.route.type = "onetime";
+        if (type.id !== "onetime") {
+          $scope.map.local.displayTypes = [];
+          return $scope.map.local.displayTypes = $scope.map.local.onetimetype;
+        }
+      });
+    };
+    setAllTypes = function() {
+      $scope.map.local.displayTypes = [];
+      return $scope.map.local.types.forEach(function(type) {
+        return $scope.map.local.displayTypes.push(type);
+      });
+    };
     $scope.$watch('map.local.route.fwy', function(newValue, oldValue, scope) {
-      $scope.map.local.route.start = 0;
-      $scope.map.local.route.end = 0;
+      $scope.map.local.route.start = null;
+      $scope.map.local.route.end = null;
       if (newValue === '73') {
         $scope.map.local.points = $scope.map.local.points73;
         $scope.map.local.plazas = $scope.map.local.plazas73;
@@ -343,6 +391,11 @@ app.controller('mapController', [
       points = sharedProperties.Properties().points;
       startPoints = $scope.map.local.startPoints;
       endPoints = $scope.map.local.endPoints;
+      if (isUnknown(newValues.start) || isUnknown(newValues.end)) {
+        reduceToOneTime();
+      } else {
+        setAllTypes();
+      }
       if (newValues.fwy === "73" || newValues.fwy === "73") {
         startPointsOpts = $scope.map.local.startPoints73;
         endPointsOpts = $scope.map.local.endPoints73;
@@ -377,8 +430,10 @@ app.controller('mapController', [
       var id, marker;
       marker = $scope.map.local.currentMarker;
       id = marker.id;
-      if ($scope.map.local.route.end.id === id) {
-        sharedProperties.setEnd(0);
+      if ($scope.map.local.route.end != null) {
+        if ($scope.map.local.route.end.id === id) {
+          sharedProperties.setEnd(null);
+        }
       }
       sharedProperties.setStart(marker);
       $scope.map.local.fitBounds();
@@ -388,8 +443,10 @@ app.controller('mapController', [
       var id, marker;
       marker = $scope.map.local.currentMarker;
       id = marker.id;
-      if ($scope.map.local.route.start.id === id) {
-        sharedProperties.setStart(0);
+      if ($scope.map.local.route.start != null) {
+        if ($scope.map.local.route.start.id === id) {
+          sharedProperties.setStart(null);
+        }
       }
       sharedProperties.setEnd(marker);
       $scope.map.local.fitBounds();

@@ -9,8 +9,8 @@ app.service('sharedProperties', [
     props = {
       route: {
         fwy: '',
-        start: 0,
-        end: 0,
+        start: null,
+        end: null,
         type: 'onetime',
         axles: 2
       },
@@ -19,6 +19,25 @@ app.service('sharedProperties', [
       points: [],
       plazas: [],
       panorama: {},
+      types: [
+        {
+          "id": "onetime",
+          "displayName": 'One-Time-Toll'
+        }, {
+          "id": "fastrak",
+          "displayName": 'Fastrak'
+        }, {
+          "id": 'express',
+          "displayName": "ExpressAccount"
+        }
+      ],
+      onetimetype: [
+        {
+          "id": "onetime",
+          "displayName": 'One-Time-Toll'
+        }
+      ],
+      displayTypes: [],
       showMapAlert: false,
       displayPoints: [],
       fitBounds: function() {

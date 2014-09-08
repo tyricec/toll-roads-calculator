@@ -61,17 +61,17 @@
               </div><!--end dropdown-->
 							
               <div class="form-group">
-              	<button id="button-reverse" class="btn btn-info col-md-5 col-md-offset-3" ng-click="map.switchPoints()">Reverse Trip</button>
+              	<button id="button-reverse" class="btn btn-default btn-gray col-md-4 col-md-offset-3" ng-click="map.switchPoints()">Reverse Trip</button>
               </div>
               
               <!--Pay By dropdown-->
               <div class="form-group">
                 <label for="local-route-type" class="col-md-3 control-label">Pay by:</label>
                 <div class="col-md-9">
-                  <select id="local-route-type" class="form-control" ng-model="map.local.route.type">
-                    <option value="onetime">One-Time-Toll</option>
+                  <select class="form-control" ng-model="map.local.route.type" ng-options="type.id as type.displayName for type in map.local.displayTypes">
+                    <!--<option value="onetime">One-Time-Toll</option>
                     <option value="fastrak">FasTrak</option>
-                    <option value="express">ExpressAccount</option>
+                    <option value="express">ExpressAccount</option>-->
                   </select>
                 </div>
               </div><!--end dropdown-->
@@ -112,7 +112,7 @@
             </div>    
       
             <div id="calculator-savings">
-              <h4>You Can Save:</h4>
+              <h4><strong>You Can Save:</strong></h4>
               <div><strong>{{map.local.route.rateObj.savings.single | currency}}</strong> with FasTrak (Peak Hours)</div>
               <div>(That's about {{map.local.route.rateObj.savings.total | currency}} a month!)</div>
               <div class="text-center"><button type="button" class="btn btn-default btn-custom btn-purple">Sign Up for FasTrak</button></div>

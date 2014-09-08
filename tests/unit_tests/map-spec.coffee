@@ -100,7 +100,7 @@ describe 'map-controller', ->
           if not isSwitch
             expect(scope.map.local.route.start.id).not.toBe(point.id)
           else
-            expect(scope.map.local.route.start.id).toBeUndefined()
+            expect(scope.map.local.route.start).toBeNull()
     )
 
     it('shouldn\'t reduce end options whenever end is changed.', ->

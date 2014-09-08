@@ -102,8 +102,7 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
       tempStartPoint = $scope.map.local.route.start
       tempEndPoint = $scope.map.local.route.end
       if tempStartPoint.point_type is "entry" or tempEndPoint.point_type is "exit"
-        $("#map-alert").html('Reverse Trip cannot be completed. One of your selections is a one-way access point and cannot be swtiched.')
-        return $scope.map.local.showMapAlert = true
+        return showAlert 'Reverse Trip cannot be completed. One of your selections is a one-way access point and cannot be swtiched.'
       $scope.map.local.route.start = tempEndPoint
       $scope.map.local.route.end = tempStartPoint
     ),
@@ -163,6 +162,10 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
     }
 
   }
+
+  showAlert = (message) ->
+    $("#map-alert").html(message)
+    $scope.map.local.showMapAlert = true
   
   preparePeakRates = (peakrates) ->
     peakrates.forEach( (rate, index) ->
@@ -170,8 +173,16 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
     )
 
   
+  formValidated = ->
+    return false if not $scope.map.local.route.start?
+    return false if not $scope.map.local.route.end?
+    return false if not $scope.map.local.route.type?
+    return false if not $scope.map.local.route.axles?
+    return true
+  
   # Form submit function
   $scope.getRate = ->
+    return showAlert 'Find Your Toll cannot be completed.  Start and end points must be selected to get a toll rate.' if not formValidated()
     rateEl = angular.element("#calculator-results")
     rateEl.slideUp(200, -> 
       startId = $scope.map.local.route.start.id
@@ -182,9 +193,10 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
         rateObj = $scope.map.local.route.rateObj = resp
         if rateObj.rates?
           preparePeakRates(rateObj.rates.peak) if rateObj.rates.peak?	
-        rateEl.slideDown()		
+        rateEl.slideDown()
       )
     )
+    return true
 
   handleStreetView = ->
     panoEl = angular.element("#pano")
@@ -206,9 +218,28 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
     newPoints.push point for point in points when cond(point)
     $scope.map.local.endDisplayOpts = newPoints
   
+
+  isUnknown = (value) ->
+    return false if not value?
+    unknownRegX = new RegExp(/unknown/i)
+    return true if unknownRegX.test value.name
+    return false
+
+  reduceToOneTime = ->
+    $scope.map.local.displayTypes.forEach (type, index) ->
+      $scope.map.local.route.type = "onetime"
+      if type.id isnt "onetime"
+        $scope.map.local.displayTypes = []
+        $scope.map.local.displayTypes = $scope.map.local.onetimetype
+
+  setAllTypes = ->
+    $scope.map.local.displayTypes = []
+    $scope.map.local.types.forEach (type) ->
+       $scope.map.local.displayTypes.push type
+
   $scope.$watch 'map.local.route.fwy' , (newValue,oldValue,scope) ->
-    $scope.map.local.route.start = 0
-    $scope.map.local.route.end = 0
+    $scope.map.local.route.start = null
+    $scope.map.local.route.end = null
 
     if newValue is '73'
       $scope.map.local.points = $scope.map.local.points73
@@ -227,6 +258,10 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
     points = sharedProperties.Properties().points
     startPoints = $scope.map.local.startPoints
     endPoints = $scope.map.local.endPoints
+
+    # Check if start and end are unknown. Switch pay by value to only have one time
+    if isUnknown(newValues.start) or isUnknown(newValues.end) then reduceToOneTime() else setAllTypes()
+
     #populate dd list depending in fwy
     if newValues.fwy == "73" or newValues.fwy == "73"
       startPointsOpts = $scope.map.local.startPoints73
@@ -254,7 +289,8 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
   $scope.onStartClick = () -> 
     marker = $scope.map.local.currentMarker    
     id = marker.id
-    sharedProperties.setEnd 0 if $scope.map.local.route.end.id is id
+    if $scope.map.local.route.end?
+      sharedProperties.setEnd null if $scope.map.local.route.end.id is id
     sharedProperties.setStart(marker)
     $scope.map.local.fitBounds()
     $scope.map.local.closeWindow($scope)
@@ -262,7 +298,8 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
   $scope.onEndClick = () -> 
     marker = $scope.map.local.currentMarker
     id = marker.id
-    sharedProperties.setStart 0 if $scope.map.local.route.start.id is id
+    if $scope.map.local.route.start?
+      sharedProperties.setStart null if $scope.map.local.route.start.id is id
     sharedProperties.setEnd(marker) 
     $scope.map.local.fitBounds()
     $scope.map.local.closeWindow($scope)
