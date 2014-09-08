@@ -83,6 +83,16 @@ app.controller('mapController', [
             $scope.showStartBtn = this.model.showStartBtn;
             $scope.showEndBtn = this.model.showEndBtn;
             $scope.map.currentMarker = this.model;
+            if (($scope.map.local.route.start != null) && (this.model.id === $scope.map.local.route.start.id)) {
+              angular.element(".start-btn").attr('disabled', true);
+            } else {
+              angular.element(".start-btn").attr('disabled', false);
+            }
+            if (($scope.map.local.route.end != null) && (this.model.id === $scope.map.local.route.end.id)) {
+              angular.element(".end-btn").attr('disabled', true);
+            } else {
+              angular.element(".end-btn").attr('disabled', false);
+            }
             if (this.model.type === "point") {
               $scope.map.showWindow = true;
               $scope.map.showPlazaWindow = false;
@@ -185,6 +195,8 @@ app.controller('mapController', [
       'showTraffic': false,
       'showStartBtn': true,
       'showStreetView': true,
+      'startDisabled': false,
+      'endDisabled': false,
       'currentMarker': {},
       'showWindow': false,
       'showPlazaWindow': false,

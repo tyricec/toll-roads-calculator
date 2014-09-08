@@ -60,7 +60,9 @@ app.service('sharedProperties', [
           markerService.setMarkerDefault(scope.map.currentMarker);
           scope.map.showWindow = false;
           scope.map.showPlazaWindow = false;
-          return scope.$apply();
+          if (!scope.$$phase) {
+            return scope.$apply();
+          }
         }
       })
     };

@@ -29,7 +29,7 @@ app.service 'sharedProperties', [ 'markerService', (markerService) ->
          markerService.setMarkerDefault scope.map.currentMarker
          scope.map.showWindow = false
          scope.map.showPlazaWindow = false
-         scope.$apply()
+         scope.$apply() if not scope.$$phase
     )
   }
   

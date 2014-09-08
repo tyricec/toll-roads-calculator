@@ -30,6 +30,14 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
           $scope.showStartBtn = @model.showStartBtn
           $scope.showEndBtn = @model.showEndBtn
           $scope.map.currentMarker = @model
+          if $scope.map.local.route.start? and (@model.id is $scope.map.local.route.start.id)
+            angular.element(".start-btn").attr('disabled', true) 
+          else 
+            angular.element(".start-btn").attr('disabled', false)
+          if $scope.map.local.route.end? and (@model.id is $scope.map.local.route.end.id )
+            angular.element(".end-btn").attr('disabled', true) 
+          else
+            angular.element(".end-btn").attr('disabled', false)
           if @model.type is "point" 
             $scope.map.showWindow = true
             $scope.map.showPlazaWindow = false
@@ -99,6 +107,8 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
     'showTraffic': false,
     'showStartBtn': true,
     'showStreetView': true,
+    'startDisabled': false,
+    'endDisabled': false,
     'currentMarker': {},
     'showWindow' : false,
     'showPlazaWindow': false,
