@@ -4,7 +4,7 @@ var app,
 app = angular.module('services', []);
 
 app.service('sharedProperties', [
-  'markerService', function(markerService) {
+  'markerService', '$timeout', function(markerService, $timeout) {
     var props;
     props = {
       route: {
@@ -56,14 +56,11 @@ app.service('sharedProperties', [
         }
       },
       closeWindow: (function(scope) {
-        if (scope.map.showWindow || scope.map.showPlazaWindow) {
+        return $timeout(function() {
           markerService.setMarkerDefault(scope.map.currentMarker);
           scope.map.showWindow = false;
-          scope.map.showPlazaWindow = false;
-          if (!scope.$$phase) {
-            return scope.$apply();
-          }
-        }
+          return scope.map.showPlazaWindow = false;
+        });
       })
     };
     return {

@@ -112,8 +112,6 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
     'currentMarker': {},
     'showWindow' : false,
     'showPlazaWindow': false,
-    'showFwyRest': true,
-    'showFwy73': false,
     'closeWindow': ( ->
        $scope.map.local.closeWindow($scope)
     ),

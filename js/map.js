@@ -204,8 +204,6 @@ app.controller('mapController', [
       'currentMarker': {},
       'showWindow': false,
       'showPlazaWindow': false,
-      'showFwyRest': true,
-      'showFwy73': false,
       'closeWindow': (function() {
         return $scope.map.local.closeWindow($scope);
       }),

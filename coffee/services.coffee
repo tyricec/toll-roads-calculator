@@ -1,7 +1,7 @@
 app = angular.module 'services', []
 
 # Services used by controllers
-app.service 'sharedProperties', [ 'markerService', (markerService) ->
+app.service 'sharedProperties', [ 'markerService', '$timeout', (markerService, $timeout) ->
   props = {
     route: { fwy: '', start: null, end: null, type: 'onetime', axles: 2 },
     mapControl: {},
@@ -25,11 +25,11 @@ app.service 'sharedProperties', [ 'markerService', (markerService) ->
       @mapControl.getGMap().fitBounds bounds if @mapControl.getGMap?
     ,
     closeWindow: (  (scope) ->
-       if scope.map.showWindow or scope.map.showPlazaWindow
+       $timeout(->
          markerService.setMarkerDefault scope.map.currentMarker
          scope.map.showWindow = false
          scope.map.showPlazaWindow = false
-         scope.$apply() if not scope.$$phase
+       )
     )
   }
   
