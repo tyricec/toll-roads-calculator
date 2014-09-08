@@ -22,7 +22,7 @@
         <p>The Toll Roads (State Routes 73, 133, 241 and 261) are going cashless and converting to all-electronic toll collection. With all electronic tolling (AET) all tolls are collected electronically, eliminating delays caused by stopping to pay with cash, searching for cash or fumbling for exact change</p>
         <h3>Toll Calculator</h3>
         <hr>
-        <p>Calculate your toll by selecting your options below:</p>
+        <p>Calculate your toll for a ONE-WAY trip by selecting the options below:</p>
         <div id="calculator-container">
           <div id="calculator-form-container" class="col-md-3">
             <form id="calculator-form" class="form-horizontal" role="form" novalidate >
@@ -88,11 +88,12 @@
                 </div>
               </div><!--end dropdown-->    
     
-              <button type="button" class="btn btn-default btn-custom btn-blue" ng-click="getRate()">Find Your Toll</button>
+              <button type="button" class="btn btn-default btn-custom btn-blue" ng-click="getRate()">Calculate Your Toll</button>
   
             </form>
       
             <div id="calculator-results" class="animated">
+            	<p>Your toll for this one-way trip:</p>
               <div class="row" ng-model="map.local.route.rateObj.rates.peak" ng-repeat="rate in map.local.route.rateObj.rates.peak">
                 <div class="col-md-6">
                   <h2>{{rate.rate}}</h2>
