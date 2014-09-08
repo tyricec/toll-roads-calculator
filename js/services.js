@@ -11,7 +11,7 @@ app.service('sharedProperties', [
         fwy: '',
         start: null,
         end: null,
-        type: 'fastrak',
+        type: 'onetime',
         axles: 2
       },
       mapControl: {},

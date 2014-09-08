@@ -3,7 +3,7 @@ app = angular.module 'services', []
 # Services used by controllers
 app.service 'sharedProperties', [ 'markerService', (markerService) ->
   props = {
-    route: { fwy: '', start: null, end: null, type: 'fastrak', axles: 2 },
+    route: { fwy: '', start: null, end: null, type: 'onetime', axles: 2 },
     mapControl: {},
     mapObj: {},
     points: [],

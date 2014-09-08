@@ -121,7 +121,7 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
       tempStartPoint = $scope.map.local.route.start
       tempEndPoint = $scope.map.local.route.end
       if not switchablePoint tempStartPoint or not switchablePoint tempEndPoint
-        return showAlert 'These points cannot be switched. One is either entry or exit only.'
+        return showAlert 'Reverse Trip cannot be completed. One of your selections is a one-way access point and cannot be swtiched.'
       $scope.map.local.route.start = tempEndPoint
       $scope.map.local.route.end = tempStartPoint
     ),
@@ -136,6 +136,8 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
       'rotateControl': false,
       'streetViewControl': false,
       'mapTypeControl': false,
+      'maxZoom': 16,
+      'minZoom': 11,
       'zoomControlOptions': {
         'position': google.maps.ControlPosition.BOTTOM_LEFT
       }
@@ -160,16 +162,16 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
           addTrafficBtn = () ->
             element = document.createElement 'div'
             el = angular.element element
-            el.append '<button ng-click="map.toggleTrafficLayer()">Traffic</button>'
+            el.append '<button class="btn btn-default btn-custom btn-blue" ng-click="map.toggleTrafficLayer()">Live Traffic</button>'
           
             # Need to invoke compile for click event to be registered to button
             $compile(el)($scope)
-            map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push el[0]
+            map.controls[google.maps.ControlPosition.TOP_RIGHT].push el[0]
 
           addCloseStreetBtn = (callback) ->
             element = document.createElement 'div'
             el = angular.element element
-            el.append '<button id="closeStreetView" ng-click="map.closeStreetView()">Close</button>'
+            el.append '<button id="closeStreetView" class="btn btn-default btn-custom btn-blue" ng-click="map.closeStreetView()">Close Street View</button>'
             $compile(el)($scope)
             panorama = sharedProperties.Properties().panorama
             panorama.controls[google.maps.ControlPosition.TOP_RIGHT].push el[0]
@@ -206,8 +208,8 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
   
   # Form submit function
   $scope.getRate = ->
-    return showAlert 'Need to enter start or end to get a rate.' if not formValidated()
-    rateEl = angular.element("#calc-results")
+    return showAlert 'Find Your Toll cannot be completed.  Start and end points must be selected to get a toll rate.' if not formValidated()
+    rateEl = angular.element("#calculator-results")
     rateEl.slideUp(200, -> 
       startId = $scope.map.local.route.start.id
       endId = $scope.map.local.route.end.id

@@ -10,7 +10,11 @@ Marker = (function() {
     this.point_type = point_type;
     this.start = null;
     this.end = null;
-    this.displayName = "SR " + this.freeway + " -- " + this.name;
+    if (this.freeway === "73") {
+      this.displayName = this.name;
+    } else {
+      this.displayName = this.freeway + " -- " + this.name;
+    }
     this.typeString = "SR " + this.freeway;
     if (this.type !== "plaza") {
       this.markerType = "Access Point:";
@@ -210,7 +214,7 @@ app.controller('mapController', [
         tempStartPoint = $scope.map.local.route.start;
         tempEndPoint = $scope.map.local.route.end;
         if (!switchablePoint(tempStartPoint || !switchablePoint(tempEndPoint))) {
-          return showAlert('These points cannot be switched. One is either entry or exit only.');
+          return showAlert('Reverse Trip cannot be completed. One of your selections is a one-way access point and cannot be swtiched.');
         }
         $scope.map.local.route.start = tempEndPoint;
         return $scope.map.local.route.end = tempStartPoint;
@@ -235,6 +239,8 @@ app.controller('mapController', [
         'rotateControl': false,
         'streetViewControl': false,
         'mapTypeControl': false,
+        'maxZoom': 16,
+        'minZoom': 11,
         'zoomControlOptions': {
           'position': google.maps.ControlPosition.BOTTOM_LEFT
         }
@@ -259,15 +265,15 @@ app.controller('mapController', [
               var el, element;
               element = document.createElement('div');
               el = angular.element(element);
-              el.append('<button ng-click="map.toggleTrafficLayer()">Traffic</button>');
+              el.append('<button class="btn btn-default btn-custom btn-blue" ng-click="map.toggleTrafficLayer()">Live Traffic</button>');
               $compile(el)($scope);
-              return map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push(el[0]);
+              return map.controls[google.maps.ControlPosition.TOP_RIGHT].push(el[0]);
             };
             addCloseStreetBtn = function(callback) {
               var el, element, panorama;
               element = document.createElement('div');
               el = angular.element(element);
-              el.append('<button id="closeStreetView" ng-click="map.closeStreetView()">Close</button>');
+              el.append('<button id="closeStreetView" class="btn btn-default btn-custom btn-blue" ng-click="map.closeStreetView()">Close Street View</button>');
               $compile(el)($scope);
               panorama = sharedProperties.Properties().panorama;
               panorama.controls[google.maps.ControlPosition.TOP_RIGHT].push(el[0]);
@@ -315,9 +321,9 @@ app.controller('mapController', [
     $scope.getRate = function() {
       var rateEl;
       if (!formValidated()) {
-        return showAlert('Need to enter start or end to get a rate.');
+        return showAlert('Find Your Toll cannot be completed.  Start and end points must be selected to get a toll rate.');
       }
-      rateEl = angular.element("#calc-results");
+      rateEl = angular.element("#calculator-results");
       rateEl.slideUp(200, function() {
         var axles, endId, startId, type;
         startId = $scope.map.local.route.start.id;

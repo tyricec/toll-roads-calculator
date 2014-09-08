@@ -3,7 +3,10 @@ class Marker
   constructor: (@id, @name, @type, @latlng, @freeway, @point_type) ->
     @start = null
     @end = null
-    @displayName = "SR " + @freeway + " -- " + @name
+    if @freeway is "73" 
+      @displayName = @name
+    else
+      @displayName = @freeway + " -- " + @name
     @typeString = "SR #{@freeway}" 
     unless @type is "plaza"
       @markerType = "Access Point:" 
