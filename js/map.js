@@ -179,7 +179,7 @@ app.controller('mapController', [
       })();
     });
     switchablePoint = function(point) {
-      if ((point != null) || point.point_type === "entry/exit") {
+      if (((point != null) && point.point_type === "entry/exit") || (point == null)) {
         return true;
       }
       return false;
@@ -204,6 +204,8 @@ app.controller('mapController', [
       'currentMarker': {},
       'showWindow': false,
       'showPlazaWindow': false,
+      'showFwyRest': true,
+      'showFwy73': false,
       'closeWindow': (function() {
         return $scope.map.local.closeWindow($scope);
       }),
@@ -211,7 +213,9 @@ app.controller('mapController', [
         var tempEndPoint, tempStartPoint;
         tempStartPoint = $scope.map.local.route.start;
         tempEndPoint = $scope.map.local.route.end;
-        if (!switchablePoint(tempStartPoint || !switchablePoint(tempEndPoint))) {
+        if (!(switchablePoint(tempStartPoint)) || !(switchablePoint(tempEndPoint))) {
+          console.log(switchablePoint(tempEndPoint));
+          console.log(switchablePoint(tempStartPoint));
           return showAlert('Reverse Trip cannot be completed. One of your selections is a one-way access point and cannot be swtiched.');
         }
         $scope.map.local.route.start = tempEndPoint;

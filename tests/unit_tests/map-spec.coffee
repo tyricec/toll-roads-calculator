@@ -74,20 +74,42 @@ describe 'map-controller', ->
 
   it('should have a button to switch the start and the end points', ->
     scope.map.local.route.start = points[0]
-    scope.map.local.route.end = points[1]
+    scope.map.local.route.end = points[3]
 
     scope.map.switchPoints()
-    expect(scope.map.local.route.start).toBe(points[1])
+    expect(scope.map.local.route.start).toBe(points[3])
     expect(scope.map.local.route.end).toBe(points[0])
   )
 
-  it('should not switch points if not possible', ->
-    scope.map.local.route.start = routeObjs[1]
+  it('should swtich points if possible', ->
+    scope.map.local.route.start = points[0]
     scope.map.switchPoints()
-    expect(scope.map.local.route.start).toBe(routeObjs[1])
-    #scope.map.local.route.start = null
-    #scope.map.local.route.end = routeObjs[1]
-    #expect(scope.map.local.route.end).toBe(routeObjs[1])
+    expect(scope.map.local.route.start).toBeNull()
+    scope.map.local.route.start = null
+    scope.map.local.route.end = scope.map.local.points[0]
+    scope.map.switchPoints()
+    expect(scope.map.local.route.end).toBeNull()
+  )
+
+  it('should not switch points if not possible', ->
+    scope.map.local.route.start = points[1]
+    scope.map.switchPoints()
+    expect(scope.map.local.route.start).toBe(points[1])
+    scope.map.local.route.start = null
+    #scope.map.local.route.end = points[2]
+    #scope.map.switchPoints()
+    #expect(scope.map.local.route.end).toBe(points[2])
+  )
+
+  it('should switch kml layers on fwy change', ->
+    scope.map.local.route.fwy = "73"
+    scope.$apply()
+    expect(scope.map.showFwy73).toBe(true)
+    expect(scope.map.showFwyRest).toBe(false)
+    scope.map.local.route.fwy = "rest"
+    scope.$apply()
+    expect(scope.map.showFwy73).toBe(false)
+    expect(scope.map.showFwyRest).toBe(true)
   )
 
   describe 'the start and end points', ->

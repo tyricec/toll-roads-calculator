@@ -92,7 +92,7 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
   )
 
   switchablePoint = (point) ->
-    return true if point? or point.point_type is "entry/exit"
+    return true if (point? and point.point_type is "entry/exit") or not point?
     return false
   
   $scope.map = {
@@ -112,13 +112,17 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
     'currentMarker': {},
     'showWindow' : false,
     'showPlazaWindow': false,
+    'showFwyRest': true,
+    'showFwy73': false,
     'closeWindow': ( ->
        $scope.map.local.closeWindow($scope)
     ),
     'switchPoints': ( ->
       tempStartPoint = $scope.map.local.route.start
       tempEndPoint = $scope.map.local.route.end
-      if not switchablePoint tempStartPoint or not switchablePoint tempEndPoint
+      if not (switchablePoint tempStartPoint) or not (switchablePoint tempEndPoint)
+        console.log switchablePoint tempEndPoint
+        console.log switchablePoint tempStartPoint
         return showAlert 'Reverse Trip cannot be completed. One of your selections is a one-way access point and cannot be swtiched.'
       $scope.map.local.route.start = tempEndPoint
       $scope.map.local.route.end = tempStartPoint
