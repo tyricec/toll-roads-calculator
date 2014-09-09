@@ -1,4 +1,4 @@
-describe('tollroads calculator page', ->
+describe('User goes to tollroads calculator page', ->
   startPoint = element(By.model('map.local.route.start'))
   endPoint = element(By.model('map.local.route.end'))
   fwy = element(By.model('map.local.route.fwy'))
@@ -12,24 +12,24 @@ describe('tollroads calculator page', ->
     browser.get('http://localhost:65513')
     browser.waitForAngular()
 
-  xit('should have a title', ->
+  it('and can see the title', ->
     expect(browser.getTitle()).toEqual('The Toll Roads | Toll Cost Calculator')
   )
 
-  xit('should have default options', ->
+  it('and should see default options', ->
     expect(startPoint.$('option:checked').getText()).toMatch(/select/gi)
     expect(startPoint.$('option:checked').getText()).toMatch(/select/gi)
   )
 
-  xit('should be able to click each point on start', ->
-    expect(pointOptions.count()).toEqual(6)
+  it('and should be able to click each point to start with dropdown.', ->
+    expect(pointOptions.count()).toEqual(7)
     pointOptions.each((element, index) ->
       element.click()
       expect(startPoint.$('option:checked').getText()).toEqual(element.getText())
     )
   )
 
-  xit('should switch end options depending on start point options', ->
+  it('and should be able to see a switch between end options depending on start point options', ->
     browser.waitForAngular()
     expect(endOptions.count()).toEqual(7)
     currStartOption = pointOptions.get(1)
@@ -42,37 +42,32 @@ describe('tollroads calculator page', ->
     expect(endOptions.count()).toEqual(2)
   )
 
-  it('should update the rates on the page', ->
+  it('and be able to get a rates on the page', ->
     off_peak = element(By.binding('map.local.route.rateObj.rates.off_peak'))
-#    weekend = element(By.binding('map.local.route.rateObj.rates.weekend'))
     axles = element(By.binding('map.local.route.rateObj.axles'))
     start = element(By.binding('map.local.route.rateObj.start'))
     end = element(By.binding('map.local.route.rateObj.end'))
 
     firstElement = pointOptions.get(1)
     firstElement.click()
-    endOption = endOptions.get(4)
+    endOption = endOptions.get(3)
     endOption.click()
-    axelSelections.each( (element, axelIndex) ->
-      element.click()
-      paymentTypes.each( (element, index) ->
-        element.click()
-        getRateBtn.click()
-        expect(off_peak.getText()).toMatch(new RegExp(axelIndex + index + 1))
-#        expect(weekend.getText()).toMatch(new RegExp(axelIndex + index + 1))
-      )
-    )
+    axelSelections.first().click()
+    paymentTypes.first().click()
+    getRateBtn.click()
+    expect(off_peak.getText()).toMatch(new RegExp(3))
   )
 
-  xit('should show adjustments when available', ->
+  it('and should be able to see adjustments when a rate has one.', ->
     descriptionIds = element.all(By.repeater('rate in map.local.route.rateObj.rates.peak').column('{{rate.descriptionIds}}'))
     descriptions = element.all(By.repeater('rate in map.local.route.rateObj.rates.peak').column('{{rate.description}}'))
     rates = element.all(By.repeater('rate in map.local.route.rateObj.rates.peak').column('{{rate.rate}}'))
     descriptionArray = ["Addition for 73", "Subtraction for 73"]
     adjustmentsArray = [0.25, -0.25]
     # Check Only Adjustment in table
-    pointOptions.get(8).click()
-    endOptions.get(2).click()
+    fwy.all(By.tagName 'option').get(1).click()
+    pointOptions.get(1).click()
+    endOptions.get(1).click()
     axelSelections.each( (axelElement, axelIndex) ->
       do -> 
         axelElement.click()
@@ -83,6 +78,18 @@ describe('tollroads calculator page', ->
     )
   )
 
+  it('and should be able to click on a point on the map to select start and end.', ->
+    off_peak = element(By.binding('map.local.route.rateObj.rates.off_peak'))
+    element(By.css('div[title="1"]')).click()
+    element(By.className('start-btn')).click()
+    expect(startPoint.getText()).toMatch(/241 ENTRY\/EXIT/)
+    element(By.css('div[title="10"]')).click()
+    element(By.className('end-btn')).click()
+    browser.actions().mouseDown().mouseUp().perform()
+    expect(endPoint.$('option:checked').getText()).toMatch(/241 EXIT/)
+    getRateBtn.click()
+    browser.waitForAngular()
+    expect(off_peak.getText()).toMatch(/3/)
+  )
+
 )
-
-

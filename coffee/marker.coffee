@@ -16,6 +16,7 @@ class Marker
     @maplatlng = new google.maps.LatLng(@glatlng.lat, @glatlng.lng)
     @markerOptions = {
       'optimized': true
+      #'title': "#{@id}"
     }
     unless @type is "plaza"
       @status = "inactive"

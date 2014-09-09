@@ -147,9 +147,6 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
     'infoWindowOptions': {
       'pixelOffset': new google.maps.Size(0, -30)
     },
-    'markerOptions' :{
-      'visible': true
-    },
     'restLayerOptions': {
       'url': 'http://ditisfl.org/toll-roads-calculator/kml/TCA_Toll_Roads_090514_Projec-133_241_261.kml'
     },
