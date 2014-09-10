@@ -11,12 +11,12 @@ class Marker
     unless @type is "plaza"
       @markerType = "Access Point:" 
     else
-      @markerType = "Toll Plaza:"    
+      @markerType = "Midway Toll Point:"    
     @glatlng = { lat: @latlng.latitude, lng: @latlng.longitude }
     @maplatlng = new google.maps.LatLng(@glatlng.lat, @glatlng.lng)
     @markerOptions = {
-      'optimized': false,
-      'title': "#{@id}"
+      'optimized': true
+      #'title': "#{@id}"
     }
     unless @type is "plaza"
       @status = "inactive"

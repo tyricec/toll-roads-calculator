@@ -137,6 +137,7 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
       'panControl': false,
       'rotateControl': false,
       'streetViewControl': false,
+      'scrollwheel': false,
       'mapTypeControl': false,
       'maxZoom': 16,
       'minZoom': 11,
@@ -207,7 +208,7 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
   
   # Form submit function
   $scope.getRate = ->
-    return showAlert 'Find Your Toll cannot be completed.  Start and end points must be selected to get a toll rate.' if not formValidated()
+    return showAlert 'Calculate Your Toll cannot be completed.  Start and end points must be selected to get a toll rate.' if not formValidated()
     rateEl = angular.element("#calculator-results")
     rateEl.slideUp(200, -> 
       startId = $scope.map.local.route.start.id

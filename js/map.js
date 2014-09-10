@@ -19,7 +19,7 @@ Marker = (function() {
     if (this.type !== "plaza") {
       this.markerType = "Access Point:";
     } else {
-      this.markerType = "Toll Plaza:";
+      this.markerType = "Midway Toll Point:";
     }
     this.glatlng = {
       lat: this.latlng.latitude,
@@ -27,8 +27,7 @@ Marker = (function() {
     };
     this.maplatlng = new google.maps.LatLng(this.glatlng.lat, this.glatlng.lng);
     this.markerOptions = {
-      'optimized': false,
-      'title': "" + this.id
+      'optimized': true
     };
     if (this.type !== "plaza") {
       this.status = "inactive";
@@ -241,6 +240,7 @@ app.controller('mapController', [
         'panControl': false,
         'rotateControl': false,
         'streetViewControl': false,
+        'scrollwheel': false,
         'mapTypeControl': false,
         'maxZoom': 16,
         'minZoom': 11,
@@ -321,7 +321,7 @@ app.controller('mapController', [
     $scope.getRate = function() {
       var rateEl;
       if (!formValidated()) {
-        return showAlert('Find Your Toll cannot be completed.  Start and end points must be selected to get a toll rate.');
+        return showAlert('Calculate Your Toll cannot be completed.  Start and end points must be selected to get a toll rate.');
       }
       rateEl = angular.element("#calculator-results");
       rateEl.slideUp(200, function() {
