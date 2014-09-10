@@ -27,7 +27,8 @@ Marker = (function() {
     };
     this.maplatlng = new google.maps.LatLng(this.glatlng.lat, this.glatlng.lng);
     this.markerOptions = {
-      'optimized': true
+      'optimized': false,
+      'title': "" + this.id
     };
     if (this.type !== "plaza") {
       this.status = "inactive";

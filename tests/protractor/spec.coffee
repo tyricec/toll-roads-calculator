@@ -79,6 +79,7 @@ describe('User goes to tollroads calculator page', ->
   )
 
   it('and should be able to click on a point on the map to select start and end.', ->
+    browser.sleep(2000)
     off_peak = element(By.binding('map.local.route.rateObj.rates.off_peak'))
     element(By.css('div[title="1"]')).click()
     element(By.className('start-btn')).click()
