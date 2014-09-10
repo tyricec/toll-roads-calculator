@@ -358,7 +358,7 @@ app.controller('mapController', [
         $scope.map.showStreetView = true;
         panoEl.show();
         panoEl.animate({
-          "height": "45%"
+          "height": "55%"
         });
       }
       return true;
