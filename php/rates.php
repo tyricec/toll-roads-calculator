@@ -71,8 +71,10 @@ switch($params['method']) {
 		$result['rates'] = $rates->getRates($result['startid'],$result['endid'],intval($params['axles']),$params['type']);
 		
 		//request price adjustments if relevant
-		if(strlen($result['rates']['rate_extra'])):
-			$result['rates'] = $rates->getAdjustments($result['rates']);
+		if($params['type'] != 'onetime'):
+			if(strlen($result['rates']['rate_extra'])):
+				$result['rates'] = $rates->getAdjustments($result['rates']);
+			endif;
 		endif;
 		
 		//clean rates output

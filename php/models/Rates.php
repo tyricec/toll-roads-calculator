@@ -48,7 +48,7 @@ class rates {
 	}
 	
 	public function getOutput($result) {
-		$new_result['off_peak'] = '$'.number_format($result['off_peak'],2);
+		$new_result['off_peak'] = $result['off_peak'] > 0 ? '$'.number_format($result['off_peak'],2) : 'No Toll';
 		$i = 0;
 		if($result['peak']):
 			foreach($result['peak'] as $peak):

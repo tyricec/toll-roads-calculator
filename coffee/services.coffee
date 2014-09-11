@@ -3,7 +3,7 @@ app = angular.module 'services', []
 # Services used by controllers
 app.service 'sharedProperties', [ 'markerService', '$timeout', (markerService, $timeout) ->
   props = {
-    route: { fwy: '', start: null, end: null, type: 'onetime', axles: 2 },
+    route: { fwy: '', start: null, end: null, type: 'onetime', axles: 2, resultText: 'Your toll for this one-way trip:', offPeakText: 'Off Peak' },
     mapControl: {},
     mapObj: {},
     points: [],

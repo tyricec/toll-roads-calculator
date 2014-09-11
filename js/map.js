@@ -331,11 +331,20 @@ app.controller('mapController', [
         type = $scope.map.local.route.type;
         axles = $scope.map.local.route.axles;
         return $http.get("php/rates.php?method=getRates&start=" + startId + "&end=" + endId + "&type=" + type + "&axles=" + axles).success(function(resp) {
-          var rateObj;
-          rateObj = $scope.map.local.route.rateObj = resp;
-          if (rateObj.rates != null) {
-            if (rateObj.rates.peak != null) {
-              preparePeakRates(rateObj.rates.peak);
+          var panoEl, rateObj;
+          $scope.map.local.route.offPeakText = resp.payment === "One-Time-Toll" ? "One-Time-Toll" : "Off Peak";
+          panoEl = angular.element("#calculator-results div");
+          if (resp.rates.off_peak === "No Toll") {
+            panoEl.hide();
+            $scope.map.local.route.resultText = "No toll required for this trip";
+          } else {
+            rateObj = $scope.map.local.route.rateObj = resp;
+            $scope.map.local.route.resultText = "Your toll for this one-way trip:";
+            panoEl.show();
+            if (rateObj.rates != null) {
+              if (rateObj.rates.peak != null) {
+                preparePeakRates(rateObj.rates.peak);
+              }
             }
           }
           return rateEl.slideDown();
