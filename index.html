@@ -95,15 +95,15 @@
             <div id="calculator-results" class="animated">
             	<p>Your toll for this one-way trip:</p>
               <div class="row" ng-model="map.local.route.rateObj.rates.peak" ng-repeat="rate in map.local.route.rateObj.rates.peak">
-                <div class="col-md-6">
+                <div ng-cloak class="col-md-6 ng-cloak">
                   <h2>{{rate.rate}}</h2>
                 </div>
-                <div class="col-md-6">
+                <div ng-cloak class="col-md-6 ng-cloak">
                   <h4>Peak{{rate.descriptionId}}</h4>
                 </div>
               </div>
               <div class="row text-primary">
-                <div class="col-md-6">
+                <div ng-cloak class="col-md-6 ng-cloak">
                   <h2>{{map.local.route.rateObj.rates.off_peak}}</h2>
                 </div>
                 <div class="col-md-6">
@@ -112,14 +112,14 @@
               </div>
             </div>    
       
-            <div id="calculator-savings">
+            <div ng-cloak id="calculator-savings" class="ng-cloak">
               <h4><strong>You Can Save:</strong></h4>
               <div><strong>{{map.local.route.rateObj.savings.single | currency}}</strong> with FasTrak (Peak Hours)</div>
               <div>(That's about {{map.local.route.rateObj.savings.total | currency}} a month!)</div>
               <div class="text-center"><a href="" class="btn btn-default btn-custom btn-purple">Sign Up for FasTrak</a></div>
             </div>
           </div>
-          <div id="map-container" class="col-md-9">
+          <div ng-cloak id="map-container" class="col-md-9 ng-cloak">
    
             <div id="controls">
               <button ng-click="map.toggleTrafficLayer()">Traffic</button>
