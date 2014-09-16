@@ -125,10 +125,6 @@
             </div>
           </div>
           <div ng-cloak id="map-container" class="col-md-9 ng-cloak">
-   
-            <div id="controls">
-              <button ng-click="map.toggleTrafficLayer()">Traffic</button>
-            </div>
             <google-map control="map.local.mapControl" center="map.center" zoom="map.zoom" 
                 options="map.mapOptions" draggable="true" events="map.events"  ng-cloak>
               <layer type="TrafficLayer"  show="map.showTraffic"></layer>
