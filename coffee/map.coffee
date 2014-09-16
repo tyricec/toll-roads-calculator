@@ -137,6 +137,7 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
       'panControl': false,
       'rotateControl': false,
       'streetViewControl': false,
+      'scrollwheel': false,
       'mapTypeControl': false,
       'maxZoom': 16,
       'minZoom': 11,
@@ -207,7 +208,7 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
   
   # Form submit function
   $scope.getRate = ->
-    return showAlert 'Find Your Toll cannot be completed.  Start and end points must be selected to get a toll rate.' if not formValidated()
+    return showAlert 'Calculate Your Toll cannot be completed.  Start and end points must be selected to get a toll rate.' if not formValidated()
     rateEl = angular.element("#calculator-results")
     rateEl.slideUp(200, -> 
       startId = $scope.map.local.route.start.id
@@ -215,9 +216,17 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
       type = $scope.map.local.route.type
       axles = $scope.map.local.route.axles
       $http.get("php/rates.php?method=getRates&start=#{startId}&end=#{endId}&type=#{type}&axles=#{axles}").success( (resp) ->
-        rateObj = $scope.map.local.route.rateObj = resp
-        if rateObj.rates?
-          preparePeakRates(rateObj.rates.peak) if rateObj.rates.peak?	
+        $scope.map.local.route.offPeakText = if resp.payment is "One-Time-Toll" then "One-Time-Toll" else "Off Peak"
+        panoEl = angular.element("#calculator-results div")
+        if resp.rates.off_peak is "No Toll"
+          panoEl.hide()
+          $scope.map.local.route.resultText = "No toll required for this trip"
+        else 
+          rateObj = $scope.map.local.route.rateObj = resp
+          $scope.map.local.route.resultText = "Your toll for this one-way trip:"
+          panoEl.show()
+          if rateObj.rates?
+            preparePeakRates(rateObj.rates.peak) if rateObj.rates.peak?	
         rateEl.slideDown()
       )
     )
@@ -234,7 +243,7 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
     if $scope.map.showStreetView is false
       $scope.map.showStreetView = true
       panoEl.show()
-      panoEl.animate({"height": "45%"})
+      panoEl.animate({"height": "55%"})
     return true
 
   # Used to change the options displayed for dropdown on certain condition.

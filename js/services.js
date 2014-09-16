@@ -12,7 +12,9 @@ app.service('sharedProperties', [
         start: null,
         end: null,
         type: 'onetime',
-        axles: 2
+        axles: 2,
+        resultText: 'Your toll for this one-way trip:',
+        offPeakText: 'Off Peak'
       },
       mapControl: {},
       mapObj: {},

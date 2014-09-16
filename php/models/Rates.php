@@ -28,7 +28,7 @@ class rates {
 		$adjustments = explode(',',$new_result['rate_extra']);
 		foreach($adjustments as $adjustment):
 			$data = array('adjust_id' => intval($adjustment));
-			$sth = $_db->prepare('SELECT `adjust_description`, `adjust_variable` FROM `adjustments` WHERE `adjust_id` = :adjust_id LIMIT 1');
+			$sth = $_db->prepare('SELECT `adjust_description`, `adjust_variable`, `adjust_type` FROM `adjustments` WHERE `adjust_id` = :adjust_id LIMIT 1');
 			$sth->execute($data);
       $result = $sth->fetch();
 			$new_result['peak'][] = $result;
@@ -48,12 +48,13 @@ class rates {
 	}
 	
 	public function getOutput($result) {
-		$new_result['off_peak'] = '$'.number_format($result['off_peak'],2);
+		$new_result['off_peak'] = $result['off_peak'] > 0 ? '$'.number_format($result['off_peak'],2) : 'No Toll';
 		$i = 0;
 		if($result['peak']):
 			foreach($result['peak'] as $peak):
 				$new_result['peak'][$i]['rate'] = '$'.number_format(($result['off_peak'] + $peak['adjust_variable']),2);
 				$new_result['peak'][$i]['description'] = $peak['adjust_description'];
+				$new_result['peak'][$i]['type'] = $peak['adjust_type'];
 				$i++;
 			endforeach;
 		endif;
