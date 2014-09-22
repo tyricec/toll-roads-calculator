@@ -31,7 +31,7 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
           $scope.showEndBtn = @model.showEndBtn
           $scope.map.currentMarker = @model
           if $scope.map.local.route.start? and (@model.id is $scope.map.local.route.start.id)
-            angular.element(".start-btn").attr('disabled', true) 
+            angular.element(".start-btn").attr('disabled', true)
           else 
             angular.element(".start-btn").attr('disabled', false)
           if $scope.map.local.route.end? and (@model.id is $scope.map.local.route.end.id )

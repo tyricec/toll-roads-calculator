@@ -293,6 +293,13 @@ div.info-window-controls button {
 		border: none;
 }
 
+.info-window-controls .btn-success[disabled],
+.info-window-controls .btn-danger[disabled] {
+		background-color: #D3D3D3;
+		border-color: #999;
+		color: #999;
+}
+
 /*-----------Angular JS-------------*/
 
 [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak, .ng-hide {
