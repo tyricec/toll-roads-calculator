@@ -30,11 +30,11 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
           $scope.showStartBtn = @model.showStartBtn
           $scope.showEndBtn = @model.showEndBtn
           $scope.map.currentMarker = @model
-          if $scope.map.local.route.start? and (@model.id is $scope.map.local.route.start.id)
+          if $scope.map.local.route.start? and (@model.id is $scope.map.local.route.start.id) or (@model.point_type is "exit")
             angular.element(".start-btn").attr('disabled', true)
           else 
             angular.element(".start-btn").attr('disabled', false)
-          if $scope.map.local.route.end? and (@model.id is $scope.map.local.route.end.id )
+          if $scope.map.local.route.end? and (@model.id is $scope.map.local.route.end.id ) or (@model.point_type is "entry")
             angular.element(".end-btn").attr('disabled', true) 
           else
             angular.element(".end-btn").attr('disabled', false)
