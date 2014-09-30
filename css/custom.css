@@ -12,49 +12,55 @@ body {
 		background-color: #CCC;
 }
 
-.text-primary {
-		color:#0052a1;
-}
-
 #application-container {
 		padding: 20px;
 		border: 2px solid #CCC;
 		margin-bottom: 20px;
 		background-color: #FFF;
+		min-height: 100%;
+}
+
+#application-container .col-height-extend {
+		height: 100%;
 }
 
 #calculator-container {
-	  display: block;
-		height: 782px;
+	  	display: block;
+		height: 100%;
 		width: 100%;
 		border: 1px solid #b6b6b6;
+}
+
+/*--------------------------------------------------------------------*/
+/*-------------------- BOOTSTRAP OVVERRIDE STYLES---------------------*/
+/*--------------------------------------------------------------------*/
+
+.text-primary {
+		color: #0052a1;
+}
+
+.form-control {
+		padding: 6px;
 }
 
 /*--------------------------------------------------------------------*/
 /*-------------------- CALCULATOR FORM STYLES ------------------------*/
 /*--------------------------------------------------------------------*/
 
-.form-control {
-		padding: 6px;
-}
-
-#calculator-form-container {
-		padding-left:10px;
-		padding-right:5px;
-		padding-top:15px;
+#calculator-form-container,
+#map-container {
+		/*padding-left: 10px;*/
+		padding-right: 16px;
+		padding-top: 15px;
 }
 
 #calculator-form label {
-		padding-right:5px;
-		text-align:left;
+		padding-right: 5px;
+		text-align: left;
 }
 
 #calculator-form .form-dropdown-group label {
 		padding-right: 20px;
-}
-
-#calculator-form .form-group .col-md-9 {
-		padding-left:0;
 }
 
 #calculator-form button[type="submit"] {
@@ -118,24 +124,9 @@ body {
 .form-group.form-dropdown-group {
 		margin-bottom: 0;
 }
-.form-dropdown-group .form-group .col-md-3 {
-		width: 27%;
-}
-
-.form-dropdown-group .form-group .col-md-9 {
-		width: 73%;
-}
-
-.form-dropdown-group .col-md-10 {
-		padding-right: 5px;
-		width: 88.3333%;
-}
 
 .form-dropdown-group .col-md-2 {
-		padding-left: 0;
-		padding-right: 0;
-		padding-top: 23px;
-		width: 11.6667%;
+		padding-top: 66px;
 }
 
 /*--------------------------------------------------------------------*/
@@ -143,6 +134,9 @@ body {
 /*--------------------------------------------------------------------*/
 
 #map-container {
+		margin-top: 12px;
+		margin-bottom: 12px;
+		margin-right: 18px;
 		height: 760px;
 }
 
@@ -300,18 +294,64 @@ div.info-window-controls button {
 		color: #999;
 }
 
-/*-----------Angular JS-------------*/
+/*-----------------------------------------------------------*/
+/*-------------------- ANGULAR JS STYLES---------------------*/
+/*-----------------------------------------------------------*/
 
 [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak, .ng-hide {
-    display: none !important;
+    	display: none !important;
 }
 
 /*-----------------------------------------------------------*/
 /*-------------------- MEDIA QUERIES ------------------------*/
 /*-----------------------------------------------------------*/
+@media only screen and (max-width: 674px) {
 
-@media all and (max-width: 768px) {
-#application-container {
-		height: 650px;
+.form-dropdown-group .col-md-2 {
+  padding-left: 0;
 }
+
+}
+
+@media only screen and (min-width: 992px) {
+
+.form-dropdown-group .col-md-2 {
+		padding-left: 0;
+		padding-right: 0;
+		padding-top: 23px;
+		width: 11.6667%;
+}
+
+.form-dropdown-group .col-md-10 {
+		padding-right: 5px;
+		width: 88.3333%;
+}
+
+.form-dropdown-group .form-group .col-md-3 {
+		width: 27%;
+}
+
+.form-dropdown-group .form-group .col-md-9 {
+		width: 73%;
+}
+
+#map-container {
+		margin-top: 0;
+		margin-right: 0;
+		margin-bottom: 0;
+}
+
+#calculator-container {
+		height: 762px;
+}
+
+#calculator-form-container,
+#map-container {
+		padding-right: 5px;
+}
+
+#calculator-form .form-group .col-md-9 {
+		padding-left: 0;
+}
+
 }
