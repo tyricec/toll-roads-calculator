@@ -42,12 +42,12 @@ Marker = (function() {
     if (this.point_type !== "exit") {
       this.showStartBtn = true;
     } else {
-      this.showStartBtn = false;
+      this.showStartBtn = true;
     }
     if (this.point_type !== "entry") {
       this.showEndBtn = true;
     } else {
-      this.showEndBtn = false;
+      this.showEndBtn = true;
     }
   }
 
@@ -87,12 +87,12 @@ app.controller('mapController', [
             $scope.showStartBtn = this.model.showStartBtn;
             $scope.showEndBtn = this.model.showEndBtn;
             $scope.map.currentMarker = this.model;
-            if (($scope.map.local.route.start != null) && (this.model.id === $scope.map.local.route.start.id)) {
+            if (($scope.map.local.route.start != null) && (this.model.id === $scope.map.local.route.start.id) || (this.model.point_type === "exit")) {
               angular.element(".start-btn").attr('disabled', true);
             } else {
               angular.element(".start-btn").attr('disabled', false);
             }
-            if (($scope.map.local.route.end != null) && (this.model.id === $scope.map.local.route.end.id)) {
+            if (($scope.map.local.route.end != null) && (this.model.id === $scope.map.local.route.end.id) || (this.model.point_type === "entry")) {
               angular.element(".end-btn").attr('disabled', true);
             } else {
               angular.element(".end-btn").attr('disabled', false);

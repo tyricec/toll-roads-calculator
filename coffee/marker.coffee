@@ -27,5 +27,7 @@ class Marker
       @icon = "states/plaza.png"
       @prevIcon = "states/plaza.png"
     @showWindow = false
-    if @point_type isnt "exit" then @showStartBtn = true else @showStartBtn = false
-    if @point_type isnt "entry" then @showEndBtn = true else @showEndBtn = false
+    #if @point_type isnt "exit" then @showStartBtn = true else @showStartBtn = false
+    #if @point_type isnt "entry" then @showEndBtn = true else @showEndBtn = false
+    if @point_type isnt "exit" then @showStartBtn = true else @showStartBtn = true
+    if @point_type isnt "entry" then @showEndBtn = true else @showEndBtn = true

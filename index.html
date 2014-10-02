@@ -17,7 +17,7 @@
   <body>
   <div id="application-container" class="container">
     <div class="row">
-    	<div class="col-md-12" ng-controller="mapController">
+    	<div class="col-md-12 col-height-extend" ng-controller="mapController">
       	<h1>Toll Rates</h1>
         <p>The Toll Roads (State Routes 73, 133, 241 and 261) are going cashless and converting to all-electronic toll collection. With all electronic tolling (AET) all tolls are collected electronically, eliminating delays caused by stopping to pay with cash, searching for cash or fumbling for exact change</p>
         <h3>Toll Calculator</h3>
@@ -41,14 +41,14 @@
              
              
 							<div class="form-group form-dropdown-group">
-              	<div class="col-md-10">
+              	<div class="col-xs-11 col-sm-11 col-md-10 ">
                 
                   <!--Start dropdown-->        
                   <div class="form-group">
                     <label for="local-route-start" class="col-md-3 control-label">Start:</label>
                     <div class="col-md-9">
                       <select id="local-route-start" class="form-control" ng-model="map.local.route.start" 
-                            ng-options="marker as marker.displayName for marker in map.local.startDisplayOpts">
+                            ng-options="marker as marker.displayName group by 'CA State Road ' + marker.freeway for marker in map.local.startDisplayOpts | orderBy:['freeway']">
                         <option value="">Select Start Point</option>
                       </select>
                     </div>
@@ -59,7 +59,7 @@
                     <label for="local-route-end" class="col-md-3 control-label">End:</label>
                     <div class="col-md-9">
                       <select id="local-route-end" class="form-control" ng-model="map.local.route.end" 
-                            ng-options="marker as marker.displayName for marker in map.local.endDisplayOpts">
+                            ng-options="marker as marker.displayName group by 'CA State Road ' + marker.freeway for marker in map.local.endDisplayOpts | orderBy:['freeway']">
                         <option value="">Select End Point</option>
                       </select>
                     </div>
@@ -67,7 +67,7 @@
                   
                 </div>
                 
-                <div class="col-md-2">
+                <div class="col-xs-1 col-sm-1 col-md-2 button-reverse">
                   <button id="button-reverse" ng-click="map.switchPoints()"><img src="images/site/reverse-trip.png" /></button>
                 </div>
 							</div>
