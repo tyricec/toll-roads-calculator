@@ -112,6 +112,57 @@ describe 'map-controller', ->
     expect(scope.map.showFwyRest).toBe(true)
   )
 
+  it('should not have more than one marker with a start icon whenever start changes.', ->
+    points[0].model = points[0]
+    points[1].model = points[1]
+    points[0].onClick()
+    scope.model = points[0].model
+    scope.onStartClick()
+    scope.$apply()
+    expect(scope.map.local.route.start.id).toBe(points[0].id)
+    points[0].onClick()
+    points[1].onClick()
+    scope.model = points[1].model
+    scope.onStartClick()
+    scope.$apply()
+    expect(scope.map.local.route.start.id).toBe(points[1].id)
+    expect(points[0].icon).toMatch(/inactive/)
+    expect(points[1].icon).toMatch(/start/)
+  )
+
+  it('should not have more than one marker with a end icon whenever end changes.', ->
+    points[0].model = points[0]
+    points[2].model = points[2]
+    points[0].onClick()
+    scope.model = points[0].model
+    scope.onEndClick()
+    scope.$apply()
+    expect(scope.map.local.route.end.id).toBe(points[0].id)
+    points[0].onClick()
+    points[2].onClick()
+    scope.model = points[2].model
+    scope.onEndClick()
+    scope.$apply()
+    expect(scope.map.local.route.end.id).toBe(points[2].id)
+    expect(points[0].icon).toMatch(/inactive/)
+    expect(points[2].icon).toMatch(/end/)
+  )
+
+  it('should set all markers inactive if freeway switch', ->
+    points[0].model = points[0]
+    points[0].onClick()
+    scope.model = points[0].model
+    scope.onStartClick()
+    scope.$apply()
+    expect(points[0].icon).toMatch(/start/)
+    scope.map.local.route.fwy = '73'
+    scope.$apply()
+    expect(scope.map.local.route.start).toBeNull()
+    scope.map.local.route.fwy = 'rest'
+    scope.$apply()
+    expect(points[0].icon).toMatch(/inactive/)
+  )
+
   describe 'the start and end points', ->
 
     afterEach -> scope.map.local.route.start = 0; scope.map.local.route.end = 0

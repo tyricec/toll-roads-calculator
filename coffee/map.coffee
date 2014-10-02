@@ -54,7 +54,6 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
             $scope.map.local.currentMarker = @model
             $scope.id = @model.id
             $scope.typeString = @model.typeString
-            #$scope.markerTitle = @model.name
             $scope.markerType = @model.markerType
             $scope.markerTitle = @model.name
             $scope.$apply()
@@ -121,8 +120,6 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
       tempStartPoint = $scope.map.local.route.start
       tempEndPoint = $scope.map.local.route.end
       if not (switchablePoint tempStartPoint) or not (switchablePoint tempEndPoint)
-        console.log switchablePoint tempEndPoint
-        console.log switchablePoint tempStartPoint
         return showAlert 'Reverse Trip cannot be completed. One of your selections is a one-way access point and cannot be swtiched.'
       $scope.map.local.route.start = tempEndPoint
       $scope.map.local.route.end = tempStartPoint
@@ -309,10 +306,10 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
       startPointsOpts = $scope.map.local.startPointsRest
       endPointsOpts = $scope.map.local.endPointsRest
     return false if not startPoints? or not endPoints?
+
     # Set other markers that were previously start or end to inactive
     points.forEach (marker) ->
-      if marker.status is "start" or marker.status is "end"
-        markerService.setMarkerStatus marker, "inactive"
+      markerService.setMarkerStatus marker, "inactive"
     
     $scope.map.local.startDisplayOpts = startPointsOpts.filter (point) -> point isnt newValues.end
     $scope.map.local.endDisplayOpts = endPointsOpts.filter (point) -> point isnt newValues.start
