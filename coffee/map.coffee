@@ -146,10 +146,14 @@ app.controller 'mapController', ['$scope', '$http', '$compile', 'sharedPropertie
       'pixelOffset': new google.maps.Size(0, -30)
     },
     'restLayerOptions': {
-      'url': 'http://ditisfl.org/toll-roads-calculator/kml/TCA_Toll_Roads_090514_Projec-133_241_261.kml'
+      'url': 'http://ditisfl.org/toll-roads-calculator/kml/TCA_Toll_Roads_090514_Projec-133_241_261.kml',
+      'suppressInfoWindows': true,
+      'clickable': false
     },
     'layer73Options': {
-      'url': 'http://ditisfl.org/toll-roads-calculator/kml/TCA_Toll_Roads_090514_Projec-73.kml'
+      'url': 'http://ditisfl.org/toll-roads-calculator/kml/TCA_Toll_Roads_090514_Projec-73.kml',
+      'suppressInfoWindows': true,
+      'clickable': false
     },
     'events': {
       # Invoked when the map is loaded
