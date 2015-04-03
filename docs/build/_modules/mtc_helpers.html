@@ -1,0 +1,543 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>mtc_helpers &mdash; MTC Analytics 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="MTC Analytics 1.0.0 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MTC Analytics 1.0.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for mtc_helpers</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;mtc_helpers.py</span>
+
+<span class="sd">   Author: Tyrice Clark</span>
+<span class="sd">   Company: Civic Resource Group</span>
+<span class="sd">   Email: tyricec@civicresourcegroup.com</span>
+
+<span class="sd">   This module has all the helper functions needed for the main script, mtc.py</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">boto</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">traceback</span> <span class="kn">import</span> <span class="n">format_exc</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">time</span> <span class="k">as</span> <span class="n">t</span><span class="p">,</span> <span class="n">timedelta</span>
+
+<span class="c"># Logging</span>
+<div class="viewcode-block" id="write_to_file"><a class="viewcode-back" href="../API.html#mtc_helpers.write_to_file">[docs]</a><span class="k">def</span> <span class="nf">write_to_file</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">output</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Writes output to stream given.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            stream (IO):</span>
+<span class="sd">                Stream to write to.</span>
+<span class="sd">            output (string):</span>
+<span class="sd">                Output to write to stream.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="log_to_file"><a class="viewcode-back" href="../API.html#mtc_helpers.log_to_file">[docs]</a><span class="k">def</span> <span class="nf">log_to_file</span><span class="p">(</span><span class="n">l_file</span><span class="p">,</span> <span class="n">output</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Log a message to given file</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        l_file (IO):</span>
+<span class="sd">            File to write message to.</span>
+<span class="sd">        output (string):</span>
+<span class="sd">            Output that goes to message.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cwd</span> <span class="o">=</span> <span class="n">get_cwd</span><span class="p">()</span>
+    <span class="n">l_file</span> <span class="o">=</span> <span class="n">cwd</span> <span class="o">+</span> <span class="s">&quot;/&quot;</span> <span class="o">+</span> <span class="s">&quot;logs/&quot;</span> <span class="o">+</span> <span class="n">l_file</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">l_file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">l_file</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">)</span>
+        <span class="n">fmt</span> <span class="o">=</span> <span class="s">&quot;%H:%M:%S %m-</span><span class="si">%d</span><span class="s">-%Y&quot;</span>
+        <span class="n">l_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">l_time</span> <span class="o">=</span> <span class="n">l_time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">fmt</span><span class="p">)</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;[{0}] {1}</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">l_time</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
+        <span class="n">write_to_file</span><span class="p">(</span><span class="n">l_file</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
+        <span class="n">l_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">ex</span>
+</div>
+<div class="viewcode-block" id="log_error"><a class="viewcode-back" href="../API.html#mtc_helpers.log_error">[docs]</a><span class="k">def</span> <span class="nf">log_error</span><span class="p">(</span><span class="n">exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Logs exception to file.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        exception (Exception):</span>
+<span class="sd">            Exception to log.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">err_message</span> <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;{0}</span><span class="se">\n</span><span class="s">{1}</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">exception</span><span class="p">),</span>
+                             <span class="nb">str</span><span class="p">(</span><span class="n">format_exc</span><span class="p">()))</span>
+    <span class="n">log_to_file</span><span class="p">(</span><span class="s">&quot;error.log&quot;</span><span class="p">,</span> <span class="n">err_message</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="log_csv"><a class="viewcode-back" href="../API.html#mtc_helpers.log_csv">[docs]</a><span class="k">def</span> <span class="nf">log_csv</span><span class="p">(</span><span class="n">action_name</span><span class="p">,</span> <span class="n">logs</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate csv from logs passed in.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        action_name (string):</span>
+<span class="sd">            Action to log (Download, Import, Unzip, etc.)</span>
+<span class="sd">        logs (list of tuples):</span>
+<span class="sd">            List of log tuples to generate csv from.</span>
+<span class="sd">        config (dict):</span>
+<span class="sd">            Dictionary that holds configuration values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">safe_name</span> <span class="o">=</span> <span class="n">escape_slashes</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;domain&quot;</span><span class="p">])</span>
+    <span class="n">script_date</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s">&quot;date&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&quot;%B-</span><span class="si">%d</span><span class="s">-%Y&quot;</span><span class="p">)</span>
+    <span class="n">file_name</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s">&quot;log_dir&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s">&quot;/&quot;</span> <span class="o">+</span> <span class="n">safe_name</span> <span class="o">+</span> <span class="s">&quot;-&quot;</span> <span class="o">+</span> <span class="n">action_name</span> <span class="o">+</span> \
+                <span class="s">&#39;-&#39;</span> <span class="o">+</span> <span class="n">script_date</span> <span class="o">+</span> <span class="s">&quot;.csv&quot;</span>
+    <span class="n">csv_file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span>
+    <span class="n">csv_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;&quot;Domain&quot;, &quot;Leidos File Name&quot;, &quot;Log-File&quot;,&#39;</span> <span class="o">+</span> \
+            <span class="s">&#39;&quot;Leidos Create Date&quot;, &quot;Log-File Date&quot;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">logs</span><span class="p">:</span>
+        <span class="n">log_date</span> <span class="o">=</span> <span class="n">get_date_in_log</span><span class="p">(</span><span class="n">log</span><span class="p">)</span>
+        <span class="n">zip_date</span> <span class="o">=</span> <span class="n">log</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+        <span class="n">zip_name</span> <span class="o">=</span> <span class="n">log</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">log_name</span> <span class="o">=</span> <span class="n">log</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">domain</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s">&quot;domain&quot;</span><span class="p">]</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&#39;&quot;{0}&quot;, &quot;{1}&quot;, &quot;{2}&quot;, &quot;{3}&quot;, &quot;{4}&quot; </span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span>
+                         <span class="n">domain</span><span class="p">,</span> <span class="n">zip_name</span><span class="p">,</span> <span class="n">log_name</span><span class="p">,</span> <span class="n">zip_date</span><span class="p">,</span> <span class="n">log_date</span><span class="p">)</span>
+        <span class="n">csv_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="log_time_to_file"><a class="viewcode-back" href="../API.html#mtc_helpers.log_time_to_file">[docs]</a><span class="k">def</span> <span class="nf">log_time_to_file</span><span class="p">(</span><span class="n">time_name</span><span class="p">,</span> <span class="n">record_time</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Log elapsed time to file.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        time_name (str):</span>
+<span class="sd">            Name of record&#39;s time being recorded</span>
+<span class="sd">        record_time (time):</span>
+<span class="sd">            Time being logged</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">time_name</span> <span class="o">+</span> <span class="s">&quot; time: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">record_time</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; seconds</span><span class="se">\n</span><span class="s">&quot;</span>
+    <span class="n">log_to_file</span><span class="p">(</span><span class="s">&quot;time_records.log&quot;</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="log_average_time"><a class="viewcode-back" href="../API.html#mtc_helpers.log_average_time">[docs]</a><span class="k">def</span> <span class="nf">log_average_time</span><span class="p">(</span><span class="n">action_name</span><span class="p">,</span> <span class="n">times</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Logs average time for an action.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        action_name (str):</span>
+<span class="sd">            Name of action (Download, Import, etc.)</span>
+<span class="sd">        times (list):</span>
+<span class="sd">            List of times to find the average of.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">average</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">times</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>
+    <span class="n">time_name</span> <span class="o">=</span> <span class="s">&quot;Average &quot;</span> <span class="o">+</span> <span class="n">action_name</span>
+    <span class="n">log_time_to_file</span><span class="p">(</span><span class="n">time_name</span><span class="p">,</span> <span class="n">average</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="log_status"><a class="viewcode-back" href="../API.html#mtc_helpers.log_status">[docs]</a><span class="k">def</span> <span class="nf">log_status</span><span class="p">(</span><span class="n">action_name</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Logs whether an action for a result was Successful or Failed.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        action_name (str):</span>
+<span class="sd">            Name of action (Download, Import, etc.)</span>
+<span class="sd">        result (tuple):</span>
+<span class="sd">            Result tuple in format:</span>
+<span class="sd">            ((file_name, extract_name), status, time, key_date)</span>
+<span class="sd">        config (dict):</span>
+<span class="sd">            Dictionary that holds configuration values.</span>
+<span class="sd">        message (str) (optional):</span>
+<span class="sd">            Message to print to screen.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">l_date</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s">&quot;date&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&quot;%Y-%m-</span><span class="si">%d</span><span class="s">&quot;</span><span class="p">)</span>
+    <span class="n">domain</span> <span class="o">=</span> <span class="n">escape_slashes</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;domain&quot;</span><span class="p">])</span>
+    <span class="n">file_name</span> <span class="o">=</span> <span class="n">domain</span> <span class="o">+</span> <span class="s">&quot;-&quot;</span> <span class="o">+</span> <span class="n">action_name</span> <span class="o">+</span> <span class="s">&quot;-&quot;</span> <span class="o">+</span> <span class="n">l_date</span> <span class="o">+</span> <span class="s">&quot;.log&quot;</span>
+    <span class="n">log_name</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">success</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">success</span> <span class="ow">is</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="n">log_to_file</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">log_name</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">log_to_file</span><span class="p">(</span><span class="s">&#39;failed_&#39;</span><span class="o">+</span><span class="n">file_name</span><span class="p">,</span> <span class="n">log_name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">output</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">success</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&quot;[Success] &quot;</span> <span class="o">+</span> <span class="n">output</span> <span class="o">+</span> <span class="nb">str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&quot; {{{0}}}&quot;</span><span class="p">,</span> <span class="n">log_name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&quot;[Failed] &quot;</span> <span class="o">+</span> <span class="n">output</span> <span class="o">+</span> <span class="nb">str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&quot; {{{0}}}&quot;</span><span class="p">,</span> <span class="n">log_name</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="log_statuses"><a class="viewcode-back" href="../API.html#mtc_helpers.log_statuses">[docs]</a><span class="k">def</span> <span class="nf">log_statuses</span><span class="p">(</span><span class="n">action_name</span><span class="p">,</span> <span class="n">result_list</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">output</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Logs status and average time of each result passed.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        action_name (str):</span>
+<span class="sd">            Name of action being logged (Download, Import, etc.)</span>
+<span class="sd">        result_list (list):</span>
+<span class="sd">            List of results to log</span>
+<span class="sd">        config (dict):</span>
+<span class="sd">            Dictionary that holds configuration values.</span>
+<span class="sd">        output (str):</span>
+<span class="sd">            Output message to print to console screen.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">success_result</span> <span class="ow">in</span> <span class="n">result_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="n">log_status</span><span class="p">(</span><span class="n">action_name</span><span class="p">,</span> <span class="n">success_result</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result_list</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">log_average_time</span><span class="p">(</span><span class="s">&quot;Successful &quot;</span><span class="o">+</span><span class="n">action_name</span><span class="p">,</span>
+                         <span class="p">[</span><span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">result_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+    <span class="k">for</span> <span class="n">failed_result</span> <span class="ow">in</span> <span class="n">result_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">log_status</span><span class="p">(</span><span class="n">action_name</span><span class="p">,</span> <span class="n">failed_result</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result_list</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">log_average_time</span><span class="p">(</span><span class="s">&quot;Failed &quot;</span><span class="o">+</span><span class="n">action_name</span><span class="p">,</span>
+                         <span class="p">[</span><span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">result_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+</div>
+<div class="viewcode-block" id="log_import_summary"><a class="viewcode-back" href="../API.html#mtc_helpers.log_import_summary">[docs]</a><span class="k">def</span> <span class="nf">log_import_summary</span><span class="p">(</span><span class="n">output</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Logs output from piwik python script.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        output (IO):</span>
+<span class="sd">            Stream from piwik command.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cwd</span> <span class="o">=</span> <span class="n">get_cwd</span><span class="p">()</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cwd</span><span class="o">+</span><span class="s">&#39;/logs/import_summary.log&#39;</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">import_summary</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">iter</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">readline</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">):</span>
+            <span class="n">fmt</span> <span class="o">=</span> <span class="s">&quot;%H:%M:%S %m-</span><span class="si">%d</span><span class="s">-%Y&quot;</span>
+            <span class="n">current_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+            <span class="n">current_time</span> <span class="o">=</span> <span class="n">current_time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">fmt</span><span class="p">)</span>
+            <span class="n">import_summary</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&#39;[{0}]&#39;</span><span class="p">,</span> <span class="n">time</span><span class="p">))</span>
+            <span class="n">import_summary</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="split_lists_by_status"><a class="viewcode-back" href="../API.html#mtc_helpers.split_lists_by_status">[docs]</a><span class="k">def</span> <span class="nf">split_lists_by_status</span><span class="p">(</span><span class="n">result_list</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Splits a list by status of result tuples within the list.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        result_list (list):</span>
+<span class="sd">            List of result tuples</span>
+<span class="sd">            Format of tuple: ((key_name, unzipped_name), status, time, key_date)</span>
+
+<span class="sd">    Return type:</span>
+<span class="sd">        list</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        List containing two lists, one list with successful results and</span>
+<span class="sd">        the other failed results.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span>
+        <span class="p">[</span><span class="n">result</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">result_list</span> <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">True</span><span class="p">],</span>
+        <span class="p">[</span><span class="n">result</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">result_list</span> <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">False</span><span class="p">]</span>
+    <span class="p">]</span>
+
+</div>
+<div class="viewcode-block" id="create_date_range"><a class="viewcode-back" href="../API.html#mtc_helpers.create_date_range">[docs]</a><span class="k">def</span> <span class="nf">create_date_range</span><span class="p">(</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a date range list.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        start_date (str):</span>
+<span class="sd">            Date string to become datetime object</span>
+<span class="sd">        end_date (str):</span>
+<span class="sd">            Date string to become datetime object</span>
+
+<span class="sd">    Return type:</span>
+<span class="sd">        list</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A list containing datetime objects of start and end date.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># Creates a list of datetimes from dates given</span>
+    <span class="n">date_range</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s">&#39;%Y-%m-</span><span class="si">%d</span><span class="s"> %H:%M:%S&#39;</span>
+    <span class="n">start_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">start_date</span> <span class="o">+</span> <span class="s">&#39; &#39;</span> <span class="o">+</span> <span class="s">&#39;00:00:00&#39;</span><span class="p">,</span> <span class="n">fmt</span><span class="p">)</span>
+    <span class="n">end_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">end_date</span> <span class="o">+</span> <span class="s">&#39; &#39;</span> <span class="o">+</span> <span class="s">&#39;00:00:00&#39;</span><span class="p">,</span> <span class="n">fmt</span><span class="p">)</span>
+    <span class="n">date_range</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">start_date</span><span class="p">)</span>
+    <span class="n">date_range</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">end_date</span><span class="p">)</span>
+    <span class="c"># return list of date ranges</span>
+    <span class="k">return</span> <span class="n">date_range</span>
+</div>
+<div class="viewcode-block" id="get_connection"><a class="viewcode-back" href="../API.html#mtc_helpers.get_connection">[docs]</a><span class="k">def</span> <span class="nf">get_connection</span><span class="p">(</span><span class="n">access_key</span><span class="p">,</span> <span class="n">secret</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gets connection to S3.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        access_key:</span>
+<span class="sd">            Access key needed for s3 connection.</span>
+<span class="sd">        secret:</span>
+<span class="sd">            Secret key needed for s3 connection.</span>
+<span class="sd">    Return type:</span>
+<span class="sd">        boto.s3.connection</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A connection to the s3 machine.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">connection</span> <span class="o">=</span> <span class="n">boto</span><span class="o">.</span><span class="n">connect_s3</span><span class="p">(</span><span class="n">access_key</span><span class="p">,</span> <span class="n">secret</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">connection</span>
+</div>
+<div class="viewcode-block" id="get_bucket"><a class="viewcode-back" href="../API.html#mtc_helpers.get_bucket">[docs]</a><span class="k">def</span> <span class="nf">get_bucket</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">bucket_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gets bucket from s3 connection.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        conn (boto.s3.connection):</span>
+<span class="sd">            Connection to s3 machine.</span>
+<span class="sd">        bucket_name (str):</span>
+<span class="sd">            Name of bucket to get.</span>
+
+<span class="sd">    Return type:</span>
+<span class="sd">        boto.s3.bucket.Bucket</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Bucket from s3 machine.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="s">&quot;Getting Bucket {{{0}}}&quot;</span>
+    <span class="k">print</span> <span class="n">output</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">bucket_name</span><span class="p">)</span>
+    <span class="n">bucket</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">get_bucket</span><span class="p">(</span><span class="n">bucket_name</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&quot;Bucket received.&quot;</span>
+    <span class="k">return</span> <span class="n">bucket</span>
+</div>
+<div class="viewcode-block" id="get_result"><a class="viewcode-back" href="../API.html#mtc_helpers.get_result">[docs]</a><span class="k">def</span> <span class="nf">get_result</span><span class="p">(</span><span class="n">process</span><span class="p">,</span> <span class="n">key_date</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns result from process.</span>
+
+<span class="sd">    Used to reduce try, except, blocks in functions.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        process (method):</span>
+<span class="sd">            function that processes arguments to a result.</span>
+<span class="sd">        date (str):</span>
+<span class="sd">            date of key that is part of the result.</span>
+<span class="sd">        *args:</span>
+<span class="sd">            Arguments for process method.</span>
+
+<span class="sd">    Return type:</span>
+<span class="sd">        tuple</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Result tuple from process.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">process</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span>
+        <span class="n">log_error</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="p">,</span> <span class="n">key_date</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="get_keys"><a class="viewcode-back" href="../API.html#mtc_helpers.get_keys">[docs]</a><span class="k">def</span> <span class="nf">get_keys</span><span class="p">(</span><span class="n">bucket</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get keys from bucket.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        bucket (boto.s3.bucket.Bucket):</span>
+<span class="sd">            Bucket to get keys from.</span>
+
+<span class="sd">    Return type:</span>
+<span class="sd">        list</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        List of keys from bucket.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">print</span> <span class="s">&quot;Getting keys from bucket.&quot;</span>
+    <span class="k">return</span> <span class="n">bucket</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="get_credentials"><a class="viewcode-back" href="../API.html#mtc_helpers.get_credentials">[docs]</a><span class="k">def</span> <span class="nf">get_credentials</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">access_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get Credentials for either downloading or uploading.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        config (dict):</span>
+<span class="sd">            Dictionary with configuration values.</span>
+<span class="sd">        access_name (str):</span>
+<span class="sd">            Name of credentials. Value can be either &quot;push&quot; or &quot;pull&quot;.</span>
+
+<span class="sd">    Return type:</span>
+<span class="sd">        tuple</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A tuple with access key and secret key.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">print</span> <span class="nb">str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;Getting </span><span class="se">\&quot;</span><span class="s">{0}</span><span class="se">\&quot;</span><span class="s"> credentials.&quot;</span><span class="p">,</span> <span class="n">access_name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">access_name</span> <span class="o">==</span> <span class="s">&quot;pull&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;aws_pull_access_key&quot;</span><span class="p">],</span> <span class="n">config</span><span class="p">[</span><span class="s">&quot;aws_pull_secret&quot;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">access_name</span> <span class="o">==</span> <span class="s">&quot;push&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;aws_push_access_key&quot;</span><span class="p">],</span> <span class="n">config</span><span class="p">[</span><span class="s">&quot;aws_push_secret&quot;</span><span class="p">])</span>
+    <span class="k">print</span> <span class="s">&quot;No credentials found.&quot;</span>
+</div>
+<div class="viewcode-block" id="get_date_in_log"><a class="viewcode-back" href="../API.html#mtc_helpers.get_date_in_log">[docs]</a><span class="k">def</span> <span class="nf">get_date_in_log</span><span class="p">(</span><span class="n">log</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Finds the date within the log file. Can be found on line 3 of each</span>
+<span class="sd">    valid log file.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        log (tuple):</span>
+<span class="sd">            Log tuple that comes from results of download and unzip functions.</span>
+
+<span class="sd">    Return type:</span>
+<span class="sd">        str</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Date from the log.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">command</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;grep&quot;</span><span class="p">,</span> <span class="s">&quot;#Date&quot;</span><span class="p">,</span> <span class="n">log</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]]</span>
+    <span class="n">proc</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">proc</span><span class="o">.</span><span class="n">stdout</span><span class="p">:</span>
+        <span class="n">date_split</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;#Date: &quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">date_split</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="get_cwd"><a class="viewcode-back" href="../API.html#mtc_helpers.get_cwd">[docs]</a><span class="k">def</span> <span class="nf">get_cwd</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gets current working directory of script.</span>
+
+<span class="sd">    Return type:</span>
+<span class="sd">        str</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Current working directory of script.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="k">return</span> <span class="n">cwd</span>
+</div>
+<div class="viewcode-block" id="escape_slashes"><a class="viewcode-back" href="../API.html#mtc_helpers.escape_slashes">[docs]</a><span class="k">def</span> <span class="nf">escape_slashes</span><span class="p">(</span><span class="n">word</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Replaces slashes within a word with a hypen.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        word (str):</span>
+<span class="sd">            Word to escape slashes from.</span>
+
+<span class="sd">    Return type:</span>
+<span class="sd">        str</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Word with slashes escaped.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">word</span> <span class="o">=</span> <span class="n">word</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">,</span> <span class="s">&#39;-&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">word</span>
+</div>
+<div class="viewcode-block" id="get_search"><a class="viewcode-back" href="../API.html#mtc_helpers.get_search">[docs]</a><span class="k">def</span> <span class="nf">get_search</span><span class="p">(</span><span class="n">domain</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gets the regex pattern for a domain.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        domain (str):</span>
+<span class="sd">            Domain to get log regex matching for.</span>
+
+<span class="sd">    Return type:</span>
+<span class="sd">        str</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Regex to match log files to a domain on Leidos server.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">domain</span> <span class="o">==</span> <span class="s">&#39;511.org&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">&#39;.*511ORG.*</span><span class="se">\\</span><span class="s">.log</span><span class="se">\\</span><span class="s">.zip&#39;</span>
+    <span class="k">elif</span> <span class="n">domain</span> <span class="o">==</span> <span class="s">&#39;my511.org&#39;</span><span class="p">:</span>
+        <span class="k">return</span><span class="s">&#39;.*-MY511-.*</span><span class="se">\\</span><span class="s">.log</span><span class="se">\\</span><span class="s">.zip&#39;</span>
+    <span class="k">elif</span> <span class="n">domain</span> <span class="o">==</span> <span class="s">&#39;assets.511.org&#39;</span><span class="p">:</span>
+        <span class="k">return</span><span class="s">&#39;.*Assets.*</span><span class="se">\\</span><span class="s">.log</span><span class="se">\\</span><span class="s">.zip&#39;</span>
+    <span class="k">elif</span> <span class="n">domain</span> <span class="o">==</span> <span class="s">&#39;511.org/developer-resources.asp&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">&#39;.*-MY511Services-.*</span><span class="se">\\</span><span class="s">.log</span><span class="se">\\</span><span class="s">.zip&#39;</span>
+    <span class="k">elif</span> <span class="n">domain</span> <span class="o">==</span> <span class="s">&#39;m.parking.511.org&#39;</span><span class="p">:</span>
+        <span class="k">return</span><span class="s">&#39;.*ParkingMobile.*</span><span class="se">\\</span><span class="s">.log</span><span class="se">\\</span><span class="s">.zip&#39;</span>
+    <span class="k">elif</span> <span class="n">domain</span> <span class="o">==</span> <span class="s">&#39;ticker.511.org&#39;</span><span class="p">:</span>
+        <span class="k">return</span><span class="s">&#39;.*Ticker.*</span><span class="se">\\</span><span class="s">.log</span><span class="se">\\</span><span class="s">.zip&#39;</span>
+    <span class="k">elif</span> <span class="n">domain</span> <span class="o">==</span> <span class="s">&#39;traffic.511.org&#39;</span><span class="p">:</span>
+        <span class="k">return</span><span class="s">&#39;(.*Traffic.*</span><span class="se">\\</span><span class="s">.log</span><span class="se">\\</span><span class="s">.zip)|(.*CMS.*</span><span class="se">\\</span><span class="s">.log</span><span class="se">\\</span><span class="s">.zip)&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="get_yesterday_date"><a class="viewcode-back" href="../API.html#mtc_helpers.get_yesterday_date">[docs]</a><span class="k">def</span> <span class="nf">get_yesterday_date</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns yesterday date as datetime object.</span>
+
+<span class="sd">    Return type:</span>
+<span class="sd">        datetime</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Yesterday&#39;s date.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">today_date</span> <span class="o">=</span> <span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()</span>
+    <span class="n">today_time</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">min</span>
+    <span class="n">today_datetime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">combine</span><span class="p">(</span><span class="n">today_date</span><span class="p">,</span> <span class="n">today_time</span><span class="p">)</span>
+    <span class="n">yesterday_datetime</span> <span class="o">=</span> <span class="n">today_datetime</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">yesterday_datetime</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/crg.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, Tyrice Clark.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.3</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

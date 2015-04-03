@@ -1,0 +1,41 @@
+Developer Guide
+---------------
+
+Introduction
+============
+
+The purpose of this document is to help aid in understanding the development of all the
+scripts. It is more general than the API documentation and should give a high level
+understanding of the code.
+
+Architecture
+============
+
+There are 4 modules that make up the script, *mtc.py*, *mtc_helpers.py*, *legacy.py*, and *mtc_classes.py*.
+The Module *mtc* is the main module that can be executed with *legacy* being an extension of it that can be executed.
+Modules *mtc_helpers* and *mtc_classes* are libraries of functions and classes that *mtc* and *legacy* use.
+
+Starting with module *mtc*, the code is organized into sections determined by actions. These actions are:
+
+- Downloading
+- Unzipping
+- Importing
+- Compressing
+- Archiving
+- Cleanup
+
+The overall structure of these scripts is to use more of a functional structure. Modules *mtc_helpers* contain many
+functions that *mtc* uses with list comprehensions to keep this structure. Almost each section of *mtc* is broken up
+into two functions where there is one function calling that one in a list comprehension. Functions *download_logs* and 
+*download_log* can be used as an example:
+
+.. literalinclude:: mtc.py
+   :linenos:
+   :pyobject: download_logs
+   :emphasize-lines: 19
+
+.. literalinclude:: mtc.py
+   :linenos:
+   :pyobject: download_log
+
+\* *Line 19 in the function download_logs shows the list comprehension* 

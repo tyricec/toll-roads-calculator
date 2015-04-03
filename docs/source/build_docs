@@ -1,0 +1,3 @@
+sphinx-build -b html . ../build
+rm -rvf /home/tclark/build
+cp -rv ../build /home/tclark/

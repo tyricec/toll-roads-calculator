@@ -1,0 +1,1028 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>API Documentation &mdash; MTC Analytics 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="MTC Analytics 1.0.0 documentation" href="index.html" />
+    <link rel="prev" title="Developer Notes" href="Developer-Notes.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Developer-Notes.html" title="Developer Notes"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MTC Analytics 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="api-documentation">
+<h1>API Documentation<a class="headerlink" href="#api-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-mtc">
+<span id="mtc-py"></span><h2>mtc.py<a class="headerlink" href="#module-mtc" title="Permalink to this headline">¶</a></h2>
+<p>mtc.py</p>
+<p>Author: Tyrice Clark
+Company: Civic Resource Group
+Email: <a class="reference external" href="mailto:tyricec&#37;&#52;&#48;civicresourcegroup&#46;com">tyricec<span>&#64;</span>civicresourcegroup<span>&#46;</span>com</a></p>
+<p>This module is used to import one day of data into piwik.</p>
+<dl class="function">
+<dt id="mtc.archive_logs">
+<code class="descclassname">mtc.</code><code class="descname">archive_logs</code><span class="sig-paren">(</span><em>zip_file</em>, <em>config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc.html#archive_logs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc.archive_logs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main function to archive logs.</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>zip_file (string):</dt>
+<dd>Zip file that contains all logs to archive.</dd>
+<dt>config (dict):</dt>
+<dd>Dictionary containing configuration values.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc.cleanup">
+<code class="descclassname">mtc.</code><code class="descname">cleanup</code><span class="sig-paren">(</span><em>config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc.html#cleanup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc.cleanup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cleans up directories and files that were created from script.</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>config (dict):</dt>
+<dd>Dictionary containing configuration values.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc.compress_logs">
+<code class="descclassname">mtc.</code><code class="descname">compress_logs</code><span class="sig-paren">(</span><em>logs</em>, <em>config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc.html#compress_logs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc.compress_logs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main function for compressing logs for upload.</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>logs (list):</dt>
+<dd>List of log files to be compressed.</dd>
+<dt>config (dict):</dt>
+<dd>Dictionary that contains configuration values.</dd>
+</dl>
+</dd>
+<dt>Return type:</dt>
+<dd>string</dd>
+<dt>Returns:</dt>
+<dd>The name of the zip file to upload to Amazon bucket.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc.create_zip_objs">
+<code class="descclassname">mtc.</code><code class="descname">create_zip_objs</code><span class="sig-paren">(</span><em>zips</em>, <em>config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc.html#create_zip_objs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc.create_zip_objs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create zip objects from list of files passed.</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>zips (list):</dt>
+<dd>List of zip files to become ZipFile objects.</dd>
+<dt>config (dict):</dt>
+<dd>Dictionary with configuration values.</dd>
+</dl>
+</dd>
+<dt>Return type:</dt>
+<dd>list</dd>
+<dt>Returns:</dt>
+<dd>A list of ZipFile objects.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc.download_cb">
+<code class="descclassname">mtc.</code><code class="descname">download_cb</code><span class="sig-paren">(</span><em>received</em>, <em>total</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc.html#download_cb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc.download_cb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback function for s3 downloads.</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>recieved (str):</dt>
+<dd>Number of bytes currently downloaded.</dd>
+<dt>total (str):</dt>
+<dd>Total number of bytes of file being downloaded.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc.download_log">
+<code class="descclassname">mtc.</code><code class="descname">download_log</code><span class="sig-paren">(</span><em>key</em>, <em>config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc.html#download_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc.download_log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Downloads file from s3 bucket to file system.</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>key (boto.s3.key.Key):</dt>
+<dd>Key to download.</dd>
+<dt>config (dict):</dt>
+<dd>Dictionary with configuration values.</dd>
+</dl>
+</dd>
+<dt>Return type:</dt>
+<dd>tuple</dd>
+<dt>Returns:</dt>
+<dd>Result tuple with format:
+(key_name, status, time, key_date)</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc.download_logs">
+<code class="descclassname">mtc.</code><code class="descname">download_logs</code><span class="sig-paren">(</span><em>config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc.html#download_logs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc.download_logs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main function of Download section</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>config (dict):</dt>
+<dd>Dictionary with configuration values.</dd>
+</dl>
+</dd>
+<dt>Return type:</dt>
+<dd>list</dd>
+<dt>Returns:</dt>
+<dd>List of result that reference files downloaded.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc.extract_log">
+<code class="descclassname">mtc.</code><code class="descname">extract_log</code><span class="sig-paren">(</span><em>key_name</em>, <em>log</em>, <em>zip_obj</em>, <em>config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc.html#extract_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc.extract_log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts log from zip file.</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>key_name (str):</dt>
+<dd>Name of file downloaded.</dd>
+<dt>log (str):</dt>
+<dd>Name of file to extract from zip</dd>
+<dt>zip_obj (tuple):</dt>
+<dd><dl class="first last docutils">
+<dt>Tuple with format:</dt>
+<dd>(Zip Object, Number for zip file, Number for log file)</dd>
+</dl>
+</dd>
+<dt>config (dict):</dt>
+<dd>Dictionary with configuration values.</dd>
+</dl>
+</dd>
+<dt>Return type:</dt>
+<dd>tuple</dd>
+<dt>Returns:</dt>
+<dd><dl class="first last docutils">
+<dt>Tuple with format:</dt>
+<dd>(key_name, extract_file_name)</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc.filter_keys">
+<code class="descclassname">mtc.</code><code class="descname">filter_keys</code><span class="sig-paren">(</span><em>keys</em>, <em>search</em>, <em>config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc.html#filter_keys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc.filter_keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filters keys based off it&#8217;s site regular expression pattern.</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>keys (list):</dt>
+<dd>List of keys to filter.</dd>
+<dt>search (re):</dt>
+<dd>Regular expression to match for filter.</dd>
+<dt>config (dict):</dt>
+<dd>Dictionary with configuration values.</dd>
+</dl>
+</dd>
+<dt>Return type:</dt>
+<dd>list</dd>
+<dt>Returns:</dt>
+<dd>List of keys that are matched by regex pattern.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc.filter_logs_by_date">
+<code class="descclassname">mtc.</code><code class="descname">filter_logs_by_date</code><span class="sig-paren">(</span><em>log_files</em>, <em>config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc.html#filter_logs_by_date"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc.filter_logs_by_date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filters log files that match date passed to script. Matches against #Date
+column with log files.</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>log_files (list):</dt>
+<dd>List of log files to filter.</dd>
+<dt>config (dict):</dt>
+<dd>Dictionary with configuration values.</dd>
+</dl>
+</dd>
+<dt>Return type:</dt>
+<dd>list</dd>
+<dt>Returns:</dt>
+<dd>A list of files that match date.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc.get_access_to_logs">
+<code class="descclassname">mtc.</code><code class="descname">get_access_to_logs</code><span class="sig-paren">(</span><em>config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc.html#get_access_to_logs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc.get_access_to_logs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets connection to bucket that has log files.</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>config (dict):</dt>
+<dd>Dictionary with configuration values</dd>
+</dl>
+</dd>
+<dt>Return type:</dt>
+<dd>boto.s3.bucket.Bucket</dd>
+<dt>Returns:</dt>
+<dd>AWS bucket</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc.get_crg_connection">
+<code class="descclassname">mtc.</code><code class="descname">get_crg_connection</code><span class="sig-paren">(</span><em>config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc.html#get_crg_connection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc.get_crg_connection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get connection to bucket from CRG.</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>config (dict):</dt>
+<dd>Dictionary containing configuration values.</dd>
+</dl>
+</dd>
+<dt>Return type:</dt>
+<dd>boto.s3.bucket.Bucket</dd>
+<dt>Returns:</dt>
+<dd>Bucket to upload to.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc.get_error">
+<code class="descclassname">mtc.</code><code class="descname">get_error</code><span class="sig-paren">(</span><em>stderr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc.html#get_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc.get_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads in error stream and returns output result.</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>stderr (IO):</dt>
+<dd>Error stream to read.</dd>
+</dl>
+</dd>
+<dt>Return type:</dt>
+<dd>tuple</dd>
+<dt>Returns:</dt>
+<dd>Result tuple that is either output of error or skip parameter to retry.
+Format: (&#8220;output&#8221;, &#8220;error_output&#8221;), (&#8220;skip&#8221;, &#8220;skip number&#8221;)</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc.get_logs_to_download">
+<code class="descclassname">mtc.</code><code class="descname">get_logs_to_download</code><span class="sig-paren">(</span><em>bucket</em>, <em>config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc.html#get_logs_to_download"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc.get_logs_to_download" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns logs to download</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>bucket (boto.s3.bucket.Bucket):</dt>
+<dd>Bucket to download logs from.</dd>
+<dt>config (dict):</dt>
+<dd>Dictionary with configuration values.</dd>
+</dl>
+</dd>
+<dt>Return type:</dt>
+<dd>list</dd>
+<dt>Returns:</dt>
+<dd>List of Keys</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc.import_log">
+<code class="descclassname">mtc.</code><code class="descname">import_log</code><span class="sig-paren">(</span><em>log</em>, <em>key_name</em>, <em>key_date</em>, <em>config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc.html#import_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc.import_log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Imports log into piwik.</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>log (str):</dt>
+<dd>Log to import</dd>
+<dt>key_name (str):</dt>
+<dd>Name of key associatied with log.</dd>
+<dt>key_date (str):</dt>
+<dd>Date of key associated with log.</dd>
+<dt>config (dict):</dt>
+<dd>Dictionary that contatins configuration values.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc.import_logs">
+<code class="descclassname">mtc.</code><code class="descname">import_logs</code><span class="sig-paren">(</span><em>log_files</em>, <em>config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc.html#import_logs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc.import_logs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main function for importing logs</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>log_files (list):</dt>
+<dd>Log files to import into Piwik.</dd>
+<dt>config (dict):</dt>
+<dd>Dictionary with configuration values.</dd>
+</dl>
+</dd>
+<dt>Return type:</dt>
+<dd>list</dd>
+<dt>Returns:</dt>
+<dd>A list of files that were imported.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc.main">
+<code class="descclassname">mtc.</code><code class="descname">main</code><span class="sig-paren">(</span><em>domain</em>, <em>script_date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main function of script.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc.run_archive">
+<code class="descclassname">mtc.</code><code class="descname">run_archive</code><span class="sig-paren">(</span><em>config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc.html#run_archive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc.run_archive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs piwik archive command.</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>config (dict):</dt>
+<dd>Dictionary with configuration values.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc.run_import">
+<code class="descclassname">mtc.</code><code class="descname">run_import</code><span class="sig-paren">(</span><em>log</em>, <em>config</em>, <em>skip=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc.html#run_import"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc.run_import" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs import on log passed.</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>log (str):</dt>
+<dd>Name of log to import.</dd>
+<dt>config (dict):</dt>
+<dd>Dictionary containing configuration values.</dd>
+<dt>skip (str) (optional):</dt>
+<dd>Value to retry import at previous line number</dd>
+</dl>
+</dd>
+<dt>Return type:</dt>
+<dd>tuple</dd>
+<dt>Returns:</dt>
+<dd>Result tuple.
+Format: (True,), (&#8220;output&#8221;, &#8220;error output&#8221;), (&#8220;skip&#8221;, &#8220;skip value&#8221;)</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc.run_piwik_command">
+<code class="descclassname">mtc.</code><code class="descname">run_piwik_command</code><span class="sig-paren">(</span><em>command</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc.html#run_piwik_command"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc.run_piwik_command" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs piwik import command.</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>command (str):</dt>
+<dd>Command to run.</dd>
+</dl>
+</dd>
+<dt>Return type:</dt>
+<dd>tuple</dd>
+<dt>Returns:</dt>
+<dd>Result tuple of command.
+Format: (True,), (&#8220;output&#8221;, &#8220;error output&#8221;), (&#8220;skip&#8221;, &#8220;skip number&#8221;)</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc.run_script">
+<code class="descclassname">mtc.</code><code class="descname">run_script</code><span class="sig-paren">(</span><em>domain</em>, <em>script_date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc.html#run_script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc.run_script" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs all main functions for specific domain and date.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc.setup_directories">
+<code class="descclassname">mtc.</code><code class="descname">setup_directories</code><span class="sig-paren">(</span><em>domain_name</em>, <em>config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc.html#setup_directories"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc.setup_directories" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets up directories that are required by script.</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>domain_name (string):</dt>
+<dd>Name of domain that script is running for.</dd>
+<dt>config (dict):</dt>
+<dd>Dictionary that holds configuration of script.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc.setup_script">
+<code class="descclassname">mtc.</code><code class="descname">setup_script</code><span class="sig-paren">(</span><em>domain</em>, <em>script_date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc.html#setup_script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc.setup_script" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets up everything needed for script to run.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc.unzip_log">
+<code class="descclassname">mtc.</code><code class="descname">unzip_log</code><span class="sig-paren">(</span><em>key_name</em>, <em>zip_obj</em>, <em>num</em>, <em>config</em>, <em>key_date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc.html#unzip_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc.unzip_log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unzip logs from zip file passed.</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>key_name (str):</dt>
+<dd>Name of zip file.</dd>
+<dt>zip_obj (ZipFile):</dt>
+<dd>ZipFile object to extract from.</dd>
+<dt>num (int):</dt>
+<dd>Number assigned to zip file.</dd>
+<dt>config (dict):</dt>
+<dd>Dictionary with configuration values.</dd>
+<dt>key_date (str):</dt>
+<dd>Date of key from Leidos.</dd>
+</dl>
+</dd>
+<dt>Return type:</dt>
+<dd>list</dd>
+<dt>Returns:</dt>
+<dd>A list of results containing extracted logs.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc.unzip_logs">
+<code class="descclassname">mtc.</code><code class="descname">unzip_logs</code><span class="sig-paren">(</span><em>zips</em>, <em>config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc.html#unzip_logs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc.unzip_logs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main function for unzipping log files downloaded.</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>zips (list):</dt>
+<dd>List of files to unzip.</dd>
+<dt>config (dict):</dt>
+<dd>Dictionary with configuration values.</dd>
+</dl>
+</dd>
+<dt>Return type:</dt>
+<dd>list</dd>
+<dt>Returns:</dt>
+<dd>List of results with extracted name added.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc.upload_cb">
+<code class="descclassname">mtc.</code><code class="descname">upload_cb</code><span class="sig-paren">(</span><em>uploaded</em>, <em>total</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc.html#upload_cb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc.upload_cb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback function for upload.</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>uploaded (str):</dt>
+<dd>Amount of bytes currently uploaded.</dd>
+<dt>total (str):</dt>
+<dd>Total amount of bytes to upload.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc.upload_zip">
+<code class="descclassname">mtc.</code><code class="descname">upload_zip</code><span class="sig-paren">(</span><em>zip_file</em>, <em>bucket</em>, <em>config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc.html#upload_zip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc.upload_zip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uploads given zip file to given bucket.</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>zip_file (string):</dt>
+<dd>Zip file to upload</dd>
+<dt>bucket (boto.s3.bucket.Bucket):</dt>
+<dd>Bucket to upload zip file to.</dd>
+<dt>config (dict):</dt>
+<dd>Dictionary containing configuration values.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-mtc_helpers">
+<span id="mtc-helpers-py"></span><h2>mtc_helpers.py<a class="headerlink" href="#module-mtc_helpers" title="Permalink to this headline">¶</a></h2>
+<p>mtc_helpers.py</p>
+<p>Author: Tyrice Clark
+Company: Civic Resource Group
+Email: <a class="reference external" href="mailto:tyricec&#37;&#52;&#48;civicresourcegroup&#46;com">tyricec<span>&#64;</span>civicresourcegroup<span>&#46;</span>com</a></p>
+<p>This module has all the helper functions needed for the main script, mtc.py</p>
+<dl class="function">
+<dt id="mtc_helpers.create_date_range">
+<code class="descclassname">mtc_helpers.</code><code class="descname">create_date_range</code><span class="sig-paren">(</span><em>start_date</em>, <em>end_date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc_helpers.html#create_date_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc_helpers.create_date_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a date range list.</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>start_date (str):</dt>
+<dd>Date string to become datetime object</dd>
+<dt>end_date (str):</dt>
+<dd>Date string to become datetime object</dd>
+</dl>
+</dd>
+<dt>Return type:</dt>
+<dd>list</dd>
+<dt>Returns:</dt>
+<dd>A list containing datetime objects of start and end date.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc_helpers.escape_slashes">
+<code class="descclassname">mtc_helpers.</code><code class="descname">escape_slashes</code><span class="sig-paren">(</span><em>word</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc_helpers.html#escape_slashes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc_helpers.escape_slashes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replaces slashes within a word with a hypen.</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>word (str):</dt>
+<dd>Word to escape slashes from.</dd>
+</dl>
+</dd>
+<dt>Return type:</dt>
+<dd>str</dd>
+<dt>Returns:</dt>
+<dd>Word with slashes escaped.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc_helpers.get_bucket">
+<code class="descclassname">mtc_helpers.</code><code class="descname">get_bucket</code><span class="sig-paren">(</span><em>conn</em>, <em>bucket_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc_helpers.html#get_bucket"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc_helpers.get_bucket" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets bucket from s3 connection.</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>conn (boto.s3.connection):</dt>
+<dd>Connection to s3 machine.</dd>
+<dt>bucket_name (str):</dt>
+<dd>Name of bucket to get.</dd>
+</dl>
+</dd>
+<dt>Return type:</dt>
+<dd>boto.s3.bucket.Bucket</dd>
+<dt>Returns:</dt>
+<dd>Bucket from s3 machine.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc_helpers.get_connection">
+<code class="descclassname">mtc_helpers.</code><code class="descname">get_connection</code><span class="sig-paren">(</span><em>access_key</em>, <em>secret</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc_helpers.html#get_connection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc_helpers.get_connection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets connection to S3.</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>access_key:</dt>
+<dd>Access key needed for s3 connection.</dd>
+<dt>secret:</dt>
+<dd>Secret key needed for s3 connection.</dd>
+</dl>
+</dd>
+<dt>Return type:</dt>
+<dd>boto.s3.connection</dd>
+<dt>Returns:</dt>
+<dd>A connection to the s3 machine.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc_helpers.get_credentials">
+<code class="descclassname">mtc_helpers.</code><code class="descname">get_credentials</code><span class="sig-paren">(</span><em>config</em>, <em>access_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc_helpers.html#get_credentials"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc_helpers.get_credentials" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get Credentials for either downloading or uploading.</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>config (dict):</dt>
+<dd>Dictionary with configuration values.</dd>
+<dt>access_name (str):</dt>
+<dd>Name of credentials. Value can be either &#8220;push&#8221; or &#8220;pull&#8221;.</dd>
+</dl>
+</dd>
+<dt>Return type:</dt>
+<dd>tuple</dd>
+<dt>Returns:</dt>
+<dd>A tuple with access key and secret key.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc_helpers.get_cwd">
+<code class="descclassname">mtc_helpers.</code><code class="descname">get_cwd</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc_helpers.html#get_cwd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc_helpers.get_cwd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets current working directory of script.</p>
+<dl class="docutils">
+<dt>Return type:</dt>
+<dd>str</dd>
+<dt>Returns:</dt>
+<dd>Current working directory of script.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc_helpers.get_date_in_log">
+<code class="descclassname">mtc_helpers.</code><code class="descname">get_date_in_log</code><span class="sig-paren">(</span><em>log</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc_helpers.html#get_date_in_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc_helpers.get_date_in_log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the date within the log file. Can be found on line 3 of each
+valid log file.</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>log (tuple):</dt>
+<dd>Log tuple that comes from results of download and unzip functions.</dd>
+</dl>
+</dd>
+<dt>Return type:</dt>
+<dd>str</dd>
+<dt>Returns:</dt>
+<dd>Date from the log.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc_helpers.get_keys">
+<code class="descclassname">mtc_helpers.</code><code class="descname">get_keys</code><span class="sig-paren">(</span><em>bucket</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc_helpers.html#get_keys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc_helpers.get_keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get keys from bucket.</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>bucket (boto.s3.bucket.Bucket):</dt>
+<dd>Bucket to get keys from.</dd>
+</dl>
+</dd>
+<dt>Return type:</dt>
+<dd>list</dd>
+<dt>Returns:</dt>
+<dd>List of keys from bucket.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc_helpers.get_result">
+<code class="descclassname">mtc_helpers.</code><code class="descname">get_result</code><span class="sig-paren">(</span><em>process</em>, <em>key_date</em>, <em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc_helpers.html#get_result"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc_helpers.get_result" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns result from process.</p>
+<p>Used to reduce try, except, blocks in functions.</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>process (method):</dt>
+<dd>function that processes arguments to a result.</dd>
+<dt>date (str):</dt>
+<dd>date of key that is part of the result.</dd>
+<dt><a href="#id1"><span class="problematic" id="id2">*</span></a>args:</dt>
+<dd>Arguments for process method.</dd>
+</dl>
+</dd>
+<dt>Return type:</dt>
+<dd>tuple</dd>
+<dt>Returns:</dt>
+<dd>Result tuple from process.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc_helpers.get_search">
+<code class="descclassname">mtc_helpers.</code><code class="descname">get_search</code><span class="sig-paren">(</span><em>domain</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc_helpers.html#get_search"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc_helpers.get_search" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the regex pattern for a domain.</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>domain (str):</dt>
+<dd>Domain to get log regex matching for.</dd>
+</dl>
+</dd>
+<dt>Return type:</dt>
+<dd>str</dd>
+<dt>Returns:</dt>
+<dd>Regex to match log files to a domain on Leidos server.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc_helpers.get_yesterday_date">
+<code class="descclassname">mtc_helpers.</code><code class="descname">get_yesterday_date</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc_helpers.html#get_yesterday_date"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc_helpers.get_yesterday_date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns yesterday date as datetime object.</p>
+<dl class="docutils">
+<dt>Return type:</dt>
+<dd>datetime</dd>
+<dt>Returns:</dt>
+<dd>Yesterday&#8217;s date.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc_helpers.log_average_time">
+<code class="descclassname">mtc_helpers.</code><code class="descname">log_average_time</code><span class="sig-paren">(</span><em>action_name</em>, <em>times</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc_helpers.html#log_average_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc_helpers.log_average_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logs average time for an action.</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>action_name (str):</dt>
+<dd>Name of action (Download, Import, etc.)</dd>
+<dt>times (list):</dt>
+<dd>List of times to find the average of.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc_helpers.log_csv">
+<code class="descclassname">mtc_helpers.</code><code class="descname">log_csv</code><span class="sig-paren">(</span><em>action_name</em>, <em>logs</em>, <em>config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc_helpers.html#log_csv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc_helpers.log_csv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate csv from logs passed in.</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>action_name (string):</dt>
+<dd>Action to log (Download, Import, Unzip, etc.)</dd>
+<dt>logs (list of tuples):</dt>
+<dd>List of log tuples to generate csv from.</dd>
+<dt>config (dict):</dt>
+<dd>Dictionary that holds configuration values.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc_helpers.log_error">
+<code class="descclassname">mtc_helpers.</code><code class="descname">log_error</code><span class="sig-paren">(</span><em>exception</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc_helpers.html#log_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc_helpers.log_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logs exception to file.</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>exception (Exception):</dt>
+<dd>Exception to log.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc_helpers.log_import_summary">
+<code class="descclassname">mtc_helpers.</code><code class="descname">log_import_summary</code><span class="sig-paren">(</span><em>output</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc_helpers.html#log_import_summary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc_helpers.log_import_summary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logs output from piwik python script.</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>output (IO):</dt>
+<dd>Stream from piwik command.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc_helpers.log_status">
+<code class="descclassname">mtc_helpers.</code><code class="descname">log_status</code><span class="sig-paren">(</span><em>action_name</em>, <em>result</em>, <em>config</em>, <em>output=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc_helpers.html#log_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc_helpers.log_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logs whether an action for a result was Successful or Failed.</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>action_name (str):</dt>
+<dd>Name of action (Download, Import, etc.)</dd>
+<dt>result (tuple):</dt>
+<dd>Result tuple in format:
+((file_name, extract_name), status, time, key_date)</dd>
+<dt>config (dict):</dt>
+<dd>Dictionary that holds configuration values.</dd>
+<dt>message (str) (optional):</dt>
+<dd>Message to print to screen.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc_helpers.log_statuses">
+<code class="descclassname">mtc_helpers.</code><code class="descname">log_statuses</code><span class="sig-paren">(</span><em>action_name</em>, <em>result_list</em>, <em>config</em>, <em>output</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc_helpers.html#log_statuses"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc_helpers.log_statuses" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logs status and average time of each result passed.</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>action_name (str):</dt>
+<dd>Name of action being logged (Download, Import, etc.)</dd>
+<dt>result_list (list):</dt>
+<dd>List of results to log</dd>
+<dt>config (dict):</dt>
+<dd>Dictionary that holds configuration values.</dd>
+<dt>output (str):</dt>
+<dd>Output message to print to console screen.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc_helpers.log_time_to_file">
+<code class="descclassname">mtc_helpers.</code><code class="descname">log_time_to_file</code><span class="sig-paren">(</span><em>time_name</em>, <em>record_time</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc_helpers.html#log_time_to_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc_helpers.log_time_to_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log elapsed time to file.</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>time_name (str):</dt>
+<dd>Name of record&#8217;s time being recorded</dd>
+<dt>record_time (time):</dt>
+<dd>Time being logged</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc_helpers.log_to_file">
+<code class="descclassname">mtc_helpers.</code><code class="descname">log_to_file</code><span class="sig-paren">(</span><em>l_file</em>, <em>output</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc_helpers.html#log_to_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc_helpers.log_to_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log a message to given file</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>l_file (IO):</dt>
+<dd>File to write message to.</dd>
+<dt>output (string):</dt>
+<dd>Output that goes to message.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc_helpers.split_lists_by_status">
+<code class="descclassname">mtc_helpers.</code><code class="descname">split_lists_by_status</code><span class="sig-paren">(</span><em>result_list</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc_helpers.html#split_lists_by_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc_helpers.split_lists_by_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Splits a list by status of result tuples within the list.</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>result_list (list):</dt>
+<dd>List of result tuples
+Format of tuple: ((key_name, unzipped_name), status, time, key_date)</dd>
+</dl>
+</dd>
+<dt>Return type:</dt>
+<dd>list</dd>
+<dt>Returns:</dt>
+<dd>List containing two lists, one list with successful results and
+the other failed results.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="mtc_helpers.write_to_file">
+<code class="descclassname">mtc_helpers.</code><code class="descname">write_to_file</code><span class="sig-paren">(</span><em>stream</em>, <em>output</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc_helpers.html#write_to_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc_helpers.write_to_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes output to stream given.</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>stream (IO):</dt>
+<dd>Stream to write to.</dd>
+<dt>output (string):</dt>
+<dd>Output to write to stream.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-mtc_classes">
+<span id="mtc-classes-py"></span><h2>mtc_classes.py<a class="headerlink" href="#module-mtc_classes" title="Permalink to this headline">¶</a></h2>
+<p>mtc_classes.py</p>
+<p>Author: Tyrice Clark
+Company: Civic Resource Group
+Email: <a class="reference external" href="mailto:tyricec&#37;&#52;&#48;civicresource&#46;com">tyricec<span>&#64;</span>civicresource<span>&#46;</span>com</a></p>
+<dl class="class">
+<dt id="mtc_classes.Config">
+<em class="property">class </em><code class="descclassname">mtc_classes.</code><code class="descname">Config</code><a class="reference internal" href="_modules/mtc_classes.html#Config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc_classes.Config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parses configuration files and checks if all required
+settings are present.</p>
+<dl class="method">
+<dt id="mtc_classes.Config.check_settings">
+<code class="descname">check_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc_classes.html#Config.check_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc_classes.Config.check_settings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Makes sure required settings are loaded.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mtc_classes.Config.read_configuration">
+<code class="descname">read_configuration</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc_classes.html#Config.read_configuration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc_classes.Config.read_configuration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads configuration file and stores into a dictionary.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="mtc_classes.RequiredException">
+<em class="property">exception </em><code class="descclassname">mtc_classes.</code><code class="descname">RequiredException</code><span class="sig-paren">(</span><em>setting</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mtc_classes.html#RequiredException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mtc_classes.RequiredException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets default message for exception with setting passed.
+Keyword arguments:</p>
+<blockquote>
+<div>setting &#8211; The setting that wasn&#8217;t found in configuration file.</div></blockquote>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/crg.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">API Documentation</a><ul>
+<li><a class="reference internal" href="#module-mtc">mtc.py</a></li>
+<li><a class="reference internal" href="#module-mtc_helpers">mtc_helpers.py</a></li>
+<li><a class="reference internal" href="#module-mtc_classes">mtc_classes.py</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Developer-Notes.html"
+                        title="previous chapter">Developer Notes</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/API.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, Tyrice Clark.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.3</a>
+      
+      |
+      <a href="_sources/API.txt"
+          rel="nofollow">Page source</a></li>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,277 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>User Guide &mdash; MTC Analytics 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="MTC Analytics 1.0.0 documentation" href="index.html" />
+    <link rel="next" title="Developer Notes" href="Developer-Notes.html" />
+    <link rel="prev" title="Welcome to MTC Analytics documentation!" href="index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Developer-Notes.html" title="Developer Notes"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to MTC Analytics documentation!"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MTC Analytics 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="user-guide">
+<h1>User Guide<a class="headerlink" href="#user-guide" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>The purpose of this guide is to help the developer understand how to install and execute the script from
+this program. Location of the files will also be explained and also a brief overview of how the scripts are
+placed in different enviornments and the purpose.</p>
+</div>
+<div class="section" id="system-requirements">
+<h2>System Requirements<a class="headerlink" href="#system-requirements" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Python</li>
+<li>Unix</li>
+<li>Piwik (MySql, PHP, Piwik)</li>
+</ul>
+</div>
+<div class="section" id="python-requirements">
+<h2>Python Requirements<a class="headerlink" href="#python-requirements" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Python 2.6 - 2.7.6</li>
+<li>boto</li>
+<li>pyyaml</li>
+<li>mock (for unit testing)</li>
+</ul>
+</div>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>To use any of the scripts that this package provides, it is required to install the boto python sdk and yaml modules.
+Make sure on your machine that python and pip is installed and run the following commands:</p>
+<div class="highlight-python"><div class="highlight"><pre>pip install boto
+pip install pyyaml
+</pre></div>
+</div>
+<p>After these modules are installed, all scripts should be compatible if the system meets requirements.</p>
+</div>
+<div class="section" id="running-the-scripts">
+<h2>Running the Scripts<a class="headerlink" href="#running-the-scripts" title="Permalink to this headline">¶</a></h2>
+<p>There are a total of 7 scripts that can be ran individually for different reasons. Each script will be listed below
+with a brief explanation of its purpose.</p>
+<ul>
+<li><p class="first"><strong>run_all_daily</strong></p>
+<p>Used for a daily cron import of all the sites. Is ran with no parameters.</p>
+<div class="highlight-python"><div class="highlight"><pre>./run_all_daily
+</pre></div>
+</div>
+</li>
+<li><p class="first"><strong>run_all_weekly</strong></p>
+<p>Used to import large amount of data in a weekly basis. A date range is the only parameter needed.</p>
+<div class="highlight-python"><div class="highlight"><pre>./run_all_weekly start-date end-date
+</pre></div>
+</div>
+<p>*start-date and end-date in format YYYY-MM-DD</p>
+</li>
+<li><p class="first"><strong>stat.sh</strong></p>
+<p>Gets statistics for a site for a date specified. Site and date are parameters needed.</p>
+<div class="highlight-python"><div class="highlight"><pre>./stat.sh site date
+</pre></div>
+</div>
+<p>*date in format YYYY-MM-DD</p>
+</li>
+<li><p class="first"><strong>get_stats.sh</strong></p>
+<p>Gets statisitics for a site over a date range. Site and date range needed are parameters needed.</p>
+<div class="highlight-python"><div class="highlight"><pre>./get_stat.sh site start-date end-date
+</pre></div>
+</div>
+<p>*start-date and end-date in format YYYY-MM-DD</p>
+</li>
+<li><p class="first"><strong>create_csv.sh</strong></p>
+<p>Used to create csv files from statisitic files. No parameters needed, but .stat files from
+stat.sh or get_stats.sh must be present.</p>
+<div class="highlight-python"><div class="highlight"><pre>./create_csv.sh
+</pre></div>
+</div>
+</li>
+<li><p class="first"><strong>core/mtc.py</strong></p>
+<p>Main script to do importing. Needs site and a date to import for parameters.</p>
+<div class="highlight-python"><div class="highlight"><pre>core/mtc.py site date
+</pre></div>
+</div>
+<p>*date in format YYYY-MM-DD</p>
+</li>
+<li><p class="first"><strong>core/legacy.py</strong></p>
+<p>Used to call mtc.py over a range of days at one day increments. Needs site and date range.</p>
+<div class="highlight-python"><div class="highlight"><pre>core/legacy.py site start-date end-date
+</pre></div>
+</div>
+<p>*start-date and end-date in format YYYY-MM-DD</p>
+</li>
+</ul>
+<p>The main script to use will be core/mtc.py as it is the foundation for the other scripts. Be sure that all the
+scripts have an executable permission before running. Also, make sure to check <em>core/.aws_config</em> has all configuration
+values needed for Piwik and Amazon instances. (See Config section for more details.)</p>
+</div>
+<div class="section" id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
+<p>For the main script <em>mtc.py</em> to work, there is configuration that needs to be set. The file <em>core/.aws_config</em> contains information
+this information for <em>mtc.py</em>. Following is a list of settings that can be changed, along with a brief description:</p>
+<ul>
+<li><p class="first"><strong>aws_push_access_key</strong></p>
+<p>Access key to amazon instance to upload successful imported files to.</p>
+</li>
+<li><p class="first"><strong>aws_push_secret</strong></p>
+<p>Secret key to amazon instance to upload successful imported files to.</p>
+</li>
+<li><p class="first"><strong>aws_pull_access_key</strong></p>
+<p>Access key to amazon instance to download files from.</p>
+</li>
+<li><p class="first"><strong>aws_pull_secret</strong></p>
+<p>Secret key to amazon instance to download files from.</p>
+</li>
+<li><p class="first"><strong>sites</strong></p>
+<p>A list of sites with their site id from the piwik interface to import for.</p>
+</li>
+<li><p class="first"><strong>piwik_ip</strong></p>
+<p>The ip address to use for the import command to piwik.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="current-use">
+<h2>Current Use<a class="headerlink" href="#current-use" title="Permalink to this headline">¶</a></h2>
+<p>Currently the application is being used on three Amazon instances. Two of the instances are linked to an production Piwik database
+while the other is linked to a staging database. On each machine there is a bash script that is either triggered by a user or with
+a cron job. On each instance is the main files, <strong>mtc.py</strong>, <strong>mtc_classes.py</strong>, <strong>mtc_helpers.py</strong>, and <strong>legacy.py</strong>. On staging,
+all files contained in the github repository is present while on production only the main files and an corresponding bash script is.</p>
+<p>The production instances are labeled archive and import. The archive instance is mainly used to run a cron of daily imports and sometimes
+legacy data. The import instance is used to import large amounts of legacy data. According to plan, once all legacy data comes in,
+the import instance will be taken down and only the archive instance will remain.</p>
+<p>By this setup, the current use of the application is to have all the scripts to be tested on staging and passing only required scripts to
+both import and archive. The import instance currently uses <strong>run_all_week</strong>, while archive uses <strong>run_all_daily</strong>.</p>
+<p>Below is a diagram that should assist in understanding how this application is used.</p>
+<p class="plantuml">
+<img src="_images/plantuml-201c8877316ec846b63a1ffb734766601e9dd1fd.png" alt=":Staging User: as S
+:Import User: as I
+:Archive User: as A
+(Run *mtc.py*) as mtc
+(Run *legacy.py*) as legacy
+(Run *run_all_week*) as run_all_week
+(Run *run_all_daily*) as run_all_daily
+
+S --&gt; mtc
+S --&gt; legacy
+S --&gt; run_all_week
+S --&gt; run_all_daily
+I --&gt; run_all_week
+A --&gt; run_all_daily" />
+</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/crg.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">User Guide</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#system-requirements">System Requirements</a></li>
+<li><a class="reference internal" href="#python-requirements">Python Requirements</a></li>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#running-the-scripts">Running the Scripts</a></li>
+<li><a class="reference internal" href="#configuration">Configuration</a></li>
+<li><a class="reference internal" href="#current-use">Current Use</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to MTC Analytics documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Developer-Notes.html"
+                        title="next chapter">Developer Notes</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/User-Guide.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, Tyrice Clark.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.3</a>
+      
+      |
+      <a href="_sources/User-Guide.txt"
+          rel="nofollow">Page source</a></li>
+    </div>
+
+    
+
+    
+  </body>
+</html>
